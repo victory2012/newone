@@ -28,7 +28,7 @@ axios.interceptors.response.use(response => {
 
 function checkStatus(response) {
   // 如果http状态码正常，则直接返回数据
-  console.log(response);
+  // console.log(response);
   if (response && (response.status === 200 || response.status === 304 || response.status === 400)) {
     // console.log(response);
     if (response.data.code === 1) {

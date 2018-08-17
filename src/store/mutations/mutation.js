@@ -30,4 +30,7 @@ export default {
   triggerAddBattery(state) {
     state.addBattery = !state.addBattery;
   },
+  SETBATTERYMODEL(state, data) {
+    state.batteryModel = data;
+  }
 };

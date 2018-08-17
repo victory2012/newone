@@ -10,7 +10,7 @@
         <el-col :span="12">
           <el-form-item label="电池组客户企业" prop="batCustom">
             <el-select size="small" style="width:210px" v-model="batteryForm.batCustom" placeholder="电池组客户企业">
-              <el-option v-for="item in batCustomOpts" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled">
+              <el-option v-for="item in batCustomOpts" :key="item.id" :label="item.name" :value="item.id" :disabled="item.disabled">
               </el-option>
             </el-select>
           </el-form-item>
@@ -25,7 +25,7 @@
         <el-col :span="12">
           <el-form-item label="电池组型号" prop="batGroupModel">
             <el-select size="small" style="width:210px" v-model="batteryForm.batGroupModel" placeholder="电池组型号">
-              <el-option v-for="item in GroupModelOpts" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled">
+              <el-option v-for="item in GroupModelOpts" :key="item.id" :label="item.dicValue" :value="item.id" :disabled="item.disabled">
               </el-option>
             </el-select>
           </el-form-item>
@@ -35,27 +35,27 @@
         <el-col :span="12">
           <el-form-item label="电池组规格" prop="batGroupSpecif">
             <el-select size="small" style="width:210px" v-model="batteryForm.batGroupSpecif" placeholder="电池组规格">
-              <el-option v-for="item in batGroupSpecifOpts" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled">
+              <el-option v-for="item in batGroupSpecifOpts" :key="item.id" :label="item.dicValue" :value="item.id" :disabled="item.disabled">
               </el-option>
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="电池组额定电压" prop="batteryVoltage">
-            <el-input size="small" v-model="batteryForm.batteryVoltage" auto-complete="off"></el-input>
+            <el-input size="small" v-model.number="batteryForm.batteryVoltage" auto-complete="off"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="60">
         <el-col :span="12">
           <el-form-item label="电池组额定容量" prop="batteryCapacity">
-            <el-input size="small" v-model="batteryForm.batteryCapacity" auto-complete="off"></el-input>
+            <el-input size="small" v-model.number="batteryForm.batteryCapacity" auto-complete="off"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="电池单体型号" prop="singleBattery">
             <el-select size="small" style="width:210px" v-model="batteryForm.singleBattery" placeholder="电池单体型号">
-              <el-option v-for="item in singleBatteryOpts" :key="item.value" :label="item.label" :value="item.value" :disabled="item.disabled">
+              <el-option v-for="item in singleBatteryOpts" :key="item.id" :label="item.dicValue" :value="item.id" :disabled="item.disabled">
               </el-option>
             </el-select>
           </el-form-item>
@@ -101,12 +101,13 @@
   </el-dialog>
 </template>
 <script>
-// import utils from "@/utils/utils";
+import utils from "@/utils/utils";
 
 export default {
   data() {
     return {
-      account: "1231456",
+      account:
+        JSON.parse(sessionStorage.getItem("loginData")).data.companyName || "",
       batteryForm: {},
       batteryFormRules: {
         batCustom: [
@@ -121,12 +122,8 @@ export default {
         batGroupSpecif: [
           { required: true, message: "请选择电池组规格", trigger: "change" }
         ],
-        batteryVoltage: [
-          { required: true, message: "请输入电池组额定电压", trigger: "change" }
-        ],
-        batteryCapacity: [
-          { required: true, message: "请输入电池组额定容量", trigger: "change" }
-        ],
+        batteryVoltage: [{ required: true, message: "请输入电池组额定电压" }],
+        batteryCapacity: [{ required: true, message: "请输入电池组额定容量" }],
         singleBattery: [
           { required: true, message: "请选择电池单体型号", trigger: "change" }
         ],
@@ -169,26 +166,69 @@ export default {
       this.batteryForm = {};
     },
     submitBatteryAdd() {
-      console.log(this.batteryForm);
+      // console.log(this.batteryForm);
       this.$refs.batteryForm.validate(valid => {
         if (valid) {
           console.log("submit!");
-          // let params = {
-          //   code: this.batteryForm.groupNum,
-          //   modelId: this.batteryForm,
-          //   model: this.batteryForm,
-          //   normId: this.batteryForm,
-          //   norm: this.batteryForm,
-          //   companyId: this.batteryForm,
-          //   voltage: this.batteryForm,
-          //   capacity: this.batteryForm,
-          //   singleModeId: this.batteryForm,
-          //   singleMode: this.batteryForm,
-          //   productionDate: utils.dateFomat(this.batteryForm.productDate),
-          //   manufacturerDate: utils.dateFomat(this.batteryForm.factoryDate),
-          //   qualityGuaranteeDate: utils.dateFomat(this.batteryForm.qualityDate),
-          //   deviceId: this.batteryForm
-          // };
+          this.GroupModelOpts.forEach(key => {
+            if (key.id === this.batteryForm.batGroupModel) {
+              this.batteryForm.model = key.dicValue;
+            }
+          });
+          this.batGroupSpecifOpts.forEach(key => {
+            if (key.id === this.batteryForm.batGroupSpecif) {
+              this.batteryForm.norm = key.dicValue;
+            }
+          });
+          this.batCustomOpts.forEach(key => {
+            if (key.id === this.batteryForm.batCustom) {
+              this.batteryForm.company = key.name;
+            }
+          });
+          this.singleBatteryOpts.forEach(key => {
+            if (key.id === this.batteryForm.singleBattery) {
+              this.batteryForm.singleMode = key.dicValue;
+            }
+          });
+          this.singleBatteryOpts.forEach(key => {
+            if (key.id === this.batteryForm.singleBattery) {
+              this.batteryForm.singleMode = key.dicValue;
+            }
+          });
+          let params = {
+            code: this.batteryForm.groupNum,
+            modelId: this.batteryForm.batGroupModel,
+            model: this.batteryForm.model,
+            normId: this.batteryForm.batGroupSpecif,
+            norm: this.batteryForm.norm,
+            companyId: this.batteryForm.batCustom,
+            companyName: this.batteryForm.company,
+            voltage: this.batteryForm.batteryVoltage,
+            capacity: this.batteryForm.batteryCapacity,
+            singleModelId: this.batteryForm.singleBattery,
+            singleModel: this.batteryForm.singleMode,
+            productionDate: utils.dateFomat(this.batteryForm.productDate),
+            manufacturerDate: utils.dateFomat(this.batteryForm.factoryDate),
+            qualityGuaranteeDate: utils.dateFomat(this.batteryForm.qualityDate)
+          };
+          this.deviceIdOpts.forEach(key => {
+            if (key.id === this.batteryForm.deviceId) {
+              params.deviceId = this.batteryForm.deviceId;
+              params.deviceCode = key.code;
+            }
+          });
+          this.$axios.post("/battery_group", params).then(res => {
+            console.log("添加电池组", res);
+            if (res.data && res.data.code === 0) {
+              this.$message({
+                type: "success",
+                message: res.data.msg
+              });
+              this.$emit("hasCreated", { value: true });
+              this.batteryForm = {};
+              this.$store.state.addBattery = false;
+            }
+          });
         } else {
           console.log("error submit!!");
           return false;
@@ -197,28 +237,47 @@ export default {
     },
     /* 关闭窗口回调方法 */
     closeTt() {
+      this.$refs.batteryForm.resetFields();
       this.batteryForm = {};
       this.$store.state.addBattery = false;
     },
     /* 获取电池组型号列表 */
     getGroupModel() {
-      this.$axios.get("/dic/user_dic?key=model&categoryId=2").then(res => {
+      this.$axios.get("/dic/user_dic?dicKey=model&categoryId=2").then(res => {
         console.log("电池组型号", res);
+        if (res.data && res.data.code === 0) {
+          this.GroupModelOpts = res.data.data;
+        }
       });
     },
     /* 获取电池组规格列表 */
     getGroupSpecif() {
-      this.$axios.get("/dic/user_dic?key=norm&categoryId=2").then(res => {
+      this.$axios.get("/dic/user_dic?dicKey=norm&categoryId=2").then(res => {
         console.log("电池组规格", res);
+        if (res.data && res.data.code === 0) {
+          this.batGroupSpecifOpts = res.data.data;
+        }
       });
     },
     /* 获取电池单体型号列表 */
     getSinglBattery() {
       this.$axios
-        .get("/dic/user_dic?key=single_model&categoryId=2")
+        .get("/dic/user_dic?dicKey=single_model&categoryId=2")
         .then(res => {
           console.log("电池单体型号", res);
+          if (res.data && res.data.code === 0) {
+            this.singleBatteryOpts = res.data.data;
+          }
         });
+    },
+    /* 获取电池组客户企业表 */
+    getCompanyId() {
+      this.$axios.get("/company/names?layer=2").then(res => {
+        console.log("获取电池组客户企业表", res);
+        if (res.data && res.data.code === 0) {
+          this.batCustomOpts = res.data.data;
+        }
+      });
     },
     /* 获取设备编号列表 */
     getDeviceList() {
@@ -234,6 +293,7 @@ export default {
       this.getGroupSpecif();
       this.getSinglBattery();
       this.getDeviceList();
+      this.getCompanyId();
     }
   },
   mounted() {

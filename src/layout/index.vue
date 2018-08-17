@@ -2,7 +2,7 @@
   <div class="home">
     <div class="menu">
       <div class="log">
-        <el-dropdown size="small" class="user-name" @command="handleCommand">
+        <el-dropdown size="small" placement="bottom" class="user-name" @command="handleCommand">
           <span class="el-dropdown-link">
             <span class="avatar">
               <i class="iconfont icon-user"></i>
@@ -86,23 +86,20 @@ export default {
     box-sizing: border-box;
     flex: 1;
     background: #f5f7fa;
-    overflow-y: auto;
-    overflow-x: hidden;
-
+    overflow: auto;
     .scrollwarrp {
       padding: 20px;
-      overflow-x: hidden;
     }
   }
 }
 .el-menu {
   width: 220px;
 }
-.el-scrollbar {
-  .el-scrollbar__wrap {
-    overflow-x: hidden !important;
-  }
-}
+// .el-scrollbar {
+//   .el-scrollbar__wrap {
+//     overflow-x: hidden !important;
+//   }
+// }
 .log {
   padding-top: 24px;
   margin: 0 auto;

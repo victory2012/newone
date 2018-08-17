@@ -4,5 +4,6 @@ export default {
   mapData: '',
   manfictor: false,
   custom: false,
-  addBattery: false
+  addBattery: false,
+  batteryModel: null
 };

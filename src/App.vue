@@ -22,7 +22,7 @@ body {
   overflow-x: hidden;
 }
 .el-dialog__body {
-  padding: 30px 60px;
+  padding: 10px 60px;
 }
 .el-form-item__label {
   line-height: normal;

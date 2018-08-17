@@ -2,13 +2,12 @@
   <div class="batteryList">
     <div class="topTab">
       <div class="icons">
-        <div class="items" @click="triggerAddBattery">
+        <!-- <div class="items" @click="triggerAddBattery">
           <img src="../../../static/img/device_reg.png" alt="">
           <p>电池注册</p>
         </div>
         <div class="items">
           <el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-success="flieSuccess" :on-progress="onGoing" :on-error="flieError" :show-file-list="false" :multiple="false" :auto-upload="true">
-            <!-- <el-button slot="trigger" size="small" type="primary">选取文件</el-button> -->
             <div slot="trigger">
               <img src="../../../static/img/device_import.png" alt="">
               <p>批量导入</p>
@@ -18,6 +17,32 @@
         <div class="items">
           <img src="../../../static/img/device_recover.png" alt="">
           <p>恢复拉黑电池</p>
+        </div> -->
+        <div class="items">
+          <el-dropdown trigger="click" placement="bottom-start" @command="handleCommand">
+            <span>
+              <img src="../../../static/img/device_reg.png" alt=""><br/>
+              <span class="el-dropdown-link">电池</span>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="addBattery" :disabled="false">添加电池</el-dropdown-item>
+              <el-dropdown-item command="addModel">添加型号</el-dropdown-item>
+              <el-dropdown-item command="addSpfic">添加规格</el-dropdown-item>
+              <el-dropdown-item command="addSingel">添加单体规格</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+        <div class="items">
+          <el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-success="flieSuccess" :on-progress="onGoing" :on-error="flieError" :show-file-list="false" :multiple="false" :auto-upload="true">
+            <div slot="trigger">
+              <img id="import" :src="'../../../static/img/device_import.png'" alt="">
+              <p>批量导入</p>
+            </div>
+          </el-upload>
+        </div>
+        <div class="items">
+          <img id="recover" src="../../../static/img/device_recover.png" alt="">
+          <p>恢复拉黑电池</p>
         </div>
       </div>
       <div class="select">
@@ -25,8 +50,8 @@
           <el-input size="small" v-model="batteryId" placeholder="电池/设备编号"></el-input>
         </div>
         <div class="item">
-          <el-select size="small" v-model="value" placeholder="电池型号">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+          <el-select size="small" v-model="batteryModel" placeholder="电池型号">
+            <el-option v-for="item in Modeloptions" :key="item.id" :label="item.dicValue" :value="item.id">
             </el-option>
           </el-select>
         </div>
@@ -86,7 +111,18 @@
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout="sizes, prev, pager, next" :total="total">
       </el-pagination>
     </div>
-    <add-battery :is="showAdd"></add-battery>
+    <el-dialog width="600px" :title="titles" :visible.sync="addModel">
+      <el-form :model="modelForm" :rules="modelFormRules" ref="modelForm">
+        <el-form-item :label="labels" prop="dicValue">
+          <el-input size="small" v-model="modelForm.dicValue" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="resetModelAdd">重 置</el-button>
+        <el-button size="small" @click="submitModelAdd" type="primary">确 认</el-button>
+      </div>
+    </el-dialog>
+    <component @hasCreated="reloadBattery" :is="showAdd"></component>
   </div>
 </template>
 <style lang="scss" scoped>
@@ -94,8 +130,9 @@
   background: #ffffff;
   border-radius: 5px;
   padding: 20px;
+  min-width: 1180px;
+  overflow: auto;
   .topTab {
-    min-width: 1055px;
     display: flex;
     height: 60px;
     margin-bottom: 40px;
@@ -108,6 +145,7 @@
         font-size: 14px;
         cursor: pointer;
         img {
+          width: 28px;
           margin-bottom: 8px;
         }
       }
@@ -126,50 +164,40 @@
     text-align: right;
   }
 }
+#import {
+  margin-bottom: 12px;
+}
+#recover {
+  margin-bottom: 14px;
+}
 </style>
 <script>
-const asyncCompa = () => ({
-  component: import("@/components/battery/addBattery"),
-  delay: 3000, // 这个延时并不能让loading显示更长时间
-  timeout: 10000
-});
-
 export default {
   components: {
-    "add-battery": asyncCompa
+    "add-battery": () => import("@/components/battery/addBattery")
   },
   data() {
     return {
-      showAdd: '',
+      showAdd: "",
+      addType: "",
+      labels: "",
+      titles: "",
+      addModel: false,
       batteryId: "",
       loading: false,
       currentPage: 1,
       pageSize: 10,
       total: 0,
+      modelForm: {},
+      modelFormRules: {
+        value: [{ required: true, message: "请输入内容", trigger: "change" }]
+      },
       batteryForm: {},
       batteryFormRules: {},
-      options: [
-        {
-          value: "选项1",
-          label: "黄金糕"
-        },
-        {
-          value: "选项2",
-          label: "双皮奶"
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎"
-        },
-        {
-          value: "选项4",
-          label: "龙须面"
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭"
-        }
-      ],
+      Modeloptions: [],
+      batteryModel: '',
+      options: [],
+      bindOptions: [],
       value: "",
       tableData: [
         {
@@ -185,9 +213,70 @@ export default {
     };
   },
   methods: {
-    triggerAddBattery() {
-      this.$store.commit("triggerAddBattery");
-      this.showAdd = "add-battery";
+    reloadBattery(data) {
+      console.log(data);
+    },
+    handleSelect() {},
+    handleCommand(command) {
+      this.addType = command;
+      // this.modelForm.value = "";
+      if (command === "addBattery") {
+        this.$store.commit("triggerAddBattery");
+        this.showAdd = "add-battery";
+      }
+      if (command === "addModel") {
+        this.addModel = true;
+        this.titles = "添加型号";
+        this.labels = "电池组型号";
+      }
+      if (command === "addSpfic") {
+        this.addModel = true;
+        this.titles = "添加规格";
+        this.labels = "电池组规格";
+      }
+      if (command === "addSingel") {
+        this.addModel = true;
+        this.titles = "添加单体规格";
+        this.labels = "电池组单体规格";
+      }
+    },
+    resetModelAdd() {
+      this.$refs.modelForm.resetFields();
+      this.modelForm = {};
+    },
+    submitModelAdd() {
+      console.log(this.batteryForm);
+      this.$refs.modelForm.validate(valid => {
+        if (valid) {
+          let params = {
+            dicValue: this.modelForm.dicValue,
+            categoryId: 2
+          };
+          if (this.addType === "addModel") {
+            params.dicKey = "model";
+          }
+          if (this.addType === "addSpfic") {
+            params.dicKey = "norm";
+          }
+          if (this.addType === "addSingel") {
+            params.dicKey = "single_model";
+          }
+          this.$axios.post("/dic/user_dic", params).then(res => {
+            console.log(this.addType, res);
+            if (res.data && res.data.code === 0) {
+              this.$message({
+                type: "success",
+                message: res.data.msg
+              });
+              this.addModel = false;
+              this.modelForm = {};
+            }
+          });
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
     },
     handleSizeChange(val) {
       this.pageSize = val;
@@ -217,11 +306,20 @@ export default {
       this.$axios.get("/battery_gps", options).then(res => {
         console.log(res);
       });
+    },
+    /* 获取电池型号列表 */
+    getBatteryModelList() {
+      this.$axios.get('/dic/user_dic?dicKey=model&categoryId=2').then(res => {
+        console.log(res);
+        if (res.data && res.data.code === 0) {
+          this.Modeloptions = res.data.data;
+        }
+      });
     }
   },
   mounted() {
     this.$store.state.addBattery = false;
-    // this.getBatteryList();
+    this.getBatteryModelList();
   }
 };
 </script>
