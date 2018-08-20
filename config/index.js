@@ -5,7 +5,7 @@
 // const apiPath = require('./apiPath');
 const path = require('path');
 
-// const apiPath = "http://192.168.1.161:8000";
+// const apiPath = "http://192.168.1.164:8000";
 const apiPath = "http://47.96.8.239:8000";
 
 module.exports = {

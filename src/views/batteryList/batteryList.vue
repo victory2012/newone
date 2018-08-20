@@ -172,6 +172,8 @@
 }
 </style>
 <script>
+// import { mapActions } from "vuex";
+
 export default {
   components: {
     "add-battery": () => import("@/components/battery/addBattery")
@@ -195,7 +197,7 @@ export default {
       batteryForm: {},
       batteryFormRules: {},
       Modeloptions: [],
-      batteryModel: '',
+      batteryModel: "",
       options: [],
       bindOptions: [],
       value: "",
@@ -213,6 +215,7 @@ export default {
     };
   },
   methods: {
+    // ...mapActions(['getBatteryModel']),
     reloadBattery(data) {
       console.log(data);
     },
@@ -309,12 +312,13 @@ export default {
     },
     /* 获取电池型号列表 */
     getBatteryModelList() {
-      this.$axios.get('/dic/user_dic?dicKey=model&categoryId=2').then(res => {
-        console.log(res);
-        if (res.data && res.data.code === 0) {
-          this.Modeloptions = res.data.data;
-        }
-      });
+      this.$store.dispatch('getBatteryModel');
+      // this.$axios.get('/dic/user_dic?dicKey=model&categoryId=2').then(res => {
+      //   console.log(res);
+      //   if (res.data && res.data.code === 0) {
+      //     this.Modeloptions = res.data.data;
+      //   }
+      // });
     }
   },
   mounted() {

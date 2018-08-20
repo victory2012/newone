@@ -1,4 +1,7 @@
 export default {
+  test(store) {
+    return store.loginData;
+  },
   setStorage(state, data) {
     state.loginData = data;
     sessionStorage.setItem('loginData', data);

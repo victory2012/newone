@@ -20,13 +20,13 @@
             </el-form>
           </el-tab-pane>
           <el-tab-pane label="验证码登录" name="SMScode">
-            <el-form label-position="top" :rules="phoneRules" label-width="80px" :model="smsForm">
+            <el-form label-position="top" :rules="phoneRules" ref="smsPhone" label-width="80px" :model="smsForm">
               <el-form-item label="手机号" prop="phone">
                 <el-input v-model="smsForm.phone"></el-input>
               </el-form-item>
               <el-form-item label="短信验证码" class="smsCode" prop="smsCode">
                 <el-input v-model="smsForm.smsCode"></el-input>
-                <el-button class="getSms" type="primary" plain>获取验证码</el-button>
+                <el-button class="getSms" @click="getSmsCode" type="primary" plain>获取验证码</el-button>
               </el-form-item>
               <el-form-item>
                 <button class="accpwsBtn">登录</button>
@@ -50,7 +50,10 @@ export default {
         smsCode: ""
       },
       phoneRules: {
-        phone: [{ required: true, message: "请输入手机号", trigger: "blur" }],
+        phone: [
+          { required: true, message: "请输入手机号", trigger: "blur" },
+          { pattern: /^1[3|4|5|7|8][0-9]\d{8}$/, message: "手机号格式错误" }
+        ],
         smsCode: [
           { required: true, message: "请输入短信验证码", trigger: "blur" }
         ]
@@ -73,8 +76,8 @@ export default {
           this.$axios.post(`/login`, person).then(res => {
             console.log(res);
             if (res.data && res.data.code === 0) {
-              this.$store.commit('setStorage', JSON.stringify(res.data));
-              this.$store.commit('setTokenStorage', res.headers.token);
+              this.$store.commit("setStorage", JSON.stringify(res.data));
+              this.$store.commit("setTokenStorage", res.headers.token);
               this.$router.push("/battery");
             }
           });
@@ -83,6 +86,14 @@ export default {
           return false;
         }
       });
+    },
+    getSmsCode() {
+      this.$refs.smsPhone.validateField("phone");
+      this.$axios
+        .post("/login/sms/send", { phone: this.smsForm.phone })
+        .then(res => {
+          console.log(res);
+        });
     }
   }
 };
