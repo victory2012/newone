@@ -87,15 +87,15 @@
     </div>
     <el-dialog title="设备注册" width="600px" :visible.sync="regDevice">
       <el-form :model="regform" :rules="regRules" ref="regform">
-        <el-form-item prop="name" label="设备编号" :label-width="'216px'">
+        <el-form-item prop="name" label="设备编号" :label-width="'150px'">
           <el-input style="width:200px;" size="small" v-model="regform.name" placeholder="设备编号" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item prop="deviceType" label="设备类别" :label-width=" '216px' ">
+        <el-form-item prop="deviceType" label="设备类别" :label-width=" '150px' ">
           <el-select style="width:200px;" size="small" v-model="regform.deviceType " placeholder="请选择设备类别">
             <el-option v-for="item in categoryArr" :key="item.name" :label="item.label" :value="item.id"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item prop="company" label="相关企业" :label-width=" '216px' ">
+        <el-form-item prop="company" label="相关企业" :label-width=" '150px' ">
           <el-select style="width:200px;" size="small" v-model="regform.company " placeholder="请选择企业">
             <el-option v-for="item in companyArr" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>

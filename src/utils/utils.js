@@ -26,5 +26,14 @@ export default {
     minute = minute < 10 ? `0${second}` : second;
     second = second < 10 ? `0${second}` : second;
     return `${year}-${mounth}-${day} ${hours}:${minute}:${second}`;
+  },
+  setStorage: (key, data) => {
+    sessionStorage.setItem(key, data);
+  },
+  getStorage: (key) => {
+    return sessionStorage.getItem(key);
+  },
+  removeStorage: (key) => {
+    sessionStorage.removeItem(key);
   }
 };

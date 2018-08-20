@@ -242,14 +242,14 @@ export default {
       this.$store.state.addBattery = false;
     },
     /* 获取电池组型号列表 */
-    getGroupModel() {
-      this.$axios.get("/dic/user_dic?dicKey=model&categoryId=2").then(res => {
-        console.log("电池组型号", res);
-        if (res.data && res.data.code === 0) {
-          this.GroupModelOpts = res.data.data;
-        }
-      });
-    },
+    // getGroupModel() {
+    //   this.$axios.get("/dic/user_dic?dicKey=model&categoryId=2").then(res => {
+    //     console.log("电池组型号", res);
+    //     if (res.data && res.data.code === 0) {
+    //       this.GroupModelOpts = res.data.data;
+    //     }
+    //   });
+    // },
     /* 获取电池组规格列表 */
     getGroupSpecif() {
       this.$axios.get("/dic/user_dic?dicKey=norm&categoryId=2").then(res => {
@@ -271,29 +271,30 @@ export default {
         });
     },
     /* 获取电池组客户企业表 */
-    getCompanyId() {
-      this.$axios.get("/company/names?layer=2").then(res => {
-        console.log("获取电池组客户企业表", res);
-        if (res.data && res.data.code === 0) {
-          this.batCustomOpts = res.data.data;
-        }
-      });
-    },
+    // getCompanyId() {
+    //   this.$axios.get("/company/names?layer=2").then(res => {
+    //     console.log("获取电池组客户企业表", res);
+    //     if (res.data && res.data.code === 0) {
+    //       this.batCustomOpts = res.data.data;
+    //     }
+    //   });
+    // },
     /* 获取设备编号列表 */
-    getDeviceList() {
-      this.$axios.get("/device/code?status=0&bindingStatus=1").then(res => {
-        console.log("设备编号", res);
-        if (res.data && res.data.code === 0) {
-          this.deviceIdOpts = res.data.data;
-        }
-      });
-    },
+    // getDeviceList() {
+    //   this.$axios.get("/device/code?status=0&bindingStatus=1").then(res => {
+    //     console.log("设备编号", res);
+    //     if (res.data && res.data.code === 0) {
+    //       this.deviceIdOpts = res.data.data;
+    //     }
+    //   });
+    // },
     init() {
-      this.getGroupModel();
+      this.batCustomOpts = JSON.parse(utils.getStorage('batCustomOpts'));
+      this.GroupModelOpts = JSON.parse(utils.getStorage('Modeloptions'));
+      this.deviceIdOpts = JSON.parse(utils.getStorage('deviceIdOpts'));
       this.getGroupSpecif();
       this.getSinglBattery();
-      this.getDeviceList();
-      this.getCompanyId();
+      // this.getDeviceList();
     }
   },
   mounted() {

@@ -56,13 +56,13 @@
           </el-select>
         </div>
         <div class="item">
-          <el-select size="small" v-model="value" placeholder="客户企业名称">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
+          <el-select size="small" v-model="batCustom" placeholder="客户企业名称">
+            <el-option v-for="item in batCustomOpts" :key="item.id" :label="item.name" :value="item.id" :disabled="item.disabled">
+              </el-option>
           </el-select>
         </div>
         <div class="item">
-          <el-select size="small" v-model="value" placeholder="绑定状态">
+          <el-select size="small" v-model="bindStatus" placeholder="绑定状态">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -76,13 +76,13 @@
     <div class="tables">
       <el-table v-loading="loading" :data="tableData" style="width: 100%" :highlight-current-row="true">
         <el-table-column type="index" width="50" align="center" label="序号"></el-table-column>
-        <el-table-column prop="batteryId" align="center" label="电池编号">
+        <el-table-column prop="code" align="center" label="电池编号">
         </el-table-column>
         <el-table-column prop="model" align="center" label="电池型号">
         </el-table-column>
-        <el-table-column prop="specification" align="center" label="电池组规格">
+        <el-table-column prop="norm" align="center" label="电池组规格">
         </el-table-column>
-        <el-table-column prop="customerName" align="center" label="客户企业名称">
+        <el-table-column prop="companyName" align="center" label="客户企业名称">
         </el-table-column>
         <el-table-column prop="deviceId" align="center" label="监测设备编号">
         </el-table-column>
@@ -92,16 +92,16 @@
         </el-table-column> -->
         <el-table-column align="center" label="运行状态">
           <template slot-scope="scope">
-            <el-button @click.native.prevent="handleClick(scope.$index)" type="text" size="small">
+            <el-button @click.native.prevent="handleClick(scope.row)" :disabled="scope.row.onLine" type="text" size="small">
               查看
             </el-button>
           </template>
         </el-table-column>
         <el-table-column align="center" width="200" label="操作">
           <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">绑定</el-button>
-            <el-button @click="handleClick(scope.row)" type="text" size="small">解绑</el-button>
-            <el-button @click="handleClick(scope.row)" type="text" size="small">拉黑</el-button>
+            <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind" type="text" size="small">绑定</el-button>
+            <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">解绑</el-button>
+            <el-button @click="goBlock(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">拉黑</el-button>
             <el-button @click="handleClick(scope.row)" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -111,8 +111,9 @@
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout="sizes, prev, pager, next" :total="total">
       </el-pagination>
     </div>
+    <!-- 添加电池组型号、规格、单体规格 -->
     <el-dialog width="600px" :title="titles" :visible.sync="addModel">
-      <el-form :model="modelForm" :rules="modelFormRules" ref="modelForm">
+      <el-form :model="modelForm" label-position="right" :rules="modelFormRules" ref="modelForm">
         <el-form-item :label="labels" prop="dicValue">
           <el-input size="small" v-model="modelForm.dicValue" auto-complete="off"></el-input>
         </el-form-item>
@@ -120,6 +121,21 @@
       <div slot="footer" class="dialog-footer">
         <el-button size="small" @click="resetModelAdd">重 置</el-button>
         <el-button size="small" @click="submitModelAdd" type="primary">确 认</el-button>
+      </div>
+    </el-dialog>
+    <!-- 电池绑定 -->
+    <el-dialog width="600px" title="电池与检测设备绑定" :visible.sync="bindDevice">
+      <el-form :model="deviceModel" label-width="150px" label-position="right" ref="deviceModel">
+        <el-form-item label="监测设备编号" prop="deviceId" :rules="[{ required: true, message: '请输入内容', trigger: 'change' }]">
+          <el-select size="small" style="width:210px" v-model="deviceModel.deviceId" placeholder="设备编号">
+            <el-option v-for="item in deviceIdOpts" :key="item.code" :label="item.code" :value="item.id" :disabled="item.disabled">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="resetBind">重 置</el-button>
+        <el-button size="small" @click="submitBind" type="primary">确 认</el-button>
       </div>
     </el-dialog>
     <component @hasCreated="reloadBattery" :is="showAdd"></component>
@@ -172,7 +188,8 @@
 }
 </style>
 <script>
-// import { mapActions } from "vuex";
+// import {  } from "vuex";
+import utils from "@/utils/utils";
 
 export default {
   components: {
@@ -181,6 +198,8 @@ export default {
   data() {
     return {
       showAdd: "",
+      deviceModel: {},
+      bindDevice: false,
       addType: "",
       labels: "",
       titles: "",
@@ -192,26 +211,29 @@ export default {
       total: 0,
       modelForm: {},
       modelFormRules: {
-        value: [{ required: true, message: "请输入内容", trigger: "change" }]
+        dicValue: [{ required: true, message: "请输入内容", trigger: "change" }]
       },
       batteryForm: {},
       batteryFormRules: {},
       Modeloptions: [],
       batteryModel: "",
-      options: [],
+      batCustom: "",
+      bindStatus: "",
+      batCustomOpts: [],
+      deviceIdOpts: [],
+      options: [
+        {
+          value: 1,
+          label: "已绑定"
+        },
+        {
+          value: -1,
+          label: "未绑定"
+        }
+      ],
       bindOptions: [],
       value: "",
-      tableData: [
-        {
-          batteryId: "20160502",
-          model: "电池组型号2",
-          specification: "电池组规格2",
-          customerName: "测试采购企业",
-          deviceId: "1805B598C6E7",
-          bindingName: "已绑定",
-          online: "在线"
-        }
-      ]
+      tableData: []
     };
   },
   methods: {
@@ -220,6 +242,32 @@ export default {
       console.log(data);
     },
     handleSelect() {},
+    resetBind() {
+      this.$refs.deviceModel.resetFields();
+      this.deviceModel = {};
+    },
+    submitBind() {
+      this.$refs.deviceModel.validate(vlited => {
+        if (vlited) {
+          let bindObj = {
+            hostId: this.bindHostId,
+            deviceId: this.deviceModel.deviceId
+          };
+          this.$axios.put("host/bind", bindObj).then(res => {
+            if (res.data && res.data.code === 0) {
+              this.$message({
+                type: "success",
+                message: res.data.msg
+              });
+              this.resetBind();
+              this.bindDevice = false;
+              this.bindHostId = null;
+              this.getBatteryList();
+            }
+          });
+        }
+      });
+    },
     handleCommand(command) {
       this.addType = command;
       // this.modelForm.value = "";
@@ -289,8 +337,43 @@ export default {
       this.currentPage = val;
       this.getBatteryList();
     },
+    goBlock(row) {
+      console.log(row);
+      let deviceObj = {
+        id: row.deviceId,
+        status: -1
+      };
+      this.$axios.put("device", deviceObj).then(res => {
+        console.log(res);
+        if (res.data && res.data.code === 0) {
+          this.$message({
+            type: "success",
+            message: res.data.msg
+          });
+          this.getBatteryList();
+        }
+      });
+    },
     handleClick(row) {
       console.log(row);
+    },
+    bindDeviceClick(row) {
+      console.log(row);
+      this.getDeviceList();
+      this.bindDevice = true;
+      this.bindHostId = row.hostId;
+    },
+    unbindClick(row) {
+      this.$axios.put(`host/unbind/${row.hostId}`).then(res => {
+        if (res.data && res.data.code === 0) {
+          // console.log(res);
+          this.$message({
+            type: "success",
+            message: res.data.msg
+          });
+          this.getBatteryList();
+        }
+      });
     },
     flieError() {
       console.log("上传失败");
@@ -306,24 +389,60 @@ export default {
         pageSize: this.pageSize,
         pageNum: this.currentPage
       };
-      this.$axios.get("/battery_gps", options).then(res => {
+      this.$axios.get("/battery_group", options).then(res => {
         console.log(res);
+        this.tableData = [];
+        if (res.data && res.data.code === 0) {
+          let result = res.data.data;
+          this.total = result.total;
+          result.pageData.forEach(key => {
+            key.onLine = key.onlineStatus === 0 || key.onlineStatus === null;
+            key.hasbind = key.deviceId === null;
+            key.bindingName = key.deviceId === null ? "未绑定" : "已绑定";
+            this.tableData.push(key);
+          });
+        }
       });
     },
     /* 获取电池型号列表 */
     getBatteryModelList() {
-      this.$store.dispatch('getBatteryModel');
-      // this.$axios.get('/dic/user_dic?dicKey=model&categoryId=2').then(res => {
-      //   console.log(res);
-      //   if (res.data && res.data.code === 0) {
-      //     this.Modeloptions = res.data.data;
-      //   }
-      // });
+      console.log("123");
+      // this.$store.dispatch('getBatteryModel');
+      this.$axios.get("/dic/user_dic?dicKey=model&categoryId=2").then(res => {
+        console.log(res);
+        if (res.data && res.data.code === 0) {
+          this.Modeloptions = res.data.data;
+          console.log(utils);
+          utils.setStorage("Modeloptions", JSON.stringify(res.data.data));
+          // this.$store.commit("setStorage", JSON.stringify(res.data.data));
+        }
+      });
+    },
+    /* 获取电池组客户企业表 */
+    getCompanyId() {
+      this.$axios.get("/company/names?layer=2").then(res => {
+        console.log("获取电池组客户企业表", res);
+        if (res.data && res.data.code === 0) {
+          this.batCustomOpts = res.data.data;
+          utils.setStorage("batCustomOpts", JSON.stringify(res.data.data));
+        }
+      });
+    },
+    getDeviceList() {
+      this.$axios.get("/device/code?status=0&bindingStatus=0").then(res => {
+        console.log("设备编号", res);
+        if (res.data && res.data.code === 0) {
+          this.deviceIdOpts = res.data.data;
+          utils.setStorage("deviceIdOpts", JSON.stringify(res.data.data));
+        }
+      });
     }
   },
   mounted() {
     this.$store.state.addBattery = false;
     this.getBatteryModelList();
+    this.getCompanyId();
+    this.getBatteryList();
   }
 };
 </script>

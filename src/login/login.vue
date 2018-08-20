@@ -26,10 +26,10 @@
               </el-form-item>
               <el-form-item label="短信验证码" class="smsCode" prop="smsCode">
                 <el-input v-model="smsForm.smsCode"></el-input>
-                <el-button class="getSms" @click="getSmsCode" type="primary" plain>获取验证码</el-button>
+                <el-button class="getSms" @click="getSmsCode" :disabled="hasGetSms" type="primary" plain>{{smsMsg}}</el-button>
               </el-form-item>
               <el-form-item>
-                <button class="accpwsBtn">登录</button>
+                <button @click.stop.prevent="checkSmsCode" class="accpwsBtn">登录</button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
@@ -44,6 +44,8 @@
 export default {
   data() {
     return {
+      hasGetSms: false,
+      smsMsg: "获取验证码",
       activeName: "accPwd",
       smsForm: {
         phone: "",
@@ -51,7 +53,7 @@ export default {
       },
       phoneRules: {
         phone: [
-          { required: true, message: "请输入手机号", trigger: "blur" },
+          { required: true, message: "请输入手机号", trigger: "change" },
           { pattern: /^1[3|4|5|7|8][0-9]\d{8}$/, message: "手机号格式错误" }
         ],
         smsCode: [
@@ -88,12 +90,52 @@ export default {
       });
     },
     getSmsCode() {
-      this.$refs.smsPhone.validateField("phone");
-      this.$axios
-        .post("/login/sms/send", { phone: this.smsForm.phone })
-        .then(res => {
-          console.log(res);
-        });
+      // this.$refs.smsPhone.validateField("phone");
+      this.$refs.smsPhone.validateField("phone", opts => {
+        console.log(opts);
+        if (opts === "" || opts === undefined || opts === null) {
+          let conut = 60;
+          this.$axios
+            .post("/login/sms/send", { phone: this.smsForm.phone })
+            .then(res => {
+              console.log(res);
+              if (res.data && res.data.code === 0) {
+                this.hasGetSms = true;
+                let Timer = setInterval(() => {
+                  conut--;
+                  this.smsMsg = `重新获取${conut}s`;
+                  if (conut < 1) {
+                    this.smsMsg = "获取验证码";
+                    this.hasGetSms = false;
+                    clearInterval(Timer);
+                  }
+                }, 1000);
+                this.$message({
+                  type: "success",
+                  message: "发送成功"
+                });
+              }
+            });
+        }
+      });
+    },
+    checkSmsCode() {
+      this.$refs.smsPhone.validate(valid => {
+        if (valid) {
+          let phoneObj = {
+            phone: this.smsForm.phone,
+            code: this.smsForm.smsCode
+          };
+          this.$axios.post("/login/sms/verify", phoneObj).then(res => {
+            console.log(res);
+            if (res.data && res.data.code === 0) {
+              this.$store.commit("setStorage", JSON.stringify(res.data));
+              this.$store.commit("setTokenStorage", res.headers.token);
+              this.$router.push("/battery");
+            }
+          });
+        }
+      });
     }
   }
 };
@@ -103,7 +145,9 @@ export default {
   height: 100%;
   padding: 120px;
   min-width: 1314px;
+  min-height: 586px;
   overflow: hidden;
+  overflow-x: auto;
   box-sizing: border-box;
   .img {
     float: left;
@@ -124,11 +168,12 @@ export default {
     width: 35%;
     min-width: 375px;
     height: 100%;
+    min-height: 586px;
     background: rgba(113, 191, 219, 0.2);
     border-radius: 10px;
     .form {
       font-size: 14px;
-      min-width: 300px;
+      min-width: 310px;
       max-width: 390px;
       width: 80%;
       margin: 120px auto;

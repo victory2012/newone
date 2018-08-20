@@ -19,12 +19,12 @@ html,
 body {
   width: 100%;
   height: 100%;
-  overflow-x: hidden;
+  // overflow-x: hidden;
 }
 .el-dialog__body {
   padding: 10px 60px;
 }
-.el-form-item__label {
-  line-height: normal;
-}
+// .el-form-item__label {
+//   // line-height: normal;
+// }
 </style>
