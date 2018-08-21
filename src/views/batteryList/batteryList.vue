@@ -2,22 +2,6 @@
   <div class="batteryList">
     <div class="topTab">
       <div class="icons">
-        <!-- <div class="items" @click="triggerAddBattery">
-          <img src="../../../static/img/device_reg.png" alt="">
-          <p>电池注册</p>
-        </div>
-        <div class="items">
-          <el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-success="flieSuccess" :on-progress="onGoing" :on-error="flieError" :show-file-list="false" :multiple="false" :auto-upload="true">
-            <div slot="trigger">
-              <img src="../../../static/img/device_import.png" alt="">
-              <p>批量导入</p>
-            </div>
-          </el-upload>
-        </div>
-        <div class="items">
-          <img src="../../../static/img/device_recover.png" alt="">
-          <p>恢复拉黑电池</p>
-        </div> -->
         <div class="items">
           <el-dropdown trigger="click" placement="bottom-start" @command="handleCommand">
             <span>
@@ -101,7 +85,7 @@
           <template slot-scope="scope">
             <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind" type="text" size="small">绑定</el-button>
             <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">解绑</el-button>
-            <el-button @click="goBlock(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">拉黑</el-button>
+            <!-- <el-button @click="goBlock(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">拉黑</el-button> -->
             <el-button @click="handleClick(scope.row)" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -242,10 +226,12 @@ export default {
       console.log(data);
     },
     handleSelect() {},
+    /* 取消电池绑定 */
     resetBind() {
       this.$refs.deviceModel.resetFields();
       this.deviceModel = {};
     },
+    /* 电池绑定 */
     submitBind() {
       this.$refs.deviceModel.validate(vlited => {
         if (vlited) {
@@ -295,6 +281,7 @@ export default {
       this.$refs.modelForm.resetFields();
       this.modelForm = {};
     },
+    /* 添加电池组型号、规格、单体规格 */
     submitModelAdd() {
       console.log(this.batteryForm);
       this.$refs.modelForm.validate(valid => {
@@ -304,13 +291,13 @@ export default {
             categoryId: 2
           };
           if (this.addType === "addModel") {
-            params.dicKey = "model";
+            params.dicKey = "model"; // 电池组型号
           }
           if (this.addType === "addSpfic") {
-            params.dicKey = "norm";
+            params.dicKey = "norm"; // 电池组规格
           }
           if (this.addType === "addSingel") {
-            params.dicKey = "single_model";
+            params.dicKey = "single_model"; // 单体规格
           }
           this.$axios.post("/dic/user_dic", params).then(res => {
             console.log(this.addType, res);
@@ -329,40 +316,27 @@ export default {
         }
       });
     },
+    /* 每页显示的数量 */
     handleSizeChange(val) {
       this.pageSize = val;
       this.getBatteryList();
     },
+    /* 显示第几页 */
     handleCurrentChange(val) {
       this.currentPage = val;
       this.getBatteryList();
     },
-    goBlock(row) {
-      console.log(row);
-      let deviceObj = {
-        id: row.deviceId,
-        status: -1
-      };
-      this.$axios.put("device", deviceObj).then(res => {
-        console.log(res);
-        if (res.data && res.data.code === 0) {
-          this.$message({
-            type: "success",
-            message: res.data.msg
-          });
-          this.getBatteryList();
-        }
-      });
-    },
     handleClick(row) {
       console.log(row);
     },
+    /* 绑定按钮 */
     bindDeviceClick(row) {
       console.log(row);
       this.getDeviceList();
       this.bindDevice = true;
       this.bindHostId = row.hostId;
     },
+    /* 解绑按钮 */
     unbindClick(row) {
       this.$axios.put(`host/unbind/${row.hostId}`).then(res => {
         if (res.data && res.data.code === 0) {
@@ -384,6 +358,7 @@ export default {
     flieSuccess() {
       console.log("成功");
     },
+    /* 获取电池列表 */
     getBatteryList() {
       let options = {
         pageSize: this.pageSize,
@@ -409,12 +384,11 @@ export default {
       console.log("123");
       // this.$store.dispatch('getBatteryModel');
       this.$axios.get("/dic/user_dic?dicKey=model&categoryId=2").then(res => {
-        console.log(res);
+        console.log("获取电池型号列表", res);
         if (res.data && res.data.code === 0) {
           this.Modeloptions = res.data.data;
-          console.log(utils);
+          // console.log(utils);
           utils.setStorage("Modeloptions", JSON.stringify(res.data.data));
-          // this.$store.commit("setStorage", JSON.stringify(res.data.data));
         }
       });
     },

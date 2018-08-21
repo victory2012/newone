@@ -38,9 +38,9 @@ export default {
     // this.myEcharts = myEcharts;
 
     myEcharts.setOption(this.option);
-    setTimeout(() => {
-      myEcharts.resize();
-    }, 20);
+    // setTimeout(() => {
+    //   myEcharts.resize();
+    // }, 20);
   },
   methods: {
     checkAndSetOption() {

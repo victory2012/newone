@@ -66,46 +66,74 @@
       <span>过去24小时监测数据</span>
       <el-checkbox v-model="checked">是否自动更新数据</el-checkbox>
     </div>
-    <div class="chartWarrp">
+    <echart-map></echart-map>
+    <!-- <div class="chartWarrp">
       <div class="chartInfo">
         <i-echart :option="option" :width="width"></i-echart>
       </div>
       <div class="chartInfo">
         <i-echart :option="option" :width="width"></i-echart>
       </div>
-    </div>
-    <div class="chartWarrp">
+    </div> -->
+    <!-- <div class="chartWarrp">
       <div class="chartInfo">
         <i-echart :option="option" :width="width"></i-echart>
       </div>
       <div class="chartInfo">
         <i-echart :option="option" :width="width"></i-echart>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
 /* eslint-disable */
 import AMap from "AMap";
-import echarts from "echarts";
-import iEchart from "../../components/echart";
+import echartMap from "../../components/realTime";
+// import echarts from "echarts";
+
+// import iEchart from "../../components/echart";
 
 export default {
   components: {
-    iEchart
+    echartMap
   },
   data() {
     return {
       checked: true,
-      width: '500px',
+      width: "500px",
       option: {
         title: {
           text: "电压",
-          subtext: "检测数据变化"
+          subtext: "监测数据变化",
+          textStyle: {
+            color: "#484848"
+          },
+          subtextStyle: {
+            color: "#484848"
+          }
         },
         tooltip: {
           trigger: "axis"
         },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "20%",
+          containLabel: true
+        },
+        dataZoom: [
+          {
+            // show: true,
+            type: "slider",
+            start: 0,
+            end: 100
+          },
+          {
+            type: "inside",
+            start: 0,
+            end: 100
+          }
+        ],
         xAxis: {
           type: "category",
           boundaryGap: false,
@@ -115,6 +143,10 @@ export default {
           },
           axisTick: {
             show: false
+          },
+          axisLabel: {
+            fontSize: 11,
+            color: "#484848"
           },
           splitLine: {
             show: false
@@ -134,24 +166,20 @@ export default {
         },
         series: [
           {
-            name: "成交",
+            name: "",
             type: "line",
             smooth: true,
-            data: [10, 12, 21, 54, 260, 830, 710]
-          }
-        ],
-        dataZoom: [
-          {
-            // 这个dataZoom组件，默认控制x轴。
-            type: "slider", // 这个 dataZoom 组件是 slider 型 dataZoom 组件
-            start: 0, // 左边在 10% 的位置。
-            end: 100 // 右边在 60% 的位置。
-          },
-          {
-            // 这个dataZoom组件，也控制x轴。
-            type: "inside", // 这个 dataZoom 组件是 inside 型 dataZoom 组件
-            start: 0, // 左边在 10% 的位置。
-            end: 100 // 右边在 60% 的位置。
+            lineStyle: {
+              normal: {
+                color: "#2491fc"
+              }
+            },
+            areaStyle: {
+              normal: {
+                color: "rgba(36,145,252,0.25)"
+              }
+            },
+            data: [10, 20, 30, 80, 20, 50, 90]
           }
         ]
       }
@@ -159,7 +187,6 @@ export default {
   },
   mounted() {
     this.init();
-    console.log(window.innerWidth);
   },
   methods: {
     init() {

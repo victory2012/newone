@@ -19,7 +19,7 @@ html,
 body {
   width: 100%;
   height: 100%;
-  // overflow-x: hidden;
+  overflow-x: hidden;
 }
 .el-dialog__body {
   padding: 10px 60px;
