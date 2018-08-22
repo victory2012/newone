@@ -35,5 +35,8 @@ export default {
   },
   removeStorage: (key) => {
     sessionStorage.removeItem(key);
+  },
+  removeStorageAll: () => {
+    sessionStorage.clear();
   }
 };

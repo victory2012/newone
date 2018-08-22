@@ -24,7 +24,8 @@ body {
 .el-dialog__body {
   padding: 10px 60px;
 }
-// .el-form-item__label {
-//   // line-height: normal;
+// .el-menu-item.is-active {
+//   background-color: #71bfdb;
+//   color: #ffffff;
 // }
 </style>

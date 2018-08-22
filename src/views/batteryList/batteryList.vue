@@ -3,7 +3,7 @@
     <div class="topTab">
       <div class="icons">
         <div class="items">
-          <el-dropdown trigger="click" placement="bottom-start" @command="handleCommand">
+          <el-dropdown trigger="click" placement="bottom" @command="handleCommand">
             <span>
               <img src="../../../static/img/device_reg.png" alt=""><br/>
               <span class="el-dropdown-link">电池</span>
@@ -41,8 +41,8 @@
         </div>
         <div class="item">
           <el-select size="small" v-model="batCustom" placeholder="客户企业名称">
-            <el-option v-for="item in batCustomOpts" :key="item.id" :label="item.name" :value="item.id" :disabled="item.disabled">
-              </el-option>
+            <el-option v-for="item in batCustomOpts" :key="item.id" :label="item.name" :value="item.name" :disabled="item.disabled">
+            </el-option>
           </el-select>
         </div>
         <div class="item">
@@ -52,8 +52,8 @@
           </el-select>
         </div>
         <div class="item">
-          <el-button size="mini" type="primary">查询</el-button>
-          <el-button size="small" plain>清空</el-button>
+          <el-button @click="getBatteryList" size="mini" type="primary">查询</el-button>
+          <el-button @click="clearOptions" size="small" plain>清空</el-button>
         </div>
       </div>
     </div>
@@ -68,7 +68,7 @@
         </el-table-column>
         <el-table-column prop="companyName" align="center" label="客户企业名称">
         </el-table-column>
-        <el-table-column prop="deviceId" align="center" label="监测设备编号">
+        <el-table-column prop="deviceCode" align="center" label="监测设备编号">
         </el-table-column>
         <el-table-column prop="bindingName" align="center" label="绑定状态">
         </el-table-column>
@@ -76,7 +76,7 @@
         </el-table-column> -->
         <el-table-column align="center" label="运行状态">
           <template slot-scope="scope">
-            <el-button @click.native.prevent="handleClick(scope.row)" :disabled="scope.row.onLine" type="text" size="small">
+            <el-button @click.native.prevent="lookFor(scope.row)" :disabled="scope.row.onLine" type="text" size="small">
               查看
             </el-button>
           </template>
@@ -86,7 +86,7 @@
             <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind" type="text" size="small">绑定</el-button>
             <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">解绑</el-button>
             <!-- <el-button @click="goBlock(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">拉黑</el-button> -->
-            <el-button @click="handleClick(scope.row)" type="text" size="small">删除</el-button>
+            <el-button @click="deleteBattery(scope.row)" :disabled="!scope.row.hasbind" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -172,7 +172,6 @@
 }
 </style>
 <script>
-// import {  } from "vuex";
 import utils from "@/utils/utils";
 
 export default {
@@ -211,7 +210,7 @@ export default {
           label: "已绑定"
         },
         {
-          value: -1,
+          value: 0,
           label: "未绑定"
         }
       ],
@@ -308,6 +307,7 @@ export default {
               });
               this.addModel = false;
               this.modelForm = {};
+              this.getBatteryModelList();
             }
           });
         } else {
@@ -326,8 +326,21 @@ export default {
       this.currentPage = val;
       this.getBatteryList();
     },
-    handleClick(row) {
+    lookFor(row) {
       console.log(row);
+    },
+    deleteBattery(row) {
+      if (!row.id) return;
+      this.$axios.delete(`/host/${row.id}`).then(res => {
+        if (res.data && res.data.code === 0) {
+          // console.log(res);
+          this.$message({
+            type: "success",
+            message: res.data.msg
+          });
+          this.getBatteryList();
+        }
+      });
     },
     /* 绑定按钮 */
     bindDeviceClick(row) {
@@ -358,11 +371,23 @@ export default {
     flieSuccess() {
       console.log("成功");
     },
+    /* 清空 */
+    clearOptions() {
+      this.batCustom = "";
+      this.batteryId = "";
+      this.batteryModel = "";
+      this.bindStatus = "";
+      this.getBatteryList();
+    },
     /* 获取电池列表 */
     getBatteryList() {
       let options = {
         pageSize: this.pageSize,
-        pageNum: this.currentPage
+        pageNum: this.currentPage,
+        companyName: `${this.batCustom}`,
+        batteryGroupOrDeviceCode: this.batteryId,
+        modelId: this.batteryModel,
+        bindingStatus: this.bindStatus
       };
       this.$axios.get("/battery_group", options).then(res => {
         console.log(res);
@@ -381,8 +406,6 @@ export default {
     },
     /* 获取电池型号列表 */
     getBatteryModelList() {
-      console.log("123");
-      // this.$store.dispatch('getBatteryModel');
       this.$axios.get("/dic/user_dic?dicKey=model&categoryId=2").then(res => {
         console.log("获取电池型号列表", res);
         if (res.data && res.data.code === 0) {
@@ -410,6 +433,11 @@ export default {
           utils.setStorage("deviceIdOpts", JSON.stringify(res.data.data));
         }
       });
+    },
+    /* 用户权限 */
+    userRole() {
+      let roles = JSON.parse(utils.getStorage('loginData'));
+      console.log('roles', roles.type);
     }
   },
   mounted() {
@@ -417,6 +445,7 @@ export default {
     this.getBatteryModelList();
     this.getCompanyId();
     this.getBatteryList();
+    this.userRole();
   }
 };
 </script>

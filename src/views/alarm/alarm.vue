@@ -1,21 +1,21 @@
 <template>
   <div class="alarmTable">
     <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="index" align="center" label="序号" width="100">
+      <el-table-column prop="index" align="center" label="序号" width="50">
       </el-table-column>
-      <el-table-column prop="alarmtime" align="center" label="告警发生时间" width="180">
+      <el-table-column prop="alarmtime" align="center" label="告警发生时间">
       </el-table-column>
       <el-table-column prop="alarmProject" align="center" label="告警项目">
       </el-table-column>
       <el-table-column prop="batteryId" align="center" label="电池编号">
       </el-table-column>
-      <el-table-column prop="batteryGroup" align="center" label="电池组编号" width="100">
+      <el-table-column prop="batteryGroup" align="center" label="电池组编号">
       </el-table-column>
-      <el-table-column prop="content" align="center" label="告警内容" width="200">
+      <el-table-column prop="content" align="center" label="告警内容">
       </el-table-column>
-      <el-table-column prop="hierarchy" align="center" label="告警层级" width="120">
+      <el-table-column prop="hierarchy" align="center" label="告警层级">
       </el-table-column>
-      <el-table-column prop="level" align="center" label="告警级别" width="120">
+      <el-table-column prop="level" align="center" label="告警级别">
       </el-table-column>
       <el-table-column prop="address" align="center" label="详情" width="120">
         <template slot-scope="scope">

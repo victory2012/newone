@@ -39,7 +39,7 @@
   </div>
 </template>
 <script>
-// import http from "../api/";
+import utils from "@/utils/utils";
 
 export default {
   data() {
@@ -78,9 +78,16 @@ export default {
           this.$axios.post(`/login`, person).then(res => {
             console.log(res);
             if (res.data && res.data.code === 0) {
-              this.$store.commit("setStorage", JSON.stringify(res.data));
               this.$store.commit("setTokenStorage", res.headers.token);
-              this.$router.push("/battery");
+              this.$store.commit("setStorage", JSON.stringify(res.data.data));
+              this.$axios
+                .get(`/user/permissions/${res.data.data.id}`)
+                .then(opts => {
+                  if (opts.data && opts.data.code === 0) {
+                    utils.setStorage("userRoles", JSON.stringify(opts.data.data));
+                    this.$router.push("/battery");
+                  }
+                });
             }
           });
         } else {

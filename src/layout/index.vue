@@ -18,11 +18,11 @@
               <i class="iconfont icon-logout"></i>退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <p>demo001</p>
-        <p>生产企业管理员</p>
+        <p>{{roles.account}}</p>
+        <p>{{roles.companyName}}</p>
       </div>
-      <el-menu class="sidebar-el-menu" :default-active="$route.path" background-color="#404040" text-color="rgba(255, 255, 255, 0.67)" :unique-opened='true' :active-text-color="'#20a0ff'" router>
-        <MenuTree :menuData="this.menuData"></MenuTree>
+      <el-menu class="sidebar-el-menu" :default-active="$route.path" background-color="#404040" text-color="rgba(255, 255, 255, 0.67)" :unique-opened='true' router>
+        <MenuTree :menuData="this.menus"></MenuTree>
       </el-menu>
     </div>
     <div class="content">
@@ -35,6 +35,7 @@
   </div>
 </template>
 <script>
+import utils from "@/utils/utils";
 import MenuTree from "./sidebar";
 import menu from "./menuData";
 
@@ -42,24 +43,26 @@ export default {
   data() {
     return {
       isCollapse: false,
-      menuData: menu
+      menus: '',
+      roles: ''
     };
   },
   components: {
     MenuTree: MenuTree
   },
+  mounted() {
+    this.menus = menu.getManifactor();
+    this.roles = JSON.parse(utils.getStorage('loginData'));
+  },
   methods: {
     handleCommand(command) {
-      console.log(command);
       if (command === "loginout") {
         this.$axios.post("/login/logout").then(res => {
-          console.log(res);
-          if (res.data.code === 0) {
-            this.$store.commit('removeStorage');
-            this.$store.commit('removeTokenStorage');
+          if (res.data && res.data.code === 0) {
+            this.$store.commit("removeStorage");
+            this.$store.commit("removeTokenStorage");
             this.$router.push("/login");
-          } else {
-            this.$message.error(res.data.msg);
+            utils.removeStorageAll();
           }
         });
       }
