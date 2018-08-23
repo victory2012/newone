@@ -104,12 +104,20 @@ let userRoles = JSON.parse(JSON.parse(utils.getStorage('userRoles')));
 console.log(userRoles);
 // console.log(JSON.parse(userRoles));
 // export default menu;
+let listData = _.cloneDeep(menu);
+// manifac[0].children[0].children[1] = "";
+// manifac[1].children[0] = "";
+// manifac[2] = "";
 export default {
+  /* 生产企业 */
   getManifactor: () => {
-    let manifac = _.cloneDeep(menu);
-    // manifac[0].children[0].children[1] = "";
-    // manifac[1].children[0] = "";
-    // manifac[2] = "";
-    return manifac;
+    listData[3] = "";
+    return listData;
+  },
+  /* 平台 */
+  getPlat: () => {
+    listData[0].children[0].children[1] = "";
+    listData[1] = "";
+    return listData;
   }
 };

@@ -11,7 +11,8 @@
       </el-select>
       <el-button class="queryBtn" size="small" type="primary">确定</el-button>
     </div>
-    <div class="charts pt">
+    <echart-map></echart-map>
+    <!-- <div class="charts pt">
       <div class="info">
         <i-echart :option="option"></i-echart>
       </div>
@@ -26,7 +27,7 @@
       <div class="info">
         <i-echart :option="option"></i-echart>
       </div>
-    </div>
+    </div> -->
     <div class="batteryChart">
       <div class="addbattery">
         <ul>
@@ -94,12 +95,14 @@
 <script>
 /* eslint-disable */
 import AMap from "AMap";
+import echartMap from "../../components/realTime";
 import iEchart from "../../components/echart";
 import iAlarm from "../../components/alarm-data";
 import iMap from "../../components/map";
 
 export default {
   components: {
+    echartMap,
     iEchart,
     iAlarm,
     iMap

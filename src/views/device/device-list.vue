@@ -13,7 +13,7 @@
               <p>批量导入</p>
             </div>
           </el-upload> -->
-          <input class="fileUpload" type="file" @change="fileUpload" value="132" />
+          <input class="fileUpload" type="file" @change="fileUpload"/>
           <img src="../../../static/img/device_import.png" alt="">
           <p>批量导入</p>
         </div>

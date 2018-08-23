@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <div class="bgFFF">
+    <div class="btns">
+      <el-button type="primary" icon="el-icon-remove-outline"></el-button>
+      <el-button type="primary" icon="el-icon-circle-plus-outline"></el-button>
+    </div>
     <div class="chartWarrp">
       <div class="chartInfo" id="echart1"></div>
       <div class="chartInfo" id="echart2"></div>
@@ -45,15 +49,17 @@ export default {
             type: "slider",
             start: 0,
             end: 100,
-            startValue: 'aaa',
-            endValue: 'bbb'
+            startValue: "aaa",
+            endValue: "bbb",
+            fillerColor: "rgba(167,183,204,0.4)",
+            backgroundColor: "rgba(0,0,0,0)"
           },
           {
             type: "inside",
             start: 0,
             end: 100,
-            startValue: 'aaa',
-            endValue: 'bbb'
+            startValue: "aaa",
+            endValue: "bbb"
           }
         ],
         xAxis: {
@@ -76,6 +82,9 @@ export default {
         },
         yAxis: {
           type: "value",
+          axisLabel: {
+            formatter: "{value} v"
+          },
           axisLine: {
             show: false
           },
@@ -125,17 +134,28 @@ export default {
       myEcharts3.setOption(this.option);
       myEcharts4.setOption(this.option);
       echarts.connect([myEcharts1, myEcharts2, myEcharts3, myEcharts4]);
-      myEcharts1.on("datazoom", (param) => {
+      console.log(myEcharts1);
+      console.log(echarts);
+      myEcharts1.on("datazoom", param => {
         console.log(param);
         // console.log(option.dataZoom.start);
         // console.log(myEcharts1.dataZoom.start);
       });
+      window.onresize = () => {
+        myEcharts1.resize();
+        myEcharts2.resize();
+        myEcharts3.resize();
+        myEcharts4.resize();
+      };
     }
   }
 };
 </script>
 
 <style scoped lang="scss">
+.bgFFF {
+  background: #ffffff;
+}
 .chartWarrp {
   display: flex;
   .chartInfo {
@@ -144,6 +164,10 @@ export default {
     width: 100%;
     height: 400px;
   }
+}
+.btns {
+  padding-left: 22px;
+  margin-bottom: 20px;
 }
 // .echarts {
 //   width: 100%;

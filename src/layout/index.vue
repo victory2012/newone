@@ -18,8 +18,8 @@
               <i class="iconfont icon-logout"></i>退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <p>{{roles.account}}</p>
-        <p>{{roles.companyName}}</p>
+        <p>{{getUserLoginData.account}}</p>
+        <p>{{getUserLoginData.companyName}}</p>
       </div>
       <el-menu class="sidebar-el-menu" :default-active="$route.path" background-color="#404040" text-color="rgba(255, 255, 255, 0.67)" :unique-opened='true' router>
         <MenuTree :menuData="this.menus"></MenuTree>
@@ -35,6 +35,7 @@
   </div>
 </template>
 <script>
+import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
 import MenuTree from "./sidebar";
 import menu from "./menuData";
@@ -50,9 +51,11 @@ export default {
   components: {
     MenuTree: MenuTree
   },
+  computed: {
+    ...mapGetters(["getUserType", "getUserLoginData"])
+  },
   mounted() {
-    this.menus = menu.getManifactor();
-    this.roles = JSON.parse(utils.getStorage('loginData'));
+    this.switchMenu();
   },
   methods: {
     handleCommand(command) {
@@ -71,6 +74,14 @@ export default {
       }
       if (command === "userPwd") {
         this.$router.push("/user-pwd");
+      }
+    },
+    switchMenu() {
+      if (this.getUserType === 1) {
+        this.menus = menu.getPlat();
+      }
+      if (this.getUserType === 2) {
+        this.menus = menu.getManifactor();
       }
     }
   }

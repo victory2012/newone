@@ -14,6 +14,10 @@ export default {
     state.token = token;
     sessionStorage.setItem('token', token);
   },
+  setUserRole(state, userRoles) {
+    state.userRoles = userRoles;
+    sessionStorage.setItem('userRoles', userRoles);
+  },
   removeTokenStorage(state) {
     state.token = null;
     sessionStorage.removeItem('token');

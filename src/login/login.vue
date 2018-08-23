@@ -39,8 +39,7 @@
   </div>
 </template>
 <script>
-import utils from "@/utils/utils";
-
+// import utils from "@/utils/utils";
 export default {
   data() {
     return {
@@ -84,7 +83,8 @@ export default {
                 .get(`/user/permissions/${res.data.data.id}`)
                 .then(opts => {
                   if (opts.data && opts.data.code === 0) {
-                    utils.setStorage("userRoles", JSON.stringify(opts.data.data));
+                    this.$store.commit('setUserRole', JSON.stringify(opts.data.data));
+                    // utils.setStorage("userRoles", JSON.stringify(opts.data.data));
                     this.$router.push("/battery");
                   }
                 });

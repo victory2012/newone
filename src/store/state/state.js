@@ -5,5 +5,6 @@ export default {
   manfictor: false,
   custom: false,
   addBattery: false,
-  batteryModel: null
+  batteryModel: null,
+  userRoles: null
 };

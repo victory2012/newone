@@ -67,31 +67,12 @@
       <el-checkbox v-model="checked">是否自动更新数据</el-checkbox>
     </div>
     <echart-map></echart-map>
-    <!-- <div class="chartWarrp">
-      <div class="chartInfo">
-        <i-echart :option="option" :width="width"></i-echart>
-      </div>
-      <div class="chartInfo">
-        <i-echart :option="option" :width="width"></i-echart>
-      </div>
-    </div> -->
-    <!-- <div class="chartWarrp">
-      <div class="chartInfo">
-        <i-echart :option="option" :width="width"></i-echart>
-      </div>
-      <div class="chartInfo">
-        <i-echart :option="option" :width="width"></i-echart>
-      </div>
-    </div> -->
   </div>
 </template>
 <script>
 /* eslint-disable */
 import AMap from "AMap";
 import echartMap from "../../components/realTime";
-// import echarts from "echarts";
-
-// import iEchart from "../../components/echart";
 
 export default {
   components: {
@@ -99,90 +80,7 @@ export default {
   },
   data() {
     return {
-      checked: true,
-      width: "500px",
-      option: {
-        title: {
-          text: "电压",
-          subtext: "监测数据变化",
-          textStyle: {
-            color: "#484848"
-          },
-          subtextStyle: {
-            color: "#484848"
-          }
-        },
-        tooltip: {
-          trigger: "axis"
-        },
-        grid: {
-          left: "3%",
-          right: "4%",
-          bottom: "20%",
-          containLabel: true
-        },
-        dataZoom: [
-          {
-            // show: true,
-            type: "slider",
-            start: 0,
-            end: 100
-          },
-          {
-            type: "inside",
-            start: 0,
-            end: 100
-          }
-        ],
-        xAxis: {
-          type: "category",
-          boundaryGap: false,
-          data: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
-          axisLine: {
-            show: false
-          },
-          axisTick: {
-            show: false
-          },
-          axisLabel: {
-            fontSize: 11,
-            color: "#484848"
-          },
-          splitLine: {
-            show: false
-          }
-        },
-        yAxis: {
-          type: "value",
-          axisLine: {
-            show: false
-          },
-          axisTick: {
-            show: false
-          },
-          splitLine: {
-            show: false
-          }
-        },
-        series: [
-          {
-            name: "",
-            type: "line",
-            smooth: true,
-            lineStyle: {
-              normal: {
-                color: "#2491fc"
-              }
-            },
-            areaStyle: {
-              normal: {
-                color: "rgba(36,145,252,0.25)"
-              }
-            },
-            data: [10, 20, 30, 80, 20, 50, 90]
-          }
-        ]
-      }
+      checked: true
     };
   },
   mounted() {
@@ -199,7 +97,6 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-// @import url('../../assets/style/style.scss');
 $fontColor: rgba(0, 0, 0, 0.65);
 .center {
   background: #ffffff;

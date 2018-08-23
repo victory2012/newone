@@ -32,26 +32,17 @@ export default {
     }
   },
   mounted() {
-    let $echartsDOM = document.getElementById(this.randomId);
-    if (!$echartsDOM) return;
-    let myEcharts = echarts.init($echartsDOM);
-    // this.myEcharts = myEcharts;
-
-    myEcharts.setOption(this.option);
-    // setTimeout(() => {
-    //   myEcharts.resize();
-    // }, 20);
+    this.checkAndSetOption();
   },
   methods: {
     checkAndSetOption() {
-      // let option = this.option;
-      // this.myEcharts.setOption(option);
-      // if (isValidOption(option)) {
-      //   this.myEcharts.setOption(option);
-      //   this.isOptionAbnormal = false;
-      // } else {
-      //   this.isOptionAbnormal = true;
-      // }
+      let $echartsDOM = document.getElementById(this.randomId);
+      if (!$echartsDOM) return;
+      let myEcharts = echarts.init($echartsDOM);
+      myEcharts.setOption(this.option);
+      // window.onresize = () => {
+      //   myEcharts.resize();
+      // };
     }
   }
 };

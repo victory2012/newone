@@ -2,31 +2,33 @@
   <div class="batteryList">
     <div class="topTab">
       <div class="icons">
-        <div class="items">
-          <el-dropdown trigger="click" placement="bottom" @command="handleCommand">
-            <span>
-              <img src="../../../static/img/device_reg.png" alt=""><br/>
-              <span class="el-dropdown-link">电池</span>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="addBattery" :disabled="false">添加电池</el-dropdown-item>
-              <el-dropdown-item command="addModel">添加型号</el-dropdown-item>
-              <el-dropdown-item command="addSpfic">添加规格</el-dropdown-item>
-              <el-dropdown-item command="addSingel">添加单体规格</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </div>
-        <div class="items">
-          <el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-success="flieSuccess" :on-progress="onGoing" :on-error="flieError" :show-file-list="false" :multiple="false" :auto-upload="true">
-            <div slot="trigger">
-              <img id="import" :src="'../../../static/img/device_import.png'" alt="">
-              <p>批量导入</p>
-            </div>
-          </el-upload>
-        </div>
-        <div class="items">
-          <img id="recover" src="../../../static/img/device_recover.png" alt="">
-          <p>恢复拉黑电池</p>
+        <div v-if="getUserType !== 1">
+          <div class="items">
+            <el-dropdown trigger="click" placement="bottom" @command="handleCommand">
+              <span>
+                <img src="../../../static/img/device_reg.png" alt=""><br/>
+                <span class="el-dropdown-link">电池</span>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="addBattery" :disabled="false">添加电池</el-dropdown-item>
+                <el-dropdown-item command="addModel">添加型号</el-dropdown-item>
+                <el-dropdown-item command="addSpfic">添加规格</el-dropdown-item>
+                <el-dropdown-item command="addSingel">添加单体规格</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          <div class="items">
+            <el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-success="flieSuccess" :on-progress="onGoing" :on-error="flieError" :show-file-list="false" :multiple="false" :auto-upload="true">
+              <div slot="trigger">
+                <img id="import" :src="'../../../static/img/device_import.png'" alt="">
+                <p>批量导入</p>
+              </div>
+            </el-upload>
+          </div>
+          <div class="items">
+            <img id="recover" src="../../../static/img/device_recover.png" alt="">
+            <p>恢复拉黑电池</p>
+          </div>
         </div>
       </div>
       <div class="select">
@@ -76,17 +78,17 @@
         </el-table-column> -->
         <el-table-column align="center" label="运行状态">
           <template slot-scope="scope">
-            <el-button @click.native.prevent="lookFor(scope.row)" :disabled="scope.row.onLine" type="text" size="small">
+            <el-button @click.native.prevent="lookFor(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">
               查看
             </el-button>
           </template>
         </el-table-column>
         <el-table-column align="center" width="200" label="操作">
           <template slot-scope="scope">
-            <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind" type="text" size="small">绑定</el-button>
-            <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">解绑</el-button>
+            <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind || getUserType === 1" type="text" size="small">绑定</el-button>
+            <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind || getUserType === 1" type="text" size="small">解绑</el-button>
             <!-- <el-button @click="goBlock(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">拉黑</el-button> -->
-            <el-button @click="deleteBattery(scope.row)" :disabled="!scope.row.hasbind" type="text" size="small">删除</el-button>
+            <el-button @click="deleteBattery(scope.row)" :disabled="!scope.row.hasbind || getUserType === 1" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -172,6 +174,7 @@
 }
 </style>
 <script>
+import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
 
 export default {
@@ -219,8 +222,10 @@ export default {
       tableData: []
     };
   },
+  computed: {
+    ...mapGetters(["getUserType"])
+  },
   methods: {
-    // ...mapActions(['getBatteryModel']),
     reloadBattery(data) {
       console.log(data);
     },
@@ -436,8 +441,8 @@ export default {
     },
     /* 用户权限 */
     userRole() {
-      let roles = JSON.parse(utils.getStorage('loginData'));
-      console.log('roles', roles.type);
+      let roles = JSON.parse(utils.getStorage("loginData"));
+      console.log("roles", roles.type);
     }
   },
   mounted() {

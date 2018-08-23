@@ -10,6 +10,7 @@ import App from './App';
 import router from './router';
 import createStore from "./store/store";
 import axios from './api/http';
+import utils from "./utils/utils";
 /**
  * 导出数据报表xlsx文件
  * 已注入所有Vue实例，
@@ -18,7 +19,8 @@ import axios from './api/http';
  * 例：this.$outputXlsxFile([['字段1', '字段2'], [1, 2]], [{wch: 10}, {wch: 50}], '测试导出') 得到 测试导出.xlsx 文件
  * 第一个参数是导出的数组对象，第二个参数是设置字段宽度，第三个参数是文件名
  */
-const outputXlsxFile = (data, wscols, xlsxName) => {
+// const outputXlsxFile = (data, wscols, xlsxName) => {
+const outputXlsxFile = (data, xlsxName) => {
   /* convert state to workbook */
   const ws = XLSX.utils.aoa_to_sheet(data);
   // ws['!cols'] = wscols;
@@ -44,7 +46,11 @@ new Vue({
   },
   template: '<App/>',
   created() {
-    this.$store.state.loginData = sessionStorage.getItem('loginData') || "";
-    this.$store.state.token = sessionStorage.getItem('token') || "";
+    let loginData = utils.getStorage('loginData') || "";
+    let token = utils.getStorage('token') || "";
+    let userRoles = utils.getStorage('userRoles') || "";
+    this.$store.commit('setUserRole', userRoles);
+    this.$store.commit('setStorage', loginData);
+    this.$store.commit('setTokenStorage', token);
   }
 });

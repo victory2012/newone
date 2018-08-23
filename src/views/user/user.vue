@@ -1,7 +1,7 @@
 <template>
   <div class="alarmTable">
     <div class="addWarrp">
-      <div @click="adduser(index)" v-for="(key, index) in userData" class="addBox" :class="{'active': clicked === key.role}" :key="key.role">
+      <div @click="adduser(index)" v-for="(key, index) in userData" class="addBox" :key="key.role">
         <img :src="key.default" alt="">
         <p>{{key.text}}</p>
       </div>
@@ -21,7 +21,7 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="150">
         <template slot-scope="scope">
-          <el-button size="small" class="limite" @click.native.prevent="changeQuanxian(scope.row)" type="text">
+          <el-button :disabled="!scope.row.userType" size="small" class="limite" @click.native.prevent="changeQuanxian(scope.row)" type="text">
             修改权限
           </el-button>
           <el-button size="small" type="text" @click="secondary(scope.row)">删除</el-button>
@@ -56,7 +56,7 @@
   </div>
 </template>
 <script>
-// import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
 import addData from "../../config/add-user-data";
 import Manfictors from "../../components/user/manfictor";
@@ -84,17 +84,6 @@ export default {
       userId: null,
       addType: null, // 添加公司的类型
       tableData: [],
-      // roles: {
-      //   batteryadd: false,
-      //   infomation: false,
-      //   runState: false,
-      //   monitoring: false, // 主动监测
-      //   historyData: false, // 历史数据
-      //   alarm: false, // 告警事件
-      //   sameAnalysis: false, // 同一电池单元的数据分析
-      //   sameBatch: false, // 同批次不同电池单元的数据分析
-      //   personalInfo: false // 个人信息维护
-      // },
       userRole: [
         {
           label: "电池登记",
@@ -144,16 +133,24 @@ export default {
       ]
     };
   },
+  computed: {
+    ...mapGetters(["getUserType"])
+  },
   mounted() {
     this.$store.state.manfictor = false;
     this.$store.state.custom = false;
-    this.userData = addData();
     this.getUserList();
-  },
-  computed: {
-    // ...mapState(["manfictor"])
+    this.userLimit();
   },
   methods: {
+    userLimit() {
+      if (this.getUserType === 1) {
+        this.userData = addData.getPlat();
+      }
+      if (this.getUserType === 2) {
+        this.userData = addData.getProduct();
+      }
+    },
     secondary(item) {
       this.$alert("确定删除此用户吗？", {
         showCancelButton: true,
@@ -247,10 +244,10 @@ export default {
       this.getUserList();
     },
     adduser(index) {
-      this.userData = addData();
+      // this.userData = addData();
       this.clicked = this.userData[index].role;
       this.addType = this.userData[index].role;
-      this.userData[index].default = this.userData[index].icon;
+      // this.userData[index].default = this.userData[index].icon;
       if (this.addType > 2) {
         this.$store.commit("triggerCustom");
       } else {
@@ -277,6 +274,7 @@ export default {
           if (result.data.pageData.length > 0) {
             result.data.pageData.forEach(key => {
               key.role = utils.accountType(key.type);
+              key.userType = key.type > 2;
               this.tableData.push(key);
             });
           }
