@@ -106,8 +106,7 @@ import utils from "@/utils/utils";
 export default {
   data() {
     return {
-      account:
-        JSON.parse(sessionStorage.getItem("loginData")).data.companyName || "",
+      account: JSON.parse(sessionStorage.getItem("loginData")).companyName || "",
       batteryForm: {},
       batteryFormRules: {
         batCustom: [

@@ -44,7 +44,16 @@ let manfictor = [
   }
 ];
 
+let createUser = [
+  {
+    icon: '../../static/img/add-admin_not.png',
+    default: '../../static/img/add-admin.png',
+    text: '创建采购企业用户',
+    role: '3'
+  }
+];
 export default {
   getPlat: () => addPlat,
-  getProduct: () => manfictor
+  getProduct: () => manfictor,
+  getCreateUser: () => createUser
 };

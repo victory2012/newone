@@ -14,5 +14,12 @@ export default {
       return JSON.parse(state.loginData).type;
     }
     return "";
+  },
+  /* 获取用户角色类型 */
+  getLayerName(state) {
+    if (state.loginData) {
+      return `${JSON.parse(state.loginData).layerName}`;
+    }
+    return "";
   }
 };

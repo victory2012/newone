@@ -25,7 +25,7 @@
               </div>
             </el-upload>
           </div>
-          <div class="items">
+          <div class="items" @click="recovery">
             <img id="recover" src="../../../static/img/device_recover.png" alt="">
             <p>恢复拉黑电池</p>
           </div>
@@ -226,6 +226,9 @@ export default {
     ...mapGetters(["getUserType"])
   },
   methods: {
+    recovery() {
+      this.$router.push("/battery/defriend");
+    },
     reloadBattery(data) {
       console.log(data);
     },

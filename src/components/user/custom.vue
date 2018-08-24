@@ -106,7 +106,7 @@ export default {
                   type: "success",
                   message: "创建成功"
                 });
-                this.$emit("hasCreated", { value: true });
+                this.$emit("hasCreatedCustorm", { value: true });
                 this.$store.state.custom = false;
               }
             });

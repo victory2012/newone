@@ -33,7 +33,7 @@
       </el-pagination>
     </div>
     <Manfictors @hasCreated="reloadData" :type="addType"></Manfictors>
-    <Custom :type="addType"></Custom>
+    <Custom @hasCreatedCustorm="reloadData" :type="addType"></Custom>
     <!-- 权限 -->
     <div>
       <el-dialog title="修改权限" :width="'600px'" :visible.sync="jurisdiction">
@@ -134,7 +134,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getUserType"])
+    ...mapGetters(["getLayerName"])
   },
   mounted() {
     this.$store.state.manfictor = false;
@@ -144,10 +144,10 @@ export default {
   },
   methods: {
     userLimit() {
-      if (this.getUserType === 1) {
+      if (this.getLayerName === "平台") {
         this.userData = addData.getPlat();
       }
-      if (this.getUserType === 2) {
+      if (this.getLayerName === "生产企业") {
         this.userData = addData.getProduct();
       }
     },
