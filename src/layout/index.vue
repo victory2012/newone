@@ -44,8 +44,8 @@ export default {
   data() {
     return {
       isCollapse: false,
-      menus: '',
-      roles: ''
+      menus: "",
+      roles: ""
     };
   },
   components: {
@@ -65,6 +65,8 @@ export default {
             this.$store.commit("removeStorage");
             this.$store.commit("removeTokenStorage");
             this.$router.push("/login");
+            // this.$store.state.loginData = null;
+            // this.menus = "";
             utils.removeStorageAll();
           }
         });
@@ -77,13 +79,19 @@ export default {
       }
     },
     switchMenu() {
+      console.log("getUserType", this.getUserType);
       if (this.getUserType === 1) {
         this.menus = menu.getPlat();
-      }
-      if (this.getUserType === 2) {
+      } else if (this.getUserType === 2) {
         this.menus = menu.getManifactor();
       }
+      console.log(this.menus);
     }
+  },
+  beforeDestroy() {
+    this.menus = "";
+    this.$store.state.loginData = "";
+    console.log("sideBar is destroyed");
   }
 };
 </script>

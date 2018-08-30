@@ -66,7 +66,7 @@
       <span>过去24小时监测数据</span>
       <el-checkbox v-model="checked">是否自动更新数据</el-checkbox>
     </div>
-    <echart-map></echart-map>
+    <echart-map :mapData="mapData"></echart-map>
   </div>
 </template>
 <script>
@@ -80,7 +80,8 @@ export default {
   },
   data() {
     return {
-      checked: true
+      checked: true,
+      mapData: null
     };
   },
   mounted() {
@@ -91,6 +92,12 @@ export default {
       new AMap.Map("mapContent", {
         resizeEnable: true,
         zoom: 10
+      });
+      // this.getData();
+    },
+    getBatteryInfo() {
+      this.$axios.get(`/battery_group/{id}/info`).then(res => {
+        console.log(res);
       });
     }
   }

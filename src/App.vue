@@ -24,6 +24,12 @@ body {
 .el-dialog__body {
   padding: 10px 60px;
 }
+.el-form-item__label {
+  line-height: 30px;
+}
+.el-form-item {
+  margin-bottom: 10px;
+}
 // .el-menu-item.is-active {
 //   background-color: #71bfdb;
 //   color: #ffffff;

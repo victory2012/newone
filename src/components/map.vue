@@ -10,7 +10,7 @@ import AMap from "AMap";
 export default {
   data() {
     return {
-      map: ''
+      map: ""
     };
   },
   mounted() {
@@ -18,7 +18,6 @@ export default {
   },
   methods: {
     init() {
-      console.log(AMap);
       new AMap.Map("historyContent", {
         resizeEnable: true,
         zoom: 10

@@ -12,9 +12,9 @@
         <el-autocomplete size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入内容" @select="handleSelect"></el-autocomplete>
       </div>
     </div>
-    <div v-show="false" class="tips">
+    <!-- <div v-show="hasHostId" class="tips">
       请先选择一个电池组！
-    </div>
+    </div> -->
     <component :is="showCompontent"></component>
   </div>
 </template>
@@ -29,10 +29,25 @@ export default {
     return {
       state: "",
       actived: "real",
-      showCompontent: "real-time"
+      showCompontent: "",
+      hasHostId: false
     };
   },
+  mounted() {
+    this.init();
+  },
   methods: {
+    init() {
+      let deviceId = this.$route.query.deviceId;
+      if (deviceId) {
+        this.hasHostId = false;
+        this.showCompontent = "real-time";
+        // this.getData(deviceId);
+      } else {
+        this.hasHostId = true;
+        this.showCompontent = "";
+      }
+    },
     querySearchAsync() {},
     handleSelect() {},
     showRealData() {

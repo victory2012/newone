@@ -106,7 +106,8 @@ import utils from "@/utils/utils";
 export default {
   data() {
     return {
-      account: JSON.parse(sessionStorage.getItem("loginData")).companyName || "",
+      account:
+        JSON.parse(sessionStorage.getItem("loginData")).companyName || "",
       batteryForm: {},
       batteryFormRules: {
         batCustom: [
@@ -210,12 +211,14 @@ export default {
             manufacturerDate: utils.dateFomat(this.batteryForm.factoryDate),
             qualityGuaranteeDate: utils.dateFomat(this.batteryForm.qualityDate)
           };
-          this.deviceIdOpts.forEach(key => {
-            if (key.id === this.batteryForm.deviceId) {
-              params.deviceId = this.batteryForm.deviceId;
-              params.deviceCode = key.code;
-            }
-          });
+
+          this.deviceIdOpts &&
+            this.deviceIdOpts.forEach(key => {
+              if (key.id === this.batteryForm.deviceId) {
+                params.deviceId = this.batteryForm.deviceId;
+                params.deviceCode = key.code;
+              }
+            });
           this.$axios.post("/battery_group", params).then(res => {
             console.log("添加电池组", res);
             if (res.data && res.data.code === 0) {
@@ -240,18 +243,10 @@ export default {
       this.batteryForm = {};
       this.$store.state.addBattery = false;
     },
-    /* 获取电池组型号列表 */
-    // getGroupModel() {
-    //   this.$axios.get("/dic/user_dic?dicKey=model&categoryId=2").then(res => {
-    //     console.log("电池组型号", res);
-    //     if (res.data && res.data.code === 0) {
-    //       this.GroupModelOpts = res.data.data;
-    //     }
-    //   });
-    // },
+
     /* 获取电池组规格列表 */
     getGroupSpecif() {
-      this.$axios.get("/dic/user_dic?dicKey=norm&categoryId=2").then(res => {
+      this.$axios.get("/dic?type=Norm&categoryId=2").then(res => {
         console.log("电池组规格", res);
         if (res.data && res.data.code === 0) {
           this.batGroupSpecifOpts = res.data.data;
@@ -260,37 +255,17 @@ export default {
     },
     /* 获取电池单体型号列表 */
     getSinglBattery() {
-      this.$axios
-        .get("/dic/user_dic?dicKey=single_model&categoryId=2")
-        .then(res => {
-          console.log("电池单体型号", res);
-          if (res.data && res.data.code === 0) {
-            this.singleBatteryOpts = res.data.data;
-          }
-        });
+      this.$axios.get("/dic?type=SingleModel&categoryId=2").then(res => {
+        console.log("电池单体型号", res);
+        if (res.data && res.data.code === 0) {
+          this.singleBatteryOpts = res.data.data;
+        }
+      });
     },
-    /* 获取电池组客户企业表 */
-    // getCompanyId() {
-    //   this.$axios.get("/company/names?layer=2").then(res => {
-    //     console.log("获取电池组客户企业表", res);
-    //     if (res.data && res.data.code === 0) {
-    //       this.batCustomOpts = res.data.data;
-    //     }
-    //   });
-    // },
-    /* 获取设备编号列表 */
-    // getDeviceList() {
-    //   this.$axios.get("/device/code?status=0&bindingStatus=1").then(res => {
-    //     console.log("设备编号", res);
-    //     if (res.data && res.data.code === 0) {
-    //       this.deviceIdOpts = res.data.data;
-    //     }
-    //   });
-    // },
     init() {
-      this.batCustomOpts = JSON.parse(utils.getStorage('batCustomOpts'));
-      this.GroupModelOpts = JSON.parse(utils.getStorage('Modeloptions'));
-      this.deviceIdOpts = JSON.parse(utils.getStorage('deviceIdOpts'));
+      this.batCustomOpts = JSON.parse(utils.getStorage("batCustomOpts"));
+      this.GroupModelOpts = JSON.parse(utils.getStorage("Modeloptions"));
+      this.deviceIdOpts = JSON.parse(utils.getStorage("deviceIdOpts"));
       this.getGroupSpecif();
       this.getSinglBattery();
       // this.getDeviceList();

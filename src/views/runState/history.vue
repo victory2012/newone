@@ -11,7 +11,7 @@
       </el-select>
       <el-button class="queryBtn" size="small" type="primary">确定</el-button>
     </div>
-    <echart-map></echart-map>
+    <echart-map v-if="hasgetData" :chartData="dataObj"></echart-map>
     <!-- <div class="charts pt">
       <div class="info">
         <i-echart :option="option"></i-echart>
@@ -88,17 +88,18 @@
     </div>
     <div class="maps">
       <!-- <div id="hisContent" class="mapContent"></div> -->
-      <i-map></i-map>
+      <i-map v-if="hasgetData" :travelData="dataObj.positions"></i-map>
     </div>
   </div>
 </template>
 <script>
 /* eslint-disable */
 import AMap from "AMap";
-import echartMap from "../../components/realTime";
+import utils from "@/utils/utils";
+import echartMap from "../../components/historyChart";
 import iEchart from "../../components/echart";
 import iAlarm from "../../components/alarm-data";
-import iMap from "../../components/map";
+import iMap from "../../components/travel";
 
 export default {
   components: {
@@ -109,6 +110,15 @@ export default {
   },
   data() {
     return {
+      hasgetData: false,
+      dataObj: {
+        timeArr: [],
+        singleVoltage: [],
+        temperature: [],
+        voltage: [],
+        current: [],
+        positions: []
+      },
       start: "",
       end: "",
       timevalue: "week",
@@ -138,63 +148,6 @@ export default {
           label: "全生命周期"
         }
       ],
-      option: {
-        title: {
-          text: "电压",
-          subtext: "检测数据变化"
-        },
-        tooltip: {
-          trigger: "axis"
-        },
-        xAxis: {
-          type: "category",
-          boundaryGap: false,
-          data: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
-          axisLine: {
-            show: false
-          },
-          axisTick: {
-            show: false
-          },
-          splitLine: {
-            show: false
-          }
-        },
-        yAxis: {
-          type: "value",
-          axisLine: {
-            show: false
-          },
-          axisTick: {
-            show: false
-          },
-          splitLine: {
-            show: false
-          }
-        },
-        series: [
-          {
-            name: "成交",
-            type: "line",
-            smooth: true,
-            data: [10, 12, 21, 54, 260, 830, 710]
-          }
-        ],
-        dataZoom: [
-          {
-            // 这个dataZoom组件，默认控制x轴。
-            type: "slider", // 这个 dataZoom 组件是 slider 型 dataZoom 组件
-            start: 0, // 左边在 10% 的位置。
-            end: 100 // 右边在 60% 的位置。
-          },
-          {
-            // 这个dataZoom组件，也控制x轴。
-            type: "inside", // 这个 dataZoom 组件是 inside 型 dataZoom 组件
-            start: 0, // 左边在 10% 的位置。
-            end: 100 // 右边在 60% 的位置。
-          }
-        ]
-      },
       pieOption: {
         tooltip: {
           trigger: "item",
@@ -232,14 +185,41 @@ export default {
       }
     };
   },
-  mounted() {},
-  methods: {}
+  mounted() {
+    this.getChartData();
+  },
+  methods: {
+    getChartData() {
+      // let startTime = utils.dateFomats(utils.getYestoday());
+      // let endTime = utils.dateFomats(utils.getNowTime());
+      let startTime = 20170101010101;
+      let endTime = utils.dateFomats(utils.getNowTime());
+      this.$axios
+        .get(
+          `/battery_group/${5}/data2?startTime=${startTime}&endTime=${endTime}`
+        )
+        .then(res => {
+          console.log(res);
+          if (res.data && res.data.code === 0) {
+            let result = res.data.data;
+            result.list.forEach(key => {
+              // console.log(key);
+              this.dataObj.timeArr.push(utils.fomats(key.time)); // 时间
+              this.dataObj.singleVoltage.push(key.singleVoltage); // 单体电压
+              this.dataObj.temperature.push(key.temperature); // 温度
+              this.dataObj.voltage.push(key.voltage); // 电压
+              this.dataObj.current.push(key.current); // 电流
+              this.dataObj.positions.push([key.gcjLongitude, key.gcjLatitude]); // 电流
+            });
+            this.hasgetData = true;
+          }
+        });
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
 .history {
-  // background: #ffffff;
-  //
   box-sizing: border-box;
   border-radius: 5px;
   .timeBar {

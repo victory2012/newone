@@ -17,103 +17,20 @@
 
 <script>
 import echarts from "echarts";
+import _ from "lodash";
+import utils from "@/utils/utils";
+import options from "@/config/echartOptions";
 
 export default {
   data() {
     return {
+      timeArr: [],
+      singleVoltage: [],
+      temperature: [],
+      voltage: [],
+      current: [],
       myEcharts: null,
-      isOptionAbnormal: false,
-      option: {
-        title: {
-          text: "电压",
-          subtext: "监测数据变化",
-          textStyle: {
-            color: "#484848"
-          },
-          subtextStyle: {
-            color: "#484848"
-          }
-        },
-        tooltip: {
-          trigger: "axis"
-        },
-        grid: {
-          left: "3%",
-          right: "4%",
-          bottom: "20%",
-          containLabel: true
-        },
-        dataZoom: [
-          {
-            // show: true,
-            type: "slider",
-            start: 0,
-            end: 100,
-            startValue: "aaa",
-            endValue: "bbb",
-            fillerColor: "rgba(167,183,204,0.4)",
-            backgroundColor: "rgba(0,0,0,0)"
-          },
-          {
-            type: "inside",
-            start: 0,
-            end: 100,
-            startValue: "aaa",
-            endValue: "bbb"
-          }
-        ],
-        xAxis: {
-          type: "category",
-          boundaryGap: false,
-          data: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
-          axisLine: {
-            show: false
-          },
-          axisTick: {
-            show: false
-          },
-          axisLabel: {
-            fontSize: 11,
-            color: "#484848"
-          },
-          splitLine: {
-            show: false
-          }
-        },
-        yAxis: {
-          type: "value",
-          axisLabel: {
-            formatter: "{value} v"
-          },
-          axisLine: {
-            show: false
-          },
-          axisTick: {
-            show: false
-          },
-          splitLine: {
-            show: false
-          }
-        },
-        series: [
-          {
-            name: "",
-            type: "line",
-            smooth: true,
-            lineStyle: {
-              normal: {
-                color: "#2491fc"
-              }
-            },
-            areaStyle: {
-              normal: {
-                color: "rgba(36,145,252,0.25)"
-              }
-            },
-            data: [10, 20, 30, 80, 20, 50, 90]
-          }
-        ]
-      }
+      isOptionAbnormal: false
     };
   },
   mounted() {
@@ -129,13 +46,10 @@ export default {
       let myEcharts2 = echarts.init($echartsDOM2);
       let myEcharts3 = echarts.init($echartsDOM3);
       let myEcharts4 = echarts.init($echartsDOM4);
-      myEcharts1.setOption(this.option);
-      myEcharts2.setOption(this.option);
-      myEcharts3.setOption(this.option);
-      myEcharts4.setOption(this.option);
+
       echarts.connect([myEcharts1, myEcharts2, myEcharts3, myEcharts4]);
-      console.log(myEcharts1);
-      console.log(echarts);
+      // console.log(myEcharts1);
+      // console.log(echarts);
       myEcharts1.on("datazoom", param => {
         console.log(param);
         // console.log(option.dataZoom.start);
@@ -147,7 +61,55 @@ export default {
         myEcharts3.resize();
         myEcharts4.resize();
       };
-    }
+      // let startTime = utils.dateFomats(utils.getYestoday());
+      // let endTime = utils.dateFomats(utils.getNowTime());
+      let startTime = 20170101010101;
+      let endTime = utils.dateFomats(utils.getNowTime());
+      this.$axios
+        .get(
+          `/battery_group/${5}/data?startTime=${startTime}&endTime=${endTime}`
+        )
+        .then(res => {
+          // console.log(res);
+          if (res.data && res.data.code === 0) {
+            let result = res.data.data;
+            result.forEach(key => {
+              // console.log(key);
+              this.timeArr.push(utils.fomats(key.time));
+              this.singleVoltage.push(key.singleVoltage);
+              this.temperature.push(key.temperature);
+              this.voltage.push(key.voltage);
+              this.current.push(key.current);
+            });
+            options.xAxis.data = this.timeArr;
+
+            let voltageOptions = _.cloneDeep(options);
+            voltageOptions.title.text = "电压";
+            voltageOptions.yAxis.axisLabel = "{value} v";
+            voltageOptions.series[0].data = this.voltage;
+            myEcharts1.setOption(voltageOptions);
+
+            let singleVoltageOptions = _.cloneDeep(options);
+            singleVoltageOptions.title.text = "单体电压";
+            singleVoltageOptions.yAxis.axisLabel = "{value} v";
+            singleVoltageOptions.series[0].data = this.singleVoltage;
+            myEcharts2.setOption(singleVoltageOptions);
+
+            let currentOptions = _.cloneDeep(options);
+            currentOptions.title.text = "电流";
+            currentOptions.yAxis.axisLabel = "{value} A";
+            currentOptions.series[0].data = this.current;
+            myEcharts3.setOption(currentOptions);
+
+            let temperatureOptions = _.cloneDeep(options);
+            temperatureOptions.title.text = "温度";
+            temperatureOptions.yAxis.axisLabel = "{value} ℃";
+            temperatureOptions.series[0].data = this.temperature;
+            myEcharts4.setOption(temperatureOptions);
+          }
+        });
+    },
+    getData() {}
   }
 };
 </script>

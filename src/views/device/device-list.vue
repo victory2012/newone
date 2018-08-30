@@ -13,7 +13,7 @@
               <p>批量导入</p>
             </div>
           </el-upload> -->
-          <input class="fileUpload" type="file" @change="fileUpload"/>
+          <input class="fileUpload" type="file" @change="fileUpload" />
           <img src="../../../static/img/device_import.png" alt="">
           <p>批量导入</p>
         </div>
@@ -157,7 +157,7 @@ export default {
   },
   methods: {
     fileUpload(event) {
-      console.log(event);
+      // console.log(event);
       let obj = event.target;
       if (!obj.files) {
         return;
@@ -166,21 +166,21 @@ export default {
       let suffix = obj.files[0].name.split(".")[1];
       if (suffix !== "xls" && suffix !== "xlsx") {
         this.$message({
-          type: 'error',
+          type: "error",
           message: "请导入xls格式或者xlsx格式"
         });
         return;
       }
       if (obj.files[0].size / 1024 > IMPORTFILE_MAXSIZE) {
         this.$message({
-          type: 'error',
+          type: "error",
           message: "导入的表格文件不能大于1M"
         });
         return;
       }
       let f = obj.files[0];
       let reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = e => {
         let data = e.target.result;
         if (rABS) {
           wb = XLSX.read(btoa(this.fixdata(data)), {
@@ -197,7 +197,8 @@ export default {
         // document.getElementById("demo").innerHTML = JSON.stringify(
         //   XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
         // );
-        console.log(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]));
+        let resultObj = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+        console.log(resultObj);
       };
       if (rABS) {
         reader.readAsArrayBuffer(f);

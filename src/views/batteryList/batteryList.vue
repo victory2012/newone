@@ -87,7 +87,7 @@
           <template slot-scope="scope">
             <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind || getUserType === 1" type="text" size="small">绑定</el-button>
             <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind || getUserType === 1" type="text" size="small">解绑</el-button>
-            <!-- <el-button @click="goBlock(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">拉黑</el-button> -->
+            <!-- <el-button @click="bindDeviceClick(scope.row)" type="text" size="small">拉黑</el-button> -->
             <el-button @click="deleteBattery(scope.row)" :disabled="!scope.row.hasbind || getUserType === 1" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -230,7 +230,9 @@ export default {
       this.$router.push("/battery/defriend");
     },
     reloadBattery(data) {
-      console.log(data);
+      if (data.value) {
+        this.getBatteryList();
+      }
     },
     handleSelect() {},
     /* 取消电池绑定 */
@@ -294,17 +296,17 @@ export default {
       this.$refs.modelForm.validate(valid => {
         if (valid) {
           let params = {
-            dicValue: this.modelForm.dicValue,
+            dicKey: this.modelForm.dicValue,
             categoryId: 2
           };
           if (this.addType === "addModel") {
-            params.dicKey = "model"; // 电池组型号
+            params.type = "Model"; // 电池组型号
           }
           if (this.addType === "addSpfic") {
-            params.dicKey = "norm"; // 电池组规格
+            params.type = "Norm"; // 电池组规格
           }
           if (this.addType === "addSingel") {
-            params.dicKey = "single_model"; // 单体规格
+            params.type = "SingleModel"; // 单体规格
           }
           this.$axios.post("/dic/user_dic", params).then(res => {
             console.log(this.addType, res);
@@ -336,6 +338,12 @@ export default {
     },
     lookFor(row) {
       console.log(row);
+      this.$router.push({
+        path: "battery/run",
+        query: {
+          deviceId: row.deviceId
+        }
+      });
     },
     deleteBattery(row) {
       if (!row.id) return;
@@ -414,7 +422,7 @@ export default {
     },
     /* 获取电池型号列表 */
     getBatteryModelList() {
-      this.$axios.get("/dic/user_dic?dicKey=model&categoryId=2").then(res => {
+      this.$axios.get("/dic?type=Model&categoryId=2").then(res => {
         console.log("获取电池型号列表", res);
         if (res.data && res.data.code === 0) {
           this.Modeloptions = res.data.data;
