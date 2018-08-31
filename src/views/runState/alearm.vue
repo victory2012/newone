@@ -1,11 +1,11 @@
 <template>
   <div class="alarmTable">
-    <div class="addBtns">
+    <!-- <div class="addBtns">
       <div class="items" @click="alarmSeting">
         <img src="../../../static/img/alarm-set.png" alt="">
         <p>告警设置</p>
       </div>
-    </div>
+    </div> -->
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="index" align="center" label="序号" width="100">
       </el-table-column>
@@ -111,76 +111,76 @@
         <!-- <el-button size="small" type="primary" @click="details = false">确 定</el-button> -->
       </div>
     </el-dialog>
-    <el-dialog title="告警设置" :visible.sync="settings" width="600px">
+    <el-dialog title="告警设置" :visible.sync="settings" @closed="dialogClosed" width="600px">
       <div class="detailCenter">
+        <div class="temp">
+          <el-button @click="getTemplate" type="primary" plain size="small">恢复模板</el-button>
+        </div>
         <el-form :model="batteryForm" :rules="batteryFormRules" ref="batteryForm">
           <el-row :gutter="60">
             <el-col :span="12">
-              <el-form-item label="单体充电电压上限阈值(V)" prop="account">
-                <el-input size="small" disabled v-model="batteryForm.account" auto-complete="off"></el-input>
+              <el-form-item label="单体充电电压上限阈值(V)" prop="singleMaxChargeVoltage">
+                <el-input-number controls-position="right" size="small" v-model="batteryForm.singleMaxChargeVoltage" style="width:194px;"></el-input-number>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="单体放电电压下限阈值(V)" prop="batCustom">
-                <el-input size="small" v-model.number="batteryForm.batteryVoltage" auto-complete="off"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="60">
-            <el-col :span="12">
-              <el-form-item label="整组充电电压上限阈值(V)" prop="groupNum">
-                <el-input size="small" v-model="batteryForm.groupNum" auto-complete="off"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="整组放电电压下限阈值(V)" prop="batGroupModel">
-                <el-input size="small" v-model.number="batteryForm.batteryVoltage" auto-complete="off"></el-input>
+              <el-form-item label="单体放电电压下限阈值(V)" prop="singleMinDischargeVoltage">
+                <el-input-number controls-position="right" size="small" v-model.number="batteryForm.singleMinDischargeVoltage" style="width:194px;"></el-input-number>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="60">
             <el-col :span="12">
-              <el-form-item label="充电电流上限阈值系数" prop="batGroupSpecif">
-                <el-input size="small" v-model.number="batteryForm.batteryVoltage" auto-complete="off"></el-input>
+              <el-form-item label="整组充电电压上限阈值(V)" prop="maxChargeVoltage">
+                <el-input-number controls-position="right" size="small" v-model="batteryForm.maxChargeVoltage" style="width:194px;"></el-input-number>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="放电电流上限阈值系数" prop="batteryVoltage">
-                <el-input size="small" v-model.number="batteryForm.batteryVoltage" auto-complete="off"></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="60">
-            <el-col :span="12">
-              <el-form-item label="充电温度上限阈值(℃)" prop="batteryCapacity">
-                <el-input size="small" v-model.number="batteryForm.batteryCapacity" auto-complete="off"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="充电温度下限阈值(℃)" prop="singleBattery">
-                <el-input size="small" v-model.number="batteryForm.batteryVoltage" auto-complete="off"></el-input>
+              <el-form-item label="整组放电电压下限阈值(V)" prop="minDischargeVoltage">
+                <el-input-number controls-position="right" size="small" v-model.number="batteryForm.minDischargeVoltage" style="width:194px;"></el-input-number>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="60">
             <el-col :span="12">
-              <el-form-item label="放电温度上限阈值(℃)" prop="productDate">
-                <el-date-picker size="small" style="width: 210px" v-model="batteryForm.productDate" type="date" placeholder="生产日期">
-                </el-date-picker>
+              <el-form-item label="充电电流上限阈值系数" prop="maxChargeCurrent">
+                <el-input-number controls-position="right" size="small" v-model.number="batteryForm.maxChargeCurrent" style="width:194px;"></el-input-number>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="放电温度下限阈值(℃)" prop="factoryDate">
-                <el-date-picker size="small" style="width: 210px" v-model="batteryForm.factoryDate" type="date" placeholder="出厂日期">
-                </el-date-picker>
+              <el-form-item label="放电电流上限阈值系数" prop="minChargeCurrent">
+                <el-input-number controls-position="right" size="small" v-model.number="batteryForm.minChargeCurrent" style="width:194px;"></el-input-number>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="60">
             <el-col :span="12">
-              <el-form-item label="补水超限天数" prop="qualityDate">
-                <el-date-picker size="small" style="width: 210px" v-model="batteryForm.qualityDate" type="date" placeholder="质保期">
-                </el-date-picker>
+              <el-form-item label="充电温度上限阈值(℃)" prop="maxChargeTemperature">
+                <el-input-number controls-position="right" size="small" v-model.number="batteryForm.maxChargeTemperature" style="width:194px;"></el-input-number>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="充电温度下限阈值(℃)" prop="minChargeTemperature">
+                <el-input-number controls-position="right" size="small" v-model.number="batteryForm.minChargeTemperature" style="width:194px;"></el-input-number>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="60">
+            <el-col :span="12">
+              <el-form-item label="放电温度上限阈值(℃)" prop="maxDischargeTemperature">
+                <el-input-number controls-position="right" size="small" v-model.number="batteryForm.maxDischargeTemperature" style="width:194px;"></el-input-number>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="放电温度下限阈值(℃)" prop="minDischargeTemperature">
+                <el-input-number controls-position="right" size="small" v-model.number="batteryForm.minDischargeTemperature" style="width:194px;"></el-input-number>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="60">
+            <el-col :span="12">
+              <el-form-item label="补水超限天数" prop="maxFluidOverDays">
+                <el-input-number controls-position="right" size="small" v-model.number="batteryForm.maxFluidOverDays" style="width:194px;"></el-input-number>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -191,14 +191,13 @@
           </el-row>
           <el-row :gutter="60">
             <el-col :span="12">
-              <el-form-item label="充电容量上限阈值系数" prop="qualityDate">
-                <el-date-picker size="small" style="width: 210px" v-model="batteryForm.qualityDate" type="date" placeholder="质保期">
-                </el-date-picker>
+              <el-form-item label="充电容量上限阈值系数" prop="maxChargeCapacity">
+                <el-input-number controls-position="right" size="small" v-model.number="batteryForm.maxChargeCapacity" style="width:194px;"></el-input-number>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="充电容量下限阈值系数" prop="deviceId">
-                <el-input size="small" v-model.number="batteryForm.batteryVoltage" auto-complete="off"></el-input>
+              <el-form-item label="充电容量下限阈值系数" prop="minChargeCapacity">
+                <el-input-number controls-position="right" size="small" v-model.number="batteryForm.minChargeCapacity" style="width:194px;"></el-input-number>
               </el-form-item>
             </el-col>
           </el-row>
@@ -242,13 +241,28 @@ export default {
       this.settings = true;
     },
     handleSizeChange() {},
-    handleCurrentChange() {}
+    handleCurrentChange() {},
+    getTemplate() {
+      this.$axios.get("/battery_group_event_policy/template").then(res => {
+        console.log(res);
+        if (res.data && res.data.code === 0) {
+          this.batteryForm = res.data.data;
+        }
+      });
+    },
+    dialogClosed() {
+      this.batteryForm = {};
+    }
   }
 };
 </script>
 <style lang="scss" scoped>
 .detailCenter {
   width: 100%;
+  .temp {
+    text-align: right;
+    margin-bottom: 10px;
+  }
   table {
     width: 100%;
     tr {

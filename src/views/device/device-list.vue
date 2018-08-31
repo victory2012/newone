@@ -7,12 +7,6 @@
           <p>设备注册</p>
         </div>
         <div class="items" style="position: relative">
-          <!-- <el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-success="flieSuccess" :on-progress="onGoing" :on-error="flieError" :show-file-list="false" :multiple="false" :auto-upload="true">
-            <div slot="trigger">
-              <img src="../../../static/img/device_import.png" alt="">
-              <p>批量导入</p>
-            </div>
-          </el-upload> -->
           <input class="fileUpload" type="file" @change="fileUpload" />
           <img src="../../../static/img/device_import.png" alt="">
           <p>批量导入</p>
@@ -163,7 +157,11 @@ export default {
         return;
       }
       const IMPORTFILE_MAXSIZE = 1 * 1024; // 这里可以自定义控制导入文件大小
-      let suffix = obj.files[0].name.split(".")[1];
+      let suffix;
+      if (obj.files[0].name) {
+        suffix = obj.files[0].name.split(".")[1];
+      }
+
       if (suffix !== "xls" && suffix !== "xlsx") {
         this.$message({
           type: "error",
@@ -197,8 +195,47 @@ export default {
         // document.getElementById("demo").innerHTML = JSON.stringify(
         //   XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
         // );
+        let valuesObj = [];
         let resultObj = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
         console.log(resultObj);
+        if (resultObj.length < 1) {
+          this.$message.error("上传的文件内容为空，请检查文件");
+        } else {
+          for (let i = 0; i < resultObj.length; i++) {
+            let results = resultObj[i];
+            console.log(results);
+            if (!results["生产企业"] || !results["编号"]) {
+              this.$message.error("生产企业或设备编号不能为空，请检查文件");
+              return;
+            }
+            if (!results["编号"]) {
+              this.$message.error("生产企业或设备编号不能为空，请检查文件");
+              return;
+            }
+            if (
+              resultObj[i + 1] &&
+              results["编号"] === resultObj[i + 1]["编号"]
+            ) {
+              this.$message.error("设备编号不能重复，请检查文件");
+              return;
+            }
+            let ItemObj = {
+              companyName: "",
+              deviceCodes: []
+            };
+            ItemObj.companyName = results["生产企业"];
+            ItemObj.deviceCodes.push(results["编号"]);
+            // let options = {};
+            // options[results["生产企业"]] += "," + resultObj[i]["编号"];
+            // valuesObj[results["生产企业"]] += resultObj[i]["编号"];
+            // valuesObj[results["生产企业"]].push(resultObj[i]["编号"]);
+            // let deviceKeys = Object.keys(results);
+            // let deviceValues = Object.values(results);
+            valuesObj.push(ItemObj);
+          }
+          console.log(valuesObj);
+          this.fileUploadTo(valuesObj);
+        }
       };
       if (rABS) {
         reader.readAsArrayBuffer(f);
@@ -220,6 +257,14 @@ export default {
       }
       o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
       return o;
+    },
+    fileUploadTo(data) {
+      this.$axios.post(`/device/2/batch`, data).then(res => {
+        console.log(res);
+        if (res.data && res.data.code === 0) {
+          this.getDeviceList();
+        }
+      });
     },
     resetRegform(form) {
       this.$refs[form].resetFields();
@@ -321,15 +366,15 @@ export default {
     },
     /* 设备升级 */
     uplevel() {},
-    flieError() {
-      console.log("上传失败");
-    },
-    onGoing() {
-      console.log("上传中");
-    },
-    flieSuccess() {
-      console.log("成功");
-    },
+    // flieError() {
+    //   console.log("上传失败");
+    // },
+    // onGoing() {
+    //   console.log("上传中");
+    // },
+    // flieSuccess() {
+    //   console.log("成功");
+    // },
     /* 设备注册 -- 按钮 */
     regDialog() {
       this.regDevice = true;

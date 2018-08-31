@@ -83,7 +83,10 @@ export default {
                 .get(`/user/permissions/${res.data.data.id}`)
                 .then(opts => {
                   if (opts.data && opts.data.code === 0) {
-                    this.$store.commit('setUserRole', JSON.stringify(opts.data.data));
+                    this.$store.commit(
+                      "setUserRole",
+                      JSON.stringify(opts.data.data)
+                    );
                     // utils.setStorage("userRoles", JSON.stringify(opts.data.data));
                     this.$router.push("/battery");
                   }
@@ -198,6 +201,7 @@ export default {
     padding-top: 60px;
   }
   .accpwsBtn {
+    margin-top: 20px;
     font-size: 14px;
     width: 156px;
     height: 45px;

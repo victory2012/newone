@@ -37,7 +37,7 @@
         </div>
         <div class="item">
           <el-select size="small" v-model="batteryModel" placeholder="电池型号">
-            <el-option v-for="item in Modeloptions" :key="item.id" :label="item.dicValue" :value="item.id">
+            <el-option v-for="item in Modeloptions" :key="item.id" :label="item.dicKey" :value="item.id">
             </el-option>
           </el-select>
         </div>
@@ -308,7 +308,7 @@ export default {
           if (this.addType === "addSingel") {
             params.type = "SingleModel"; // 单体规格
           }
-          this.$axios.post("/dic/user_dic", params).then(res => {
+          this.$axios.post("/dic", params).then(res => {
             console.log(this.addType, res);
             if (res.data && res.data.code === 0) {
               this.$message({
