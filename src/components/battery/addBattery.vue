@@ -25,7 +25,7 @@
         <el-col :span="12">
           <el-form-item label="电池组型号" prop="batGroupModel">
             <el-select size="small" style="width:210px" v-model="batteryForm.batGroupModel" placeholder="电池组型号">
-              <el-option v-for="item in GroupModelOpts" :key="item.id" :label="item.dicValue" :value="item.id" :disabled="item.disabled">
+              <el-option v-for="item in GroupModelOpts" :key="item.id" :label="item.dicKey" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -35,7 +35,7 @@
         <el-col :span="12">
           <el-form-item label="电池组规格" prop="batGroupSpecif">
             <el-select size="small" style="width:210px" v-model="batteryForm.batGroupSpecif" placeholder="电池组规格">
-              <el-option v-for="item in batGroupSpecifOpts" :key="item.id" :label="item.dicValue" :value="item.id" :disabled="item.disabled">
+              <el-option v-for="item in batGroupSpecifOpts" :key="item.id" :label="item.dicKey" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -55,7 +55,7 @@
         <el-col :span="12">
           <el-form-item label="电池单体型号" prop="singleBattery">
             <el-select size="small" style="width:210px" v-model="batteryForm.singleBattery" placeholder="电池单体型号">
-              <el-option v-for="item in singleBatteryOpts" :key="item.id" :label="item.dicValue" :value="item.id" :disabled="item.disabled">
+              <el-option v-for="item in singleBatteryOpts" :key="item.id" :label="item.dicKey" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -183,11 +183,6 @@ export default {
           this.batCustomOpts.forEach(key => {
             if (key.id === this.batteryForm.batCustom) {
               this.batteryForm.company = key.name;
-            }
-          });
-          this.singleBatteryOpts.forEach(key => {
-            if (key.id === this.batteryForm.singleBattery) {
-              this.batteryForm.singleMode = key.dicValue;
             }
           });
           this.singleBatteryOpts.forEach(key => {

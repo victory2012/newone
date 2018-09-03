@@ -8,9 +8,9 @@
 import AMap from "AMap";
 import AMapUI from "AMapUI";
 
-let map;
-let pathSimplifierIns;
-let navg;
+let map = null;
+let pathSimplifierIns = null;
+let navg = null;
 export default {
   props: {
     travelData: {
@@ -29,7 +29,7 @@ export default {
   },
   methods: {
     init() {
-      console.log(this.travelData);
+      // console.log(this.travelData);
       map = new AMap.Map("historyContent", {
         resizeEnable: true,
         zoom: 10
@@ -146,8 +146,13 @@ export default {
         // this.markerArr.push(start);
         // this.markerArr.push(end);
       });
-      console.log("end");
+      // console.log("end");
     }
+  },
+  beforeDestroy() {
+    map = null;
+    pathSimplifierIns = null;
+    navg = null;
   }
 };
 </script>

@@ -2,11 +2,10 @@
 // Template version: 1.3.1
 // see http://vuejs-templates.github.io/webpack for documentation.
 
-// const apiPath = require('./apiPath');
 const path = require('path');
 
-const apiPath = "http://192.168.1.108:8000";
-// const apiPath = "http://47.96.8.239:8000";
+// const apiPath = "http://192.168.1.111:8000";
+const apiPath = "http://47.96.8.239:8000";
 
 module.exports = {
   dev: {
@@ -68,7 +67,7 @@ module.exports = {
      * Source Maps
      */
 
-    productionSourceMap: true,
+    productionSourceMap: false,
     // https://webpack.js.org/configuration/devtool/#production
     devtool: '#source-map',
 

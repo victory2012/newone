@@ -66,12 +66,13 @@
       <span>过去24小时监测数据</span>
       <el-checkbox v-model="checked">是否自动更新数据</el-checkbox>
     </div>
-    <echart-map :mapData="mapData"></echart-map>
+    <echart-map v-if="hasgetData" :chartData="dataObj"></echart-map>
   </div>
 </template>
 <script>
 /* eslint-disable */
 import AMap from "AMap";
+import utils from "@/utils/utils";
 import echartMap from "../../components/realTime";
 
 export default {
@@ -80,8 +81,16 @@ export default {
   },
   data() {
     return {
+      hasgetData: false,
       checked: true,
-      mapData: null
+      mapData: null,
+      dataObj: {
+        timeArr: [],
+        singleVoltage: [],
+        temperature: [],
+        voltage: [],
+        current: []
+      }
     };
   },
   mounted() {
@@ -93,12 +102,36 @@ export default {
         resizeEnable: true,
         zoom: 10
       });
-      // this.getData();
+      this.getData();
     },
-    getBatteryInfo() {
-      this.$axios.get(`/battery_group/{id}/info`).then(res => {
-        console.log(res);
-      });
+    // getBatteryInfo() {
+    //   this.$axios.get(`/battery_group/{id}/info`).then(res => {
+    //     console.log(res);
+    //   });
+    // },
+    getData() {
+      // let startTime = utils.dateFomats(utils.getYestoday());
+      // let endTime = utils.dateFomats(utils.getNowTime());
+      let startTime = 20170101010101;
+      let endTime = utils.dateFomats(utils.getNowTime());
+      this.$axios
+        .get(
+          `/battery_group/${5}/data?startTime=${startTime}&endTime=${endTime}`
+        )
+        .then(res => {
+          console.log(res);
+          if (res.data && res.data.code === 0) {
+            let result = res.data.data;
+            result.forEach(key => {
+              this.dataObj.timeArr.push(utils.fomats(key.time)); // 时间
+              this.dataObj.singleVoltage.push(key.singleVoltage); // 单体电压
+              this.dataObj.temperature.push(key.temperature); // 温度
+              this.dataObj.voltage.push(key.voltage); // 电压
+              this.dataObj.current.push(key.current); // 电流
+            });
+            this.hasgetData = true;
+          }
+        });
     }
   }
 };

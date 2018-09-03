@@ -12,19 +12,28 @@
         <el-autocomplete size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入内容" @select="handleSelect"></el-autocomplete>
       </div>
     </div>
-    <!-- <div v-show="hasHostId" class="tips">
+    <div v-show="hasHostId" class="tips">
       请先选择一个电池组！
-    </div> -->
+    </div>
     <component :is="showCompontent"></component>
   </div>
 </template>
 <script>
+import real from "./real";
+import history from "./history";
+import alearm from "./alearm";
+
 export default {
   components: {
-    "real-time": () => import("./real.vue"),
-    "i-history": () => import("./history.vue"),
-    "i-alarm": () => import("./alearm.vue")
+    "real-time": real,
+    "i-history": history,
+    "i-alarm": alearm
   },
+  // components: {
+  //   "real-time": () => import("./real.vue"),
+  //   "i-history": () => import("./history.vue"),
+  //   "i-alarm": () => import("./alearm.vue")
+  // },
   data() {
     return {
       state: "",
@@ -34,12 +43,18 @@ export default {
     };
   },
   mounted() {
-    this.init();
+    this.deviceId = this.$route.query.deviceId;
+    if (this.deviceId) {
+      this.hasHostId = false;
+      this.showCompontent = "real-time";
+    } else {
+      this.hasHostId = true;
+      this.showCompontent = "";
+    }
   },
   methods: {
     init() {
-      let deviceId = this.$route.query.deviceId;
-      if (deviceId) {
+      if (this.deviceId) {
         this.hasHostId = false;
         this.showCompontent = "real-time";
         // this.getData(deviceId);
@@ -52,16 +67,26 @@ export default {
     handleSelect() {},
     showRealData() {
       this.actived = "real";
-      this.showCompontent = "real-time";
+      if (this.deviceId) {
+        this.hasHostId = false;
+        this.showCompontent = "real-time";
+      }
     },
     showHistoryData() {
-      this.showCompontent = "i-history";
       this.actived = "history";
+      if (this.deviceId) {
+        this.hasHostId = false;
+        this.showCompontent = "i-history";
+      }
     },
     showAlarmData() {
       this.actived = "alarm";
-      this.showCompontent = "i-alarm";
-    }
+      if (this.deviceId) {
+        this.hasHostId = false;
+        this.showCompontent = "i-alarm";
+      }
+    },
+    getData() {}
   }
 };
 </script>

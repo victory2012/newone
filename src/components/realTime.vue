@@ -1,9 +1,9 @@
 <template>
   <div class="bgFFF">
-    <div class="btns">
+    <!-- <div class="btns">
       <el-button type="primary" icon="el-icon-remove-outline"></el-button>
       <el-button type="primary" icon="el-icon-circle-plus-outline"></el-button>
-    </div>
+    </div> -->
     <div class="chartWarrp">
       <div class="chartInfo" id="echart1"></div>
       <div class="chartInfo" id="echart2"></div>
@@ -18,10 +18,18 @@
 <script>
 import echarts from "echarts";
 import _ from "lodash";
-import utils from "@/utils/utils";
+// import utils from "@/utils/utils";
 import options from "@/config/echartOptions";
 
 export default {
+  props: {
+    chartData: {
+      type: Object,
+      default: () => {
+        return {};
+      }
+    }
+  },
   data() {
     return {
       timeArr: [],
@@ -61,55 +69,32 @@ export default {
         myEcharts3.resize();
         myEcharts4.resize();
       };
-      // let startTime = utils.dateFomats(utils.getYestoday());
-      // let endTime = utils.dateFomats(utils.getNowTime());
-      let startTime = 20170101010101;
-      let endTime = utils.dateFomats(utils.getNowTime());
-      this.$axios
-        .get(
-          `/battery_group/${5}/data?startTime=${startTime}&endTime=${endTime}`
-        )
-        .then(res => {
-          // console.log(res);
-          if (res.data && res.data.code === 0) {
-            let result = res.data.data;
-            result.forEach(key => {
-              // console.log(key);
-              this.timeArr.push(utils.fomats(key.time));
-              this.singleVoltage.push(key.singleVoltage);
-              this.temperature.push(key.temperature);
-              this.voltage.push(key.voltage);
-              this.current.push(key.current);
-            });
-            options.xAxis.data = this.timeArr;
+      options.xAxis.data = this.chartData.timeArr;
 
-            let voltageOptions = _.cloneDeep(options);
-            voltageOptions.title.text = "电压";
-            voltageOptions.yAxis.axisLabel = "{value} v";
-            voltageOptions.series[0].data = this.voltage;
-            myEcharts1.setOption(voltageOptions);
+      let voltageOptions = _.cloneDeep(options);
+      voltageOptions.title.text = "电压";
+      voltageOptions.yAxis.axisLabel = "{value} v";
+      voltageOptions.series[0].data = this.chartData.voltage;
+      myEcharts1.setOption(voltageOptions);
 
-            let singleVoltageOptions = _.cloneDeep(options);
-            singleVoltageOptions.title.text = "单体电压";
-            singleVoltageOptions.yAxis.axisLabel = "{value} v";
-            singleVoltageOptions.series[0].data = this.singleVoltage;
-            myEcharts2.setOption(singleVoltageOptions);
+      let singleVoltageOptions = _.cloneDeep(options);
+      singleVoltageOptions.title.text = "单体电压";
+      singleVoltageOptions.yAxis.axisLabel = "{value} v";
+      singleVoltageOptions.series[0].data = this.chartData.singleVoltage;
+      myEcharts2.setOption(singleVoltageOptions);
 
-            let currentOptions = _.cloneDeep(options);
-            currentOptions.title.text = "电流";
-            currentOptions.yAxis.axisLabel = "{value} A";
-            currentOptions.series[0].data = this.current;
-            myEcharts3.setOption(currentOptions);
+      let currentOptions = _.cloneDeep(options);
+      currentOptions.title.text = "电流";
+      currentOptions.yAxis.axisLabel = "{value} A";
+      currentOptions.series[0].data = this.chartData.current;
+      myEcharts3.setOption(currentOptions);
 
-            let temperatureOptions = _.cloneDeep(options);
-            temperatureOptions.title.text = "温度";
-            temperatureOptions.yAxis.axisLabel = "{value} ℃";
-            temperatureOptions.series[0].data = this.temperature;
-            myEcharts4.setOption(temperatureOptions);
-          }
-        });
-    },
-    getData() {}
+      let temperatureOptions = _.cloneDeep(options);
+      temperatureOptions.title.text = "温度";
+      temperatureOptions.yAxis.axisLabel = "{value} ℃";
+      temperatureOptions.series[0].data = this.chartData.temperature;
+      myEcharts4.setOption(temperatureOptions);
+    }
   }
 };
 </script>

@@ -10,6 +10,9 @@
     <div class="top">
       <h2 class="textAlain title">比较数据</h2>
       <div class="textAlain">
+        <div class="compare-add addone" v-show="contrastData">
+          电池编号1: {{chooseObj.code}}
+        </div>
         <div @click="openTable" class="compare-add">
           添加比较
         </div>
@@ -21,11 +24,11 @@
         <el-date-picker class="queryTime" size="small" v-model="start" type="date" placeholder="选择日期"></el-date-picker>
         <span class="lable">至</span>
         <el-date-picker class="queryTime" size="small" v-model="end" type="date" placeholder="选择日期"></el-date-picker>
-        <el-select class="timeSelect queryTime" size="small" v-model="timevalue" placeholder="请选择时间范围">
+        <el-select class="timeSelect queryTime" @change="changeTime" size="small" v-model="timevalue" placeholder="请选择时间范围">
           <el-option v-for="item in weekOption" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
-        <el-select class="timeSelect queryTime" size="small" v-model="timevalue" placeholder="请选择对比方式">
+        <el-select class="timeSelect queryTime" size="small" v-model="contrastWay" placeholder="请选择对比方式">
           <el-option v-for="item in compare" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
@@ -33,42 +36,69 @@
       </div>
     </div>
     <div class="chart">
-      <com-chart></com-chart>
+      <div style="margin-bottom:50px;">
+        <com-chart></com-chart>
+      </div>
+      <chart-bar></chart-bar>
     </div>
     <div>
-      <el-dialog title="收货地址" width="800px" :visible.sync="tableVisible">
-        <el-table :data="gridData">
-          <el-table-column property="batteryId" label="电池编号"></el-table-column>
+      <el-dialog title="添加比较" width="800px" :visible.sync="tableVisible">
+        <div class="TopWrapper">
+          <div class="item">已选择项
+            <span style="color:#71bfdb">{{chooseLen}}</span> / 最多可选
+            <span style="color:#71bfdb">1</span>项 {{chooseObj.code}}</div>
+          <div class="item2">
+            <el-input size="small" @change="remoteMethod" placeholder="请输入内容" suffix-icon="el-icon-search" v-model="searchCont">
+            </el-input>
+            <!-- <el-select v-model="searchCont" filterable clearable remote placeholder="请输入关键词" :remote-method="remoteMethod" :loading="loading">
+              <el-option v-for="item in searchList" :key="item.id" :label="item.code" :value="item.id">
+              </el-option>
+            </el-select> -->
+          </div>
+        </div>
+        <el-table :data="gridData" v-loading="loading">
+          <el-table-column property="code" label="电池编号"></el-table-column>
           <el-table-column property="model" label="电池型号"></el-table-column>
-          <el-table-column property="group" label="电池组规格"></el-table-column>
+          <el-table-column property="norm" label="电池组规格"></el-table-column>
           <el-table-column property="deviceId" label="监测设备编号"></el-table-column>
           <el-table-column label="操作" width="55">
             <template slot-scope="scope">
-              <el-checkbox v-model="gridData[scope.$index].models"></el-checkbox>
+              <el-checkbox @change="toggleCheck(scope.row)" v-model="scope.row.checked"></el-checkbox>
             </template>
           </el-table-column>
         </el-table>
         <div class="page">
-          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="10" layout="sizes, prev, pager, next" :total="100">
+          <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="8" layout="prev, pager, next" :total="total">
           </el-pagination>
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button size="small" @click="tableVisible = false">取 消</el-button>
-          <el-button size="small" type="primary" @click="tableVisible = false">确 定</el-button>
+          <el-button size="small" type="primary" @click="sureBtn">确 定</el-button>
         </div>
       </el-dialog>
     </div>
   </div>
 </template>
 <script>
+import utils from "@/utils/utils";
+import chartBar from "../../components/compare/echartBar";
 import comChart from "../../components/compare/compare-chart";
 
 export default {
   components: {
-    comChart
+    comChart,
+    chartBar
   },
   data() {
     return {
+      contrastWay: "",
+      loading: false,
+      contrastData: false,
+      total: 0,
+      chooseObj: {},
+      batteryGroup: "",
+      chooseLen: 0,
+      searchCont: "",
       tableVisible: false,
       currentPage: 1,
       actived: "same",
@@ -111,32 +141,68 @@ export default {
           value: "all"
         }
       ],
-      gridData: [
-        {
-          batteryId: "T002",
-          model: "电池组型号2",
-          group: "电池组规格2",
-          deviceId: "1805B598C6E7",
-          models: false
-        },
-        {
-          batteryId: "T002",
-          model: "电池组型号2",
-          group: "电池组规格2",
-          deviceId: "1805B598C6E7",
-          models: false
-        },
-        {
-          batteryId: "T002",
-          model: "电池组型号2",
-          group: "电池组规格2",
-          deviceId: "1805B598C6E7",
-          models: false
-        }
-      ]
+      searchList: [],
+      gridData: []
     };
   },
   methods: {
+    changeTime() {
+      console.log(this.timevalue);
+      this.end = new Date();
+      if (this.timevalue === "week") {
+        this.start = utils.getWeek();
+      }
+      if (this.timevalue === "mounth") {
+        this.start = utils.getMouth();
+      }
+      if (this.timevalue === "threemonth") {
+        this.start = utils.getThreeMounth();
+        this.getData();
+      }
+      if (this.timevalue === "sixmounth") {
+        this.start = utils.getSixMounth();
+      }
+      if (this.timevalue === "year") {
+        this.start = utils.getYear();
+      }
+      if (this.timevalue === "all") {
+        this.start = "2000-01-01";
+      }
+    },
+    getData() {
+      // let startTime = utils.dateFomats(utils.getYestoday());
+      // let endTime = utils.dateFomats(utils.getNowTime());
+      let startTime = 20170101010101;
+      let endTime = utils.dateFomats(utils.getNowTime());
+      this.$axios
+        .get(
+          `/battery_group/${5}/data?startTime=${startTime}&endTime=${endTime}`
+        )
+        .then(res => {
+          console.log(res);
+          if (res.data && res.data.code === 0) {
+            let result = res.data.data;
+            result.forEach(key => {
+              this.dataObj.timeArr.push(utils.fomats(key.time)); // 时间
+              this.dataObj.singleVoltage.push(key.singleVoltage); // 单体电压
+              this.dataObj.temperature.push(key.temperature); // 温度
+              this.dataObj.voltage.push(key.voltage); // 电压
+              this.dataObj.current.push(key.current); // 电流
+            });
+            this.hasgetData = true;
+          }
+        });
+    },
+    remoteMethod() {
+      this.batteryGroup = this.searchCont;
+      this.getBatteryList();
+    },
+    sureBtn() {
+      this.tableVisible = false;
+      if ("code" in this.chooseObj) {
+        this.contrastData = true;
+      }
+    },
     showSameData() {
       this.actived = "same";
     },
@@ -144,10 +210,50 @@ export default {
       this.actived = "diff";
     },
     openTable() {
+      // this.chooseObj = {};
       this.tableVisible = true;
     },
     handleSizeChange() {},
-    handleCurrentChange() {}
+    handleCurrentChange() {},
+    toggleCheck(data) {
+      console.log(data);
+      this.gridData.forEach(key => {
+        key.checked = false;
+      });
+      data.checked = !data.checked;
+      if (data.checked) {
+        this.chooseObj = data;
+        this.chooseLen = 1;
+      }
+    },
+    /* 获取电池列表 */
+    getBatteryList() {
+      this.loading = true;
+      let options = {
+        pageSize: 8,
+        pageNum: this.currentPage,
+        companyName: "",
+        batteryGroupOrDeviceCode: this.batteryGroup,
+        modelId: "",
+        bindingStatus: 1
+      };
+      this.$axios.get("/battery_group", options).then(res => {
+        console.log(res);
+        this.loading = false;
+        this.gridData = [];
+        if (res.data && res.data.code === 0) {
+          let result = res.data.data;
+          this.total = result.total;
+          result.pageData.forEach(key => {
+            key.checked = false;
+            this.gridData.push(key);
+          });
+        }
+      });
+    }
+  },
+  mounted() {
+    this.getBatteryList();
   }
 };
 </script>
@@ -208,6 +314,10 @@ export default {
     cursor: pointer;
     margin: 0 24px;
     font-size: 12px;
+    &.addone {
+      border: none;
+      background: #ffffff;
+    }
   }
 }
 .timeCenter {
@@ -240,5 +350,18 @@ export default {
 .page {
   padding-top: 20px;
   text-align: right;
+}
+.TopWrapper {
+  display: flex;
+  justify-content: space-between;
+  height: 32px;
+  line-height: 32px;
+  margin-bottom: 20px;
+  .item {
+    flex: 1;
+  }
+  .item2 {
+    flex: 0 0 200px;
+  }
 }
 </style>

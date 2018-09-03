@@ -18,19 +18,20 @@ export default {
     bottom: "20%",
     containLabel: true
   },
+  /* eslint-disable */
   dataZoom: [{
-    // show: true,
-    type: "slider",
-    start: 0,
-    end: 100,
-    fillerColor: "rgba(167,183,204,0.4)",
-    backgroundColor: "rgba(0,0,0,0)"
-  },
-  {
-    type: "inside",
-    start: 0,
-    end: 100
-  }
+      // show: true,
+      type: "slider",
+      start: 0,
+      end: 100,
+      fillerColor: "rgba(167,183,204,0.4)",
+      backgroundColor: "rgba(0,0,0,0)"
+    },
+    {
+      type: "inside",
+      start: 0,
+      end: 100
+    }
   ],
   xAxis: {
     type: "category",
@@ -50,6 +51,7 @@ export default {
       show: false
     }
   },
+  animation: false,
   yAxis: {
     type: "value",
     axisLabel: {

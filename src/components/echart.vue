@@ -40,9 +40,9 @@ export default {
       if (!$echartsDOM) return;
       let myEcharts = echarts.init($echartsDOM);
       myEcharts.setOption(this.option);
-      // window.onresize = () => {
-      //   myEcharts.resize();
-      // };
+      window.onresize = () => {
+        myEcharts.resize();
+      };
     }
   }
 };

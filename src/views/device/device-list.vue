@@ -151,7 +151,8 @@ export default {
   },
   methods: {
     fileUpload(event) {
-      // console.log(event);
+      console.log(event);
+      this.eventUpload = event.target;
       let obj = event.target;
       if (!obj.files) {
         return;
@@ -167,6 +168,7 @@ export default {
           type: "error",
           message: "请导入xls格式或者xlsx格式"
         });
+        this.eventUpload.value = "";
         return;
       }
       if (obj.files[0].size / 1024 > IMPORTFILE_MAXSIZE) {
@@ -174,6 +176,7 @@ export default {
           type: "error",
           message: "导入的表格文件不能大于1M"
         });
+        this.eventUpload.value = "";
         return;
       }
       let f = obj.files[0];
@@ -225,12 +228,6 @@ export default {
             };
             ItemObj.companyName = results["生产企业"];
             ItemObj.deviceCodes.push(results["编号"]);
-            // let options = {};
-            // options[results["生产企业"]] += "," + resultObj[i]["编号"];
-            // valuesObj[results["生产企业"]] += resultObj[i]["编号"];
-            // valuesObj[results["生产企业"]].push(resultObj[i]["编号"]);
-            // let deviceKeys = Object.keys(results);
-            // let deviceValues = Object.values(results);
             valuesObj.push(ItemObj);
           }
           console.log(valuesObj);
@@ -262,7 +259,12 @@ export default {
       this.$axios.post(`/device/2/batch`, data).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
+          this.$message.success("批量添加成功");
           this.getDeviceList();
+        } else {
+          if (this.eventUpload) {
+            this.eventUpload.value = "";
+          }
         }
       });
     },

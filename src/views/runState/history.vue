@@ -12,22 +12,6 @@
       <el-button class="queryBtn" size="small" type="primary">确定</el-button>
     </div>
     <echart-map v-if="hasgetData" :chartData="dataObj"></echart-map>
-    <!-- <div class="charts pt">
-      <div class="info">
-        <i-echart :option="option"></i-echart>
-      </div>
-      <div class="info">
-        <i-echart :option="option"></i-echart>
-      </div>
-    </div>
-    <div class="charts pb">
-      <div class="info">
-        <i-echart :option="option"></i-echart>
-      </div>
-      <div class="info">
-        <i-echart :option="option"></i-echart>
-      </div>
-    </div> -->
     <div class="batteryChart">
       <div class="addbattery">
         <ul>

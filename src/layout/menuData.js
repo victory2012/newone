@@ -94,7 +94,11 @@ const menu = [{
   }
 ];
 console.log(menu);
+if (!utils.getStorage('userRoles')) {
+  window.location.href = "/login"
+}
 let userRoles = JSON.parse(JSON.parse(utils.getStorage('userRoles')));
+
 console.log(userRoles);
 // console.log(JSON.parse(userRoles));
 // export default menu;

@@ -5,9 +5,10 @@ import {
   Message
 } from 'element-ui';
 
-// const baseURL = "http://47.96.8.239:8000";
-// const baseURL = "http://192.168.1.143:8000";
-const baseURL = "/api";
+// const baseURL = "/api";
+// console.log(process.env.API_HOST);
+const baseURL = process.env.API_HOST;
+
 const timeout = 30000; // 超时时间
 axios.interceptors.request.use(config => { // 这里的config包含每次请求的内容
   // config.headers['Access-Control-Allow-Headers'] = '*';

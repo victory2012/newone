@@ -17,13 +17,10 @@
               </el-dropdown-menu>
             </el-dropdown>
           </div>
-          <div class="items">
-            <el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-success="flieSuccess" :on-progress="onGoing" :on-error="flieError" :show-file-list="false" :multiple="false" :auto-upload="true">
-              <div slot="trigger">
-                <img id="import" :src="'../../../static/img/device_import.png'" alt="">
-                <p>批量导入</p>
-              </div>
-            </el-upload>
+          <div class="items" style="position: relative">
+            <input class="fileUpload" type="file" @change="fileUpload" />
+            <img id="upers" src="../../../static/img/device_import.png" alt="">
+            <p>批量导入</p>
           </div>
           <div class="items" @click="recovery">
             <img id="recover" src="../../../static/img/device_recover.png" alt="">
@@ -146,6 +143,16 @@
         text-align: center;
         font-size: 14px;
         cursor: pointer;
+        .fileUpload {
+          position: absolute;
+          top: 0;
+          left: 0;
+          font-size: 0;
+          width: 116px;
+          height: 58px;
+          opacity: 0;
+          cursor: pointer;
+        }
         img {
           width: 28px;
           margin-bottom: 8px;
@@ -172,11 +179,17 @@
 #recover {
   margin-bottom: 14px;
 }
+#upers {
+  margin-bottom: 11px;
+}
 </style>
 <script>
 import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
+import XLSX from "xlsx";
 
+let wb; // 读取完成的数据
+let rABS = false; // 是否将文件读取为二进制字符串
 export default {
   components: {
     "add-battery": () => import("@/components/battery/addBattery")
@@ -378,14 +391,148 @@ export default {
         }
       });
     },
-    flieError() {
-      console.log("上传失败");
+    fileUpload(event) {
+      console.log(event);
+      this.eventUpload = event.target;
+      let obj = event.target;
+      if (!obj.files) {
+        return;
+      }
+      const IMPORTFILE_MAXSIZE = 1 * 1024; // 这里可以自定义控制导入文件大小
+      let suffix;
+      if (obj.files[0].name) {
+        suffix = obj.files[0].name.split(".")[1];
+      }
+
+      if (suffix !== "xls" && suffix !== "xlsx") {
+        this.$message({
+          type: "error",
+          message: "请导入xls格式或者xlsx格式"
+        });
+        this.eventUpload.value = "";
+        return;
+      }
+      if (obj.files[0].size / 1024 > IMPORTFILE_MAXSIZE) {
+        this.$message({
+          type: "error",
+          message: "导入的表格文件不能大于1M"
+        });
+        this.eventUpload.value = "";
+        return;
+      }
+      let f = obj.files[0];
+      let reader = new FileReader();
+      reader.onload = e => {
+        let data = e.target.result;
+        if (rABS) {
+          wb = XLSX.read(btoa(this.fixdata(data)), {
+            // 手动转化
+            type: "base64"
+          });
+        } else {
+          wb = XLSX.read(data, {
+            type: "binary"
+          });
+        }
+        // wb.SheetNames[0]是获取Sheets中第一个Sheet的名字
+        // wb.Sheets[Sheet名]获取第一个Sheet的数据
+        // document.getElementById("demo").innerHTML = JSON.stringify(
+        //   XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
+        // );
+        let valuesObj = [];
+        let resultObj = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+        console.log(resultObj);
+        if (resultObj.length < 1) {
+          this.$message.error("上传的文件内容为空，请检查文件");
+        } else {
+          for (let i = 0; i < resultObj.length; i++) {
+            let results = resultObj[i];
+            if (
+              !results["电池组编号"] ||
+              !results["电池组型号"] ||
+              !results["电池组规格"] ||
+              !results["电池组额定电压"] ||
+              !results["电池组额定容量"] ||
+              !results["电池单体型号"] ||
+              !results["采购企业"] ||
+              !results["生产日期"] ||
+              !results["出产日期"] ||
+              !results["质保期"]
+            ) {
+              this.$message.error("请文件填写完整");
+              return;
+            }
+            if (
+              resultObj[i + 1] &&
+              results["电池组编号"] === resultObj[i + 1]["电池组编号"]
+            ) {
+              this.$message.error("电池组编号不能重复，请检查文件");
+              return;
+            }
+            if (
+              !utils.checkDate(results["生产日期"]) ||
+              !utils.checkDate(results["出产日期"]) ||
+              !utils.checkDate(results["质保期"])
+            ) {
+              this.$message.warning(
+                "时间格式不支持，请检查；（支持：2020/2/3）"
+              );
+            }
+            let ItemObj = {
+              code: results["电池组编号"],
+              model: results["电池组型号"],
+              norm: results["电池组规格"],
+              voltage: results["电池组额定电压"],
+              capacity: results["电池组额定容量"],
+              singleModel: results["电池单体型号"],
+              subCompanyName: results["采购企业"],
+              productionDate: utils.yyyymmdd(results["生产日期"]),
+              manufacturerDate: utils.yyyymmdd(results["出产日期"]),
+              qualityGuaranteeDate: utils.yyyymmdd(results["质保期"]),
+              deviceCode: results["监测设备编号"] || ""
+            };
+            // ItemObj.companyName = results["生产企业"];
+            // ItemObj.deviceCodes.push(results["编号"]);
+            valuesObj.push(ItemObj);
+          }
+          console.log(valuesObj);
+          this.fileUploadTo(valuesObj);
+        }
+      };
+      if (rABS) {
+        reader.readAsArrayBuffer(f);
+      } else {
+        reader.readAsBinaryString(f);
+      }
     },
-    onGoing() {
-      console.log("上传中");
+    fixdata(data) {
+      // 文件流转BinaryString
+      let o = "";
+      let l = 0;
+      let w = 10240;
+      for (; l < data.byteLength / w; l++) {
+        o += String.fromCharCode.apply(
+          null,
+          /* eslint-disable */
+          new Uint8Array(data.slice(l * w, l * w + w))
+        );
+      }
+      o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
+      return o;
     },
-    flieSuccess() {
-      console.log("成功");
+    fileUploadTo(data) {
+      this.$axios.post(`/battery_group/batch`, data).then(res => {
+        console.log(res);
+        if (res.data && res.data.code === 0) {
+          this.$message.success("批量添加成功");
+          this.eventUpload.value = "";
+          this.getBatteryList();
+        } else {
+          if (this.eventUpload) {
+            this.eventUpload.value = "";
+          }
+        }
+      });
     },
     /* 清空 */
     clearOptions() {
