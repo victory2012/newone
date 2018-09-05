@@ -9,56 +9,43 @@
         <el-option v-for="item in weekOption" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select>
-      <el-button class="queryBtn" size="small" type="primary">确定</el-button>
+      <el-button @click="getChartData" class="queryBtn" size="small" type="primary">确定</el-button>
     </div>
-    <echart-map v-if="hasgetData" :chartData="dataObj"></echart-map>
+    <echart-map :chartData="dataObj" :loading="loading"></echart-map>
     <div class="batteryChart">
       <div class="addbattery">
         <ul>
           <li>
-            <p class="history_count_val">0</p>
+            <p class="history_count_val">{{summary.cycle || 0}}</p>
             <p>电池循环次数</p>
           </li>
           <li>
-            <p class="history_count_val">0h</p>
+            <p class="history_count_val">{{summary.chargeTimes || 0}}h</p>
             <p>充电时间</p>
           </li>
           <li>
-            <p class="history_count_val">0h</p>
+            <p class="history_count_val">{{summary.dischargeTimes || 0}}h</p>
             <p>放电时间</p>
           </li>
           <li>
-            <p class="history_count_val">0h</p>
+            <p class="history_count_val">{{summary.avgChargeDuration || 0}}h</p>
             <p>平均充电时间</p>
           </li>
           <li>
-            <p class="history_count_val">0h</p>
+            <p class="history_count_val">{{summary.avgDischargeDuration || 0}}h</p>
             <p>平均放电时间</p>
           </li>
           <li>
-            <p class="history_count_val">0</p>
+            <p class="history_count_val">{{summary.fluidSupplementTimes || 0}}</p>
             <p>补水次数</p>
           </li>
           <li>
-            <p class="history_count_val">0h</p>
+            <p class="history_count_val">{{summary.avgFluidSupplementDuration || 0}}h</p>
             <p>平均补水时长</p>
           </li>
         </ul>
       </div>
-      <div class="circel">
-        <div class="circelInfo">
-          <i-echart :option="pieOption"></i-echart>
-        </div>
-        <div class="circelInfo">
-          <div class="item-history_alarm_divider">
-            <p class="times">1</p>
-            <p>累计告警</p>
-          </div>
-        </div>
-        <div class="circelInfo">
-          <i-echart :option="pieOption"></i-echart>
-        </div>
-      </div>
+      <chart-pie :loading="loading" :peiData="peiObj"></chart-pie>
     </div>
     <div class="alarmTab">
       <div class="tabInfo">
@@ -71,8 +58,7 @@
       <i-alarm></i-alarm>
     </div>
     <div class="maps">
-      <!-- <div id="hisContent" class="mapContent"></div> -->
-      <i-map v-if="hasgetData" :travelData="dataObj.positions"></i-map>
+      <i-map :travelData="dataObj.positions"></i-map>
     </div>
   </div>
 </template>
@@ -84,9 +70,11 @@ import echartMap from "../../components/historyChart";
 import iEchart from "../../components/echart";
 import iAlarm from "../../components/alarm-data";
 import iMap from "../../components/travel";
+import chartPie from "../../components/echartPie";
 
 export default {
   components: {
+    chartPie,
     echartMap,
     iEchart,
     iAlarm,
@@ -95,6 +83,13 @@ export default {
   data() {
     return {
       hasgetData: false,
+      loading: false,
+      eventSummary: {},
+      summary: {},
+      peiObj: {
+        eventSummary: {},
+        summary: {}
+      },
       dataObj: {
         timeArr: [],
         singleVoltage: [],
@@ -131,46 +126,11 @@ export default {
           value: "all",
           label: "全生命周期"
         }
-      ],
-      pieOption: {
-        tooltip: {
-          trigger: "item",
-          formatter: "{a} <br/>{b}: {c} ({d}%)"
-        },
-        legend: {
-          // orient: "vertical",
-          // x: "left",
-          bottom: 10,
-          left: "center",
-          data: ["直接访问", "邮件营销", "联盟广告", "视频广告", "搜索引擎"]
-        },
-        series: [
-          {
-            name: "访问来源",
-            type: "pie",
-            radius: ["30%", "50%"],
-            center: ["50%", "60%"],
-            data: [
-              { value: 335, name: "直接访问" },
-              { value: 310, name: "邮件营销" },
-              { value: 234, name: "联盟广告" },
-              { value: 135, name: "视频广告" },
-              { value: 1548, name: "搜索引擎" }
-            ],
-            itemStyle: {
-              emphasis: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: "rgba(0, 0, 0, 0.5)"
-              }
-            }
-          }
-        ]
-      }
+      ]
     };
   },
   mounted() {
-    this.getChartData();
+    // this.getChartData();
   },
   methods: {
     getChartData() {
@@ -178,6 +138,7 @@ export default {
       // let endTime = utils.dateFomats(utils.getNowTime());
       let startTime = 20170101010101;
       let endTime = utils.dateFomats(utils.getNowTime());
+      this.loading = true;
       this.$axios
         .get(
           `/battery_group/${5}/data2?startTime=${startTime}&endTime=${endTime}`
@@ -195,9 +156,18 @@ export default {
               this.dataObj.current.push(key.current); // 电流
               this.dataObj.positions.push([key.gcjLongitude, key.gcjLatitude]); // 电流
             });
-            this.hasgetData = true;
+            this.peiObj.eventSummary = result.eventSummary;
+            this.peiObj.summary = result.summary;
+            this.loading = false;
+
+            this.eventSummary = result.eventSummary;
+            this.summary = result.summary;
           }
         });
+    },
+    sureSearch() {
+      console.log(utils.dateFomats(this.start));
+      console.log(utils.dateFomats(this.end));
     }
   }
 };

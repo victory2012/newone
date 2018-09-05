@@ -28,66 +28,61 @@
           <el-option v-for="item in weekOption" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
-        <el-select class="timeSelect queryTime" size="small" v-model="contrastWay" placeholder="请选择对比方式">
+        <el-select v-show="actived == 'same'" class="timeSelect queryTime" size="small" clearable v-model="contrastWay" placeholder="请选择对比方式">
           <el-option v-for="item in compare" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
-        <el-button class="queryBtn" size="small" type="primary">确定</el-button>
+        <el-button @click="sureBtnSearch" class="queryBtn" size="small" type="primary">确定</el-button>
       </div>
     </div>
     <div class="chart">
-      <div style="margin-bottom:50px;">
-        <com-chart></com-chart>
-      </div>
-      <chart-bar></chart-bar>
+      <com-chart :loading="loading" :chartData="dataArr" :chartBarData="summary"></com-chart>
     </div>
-    <div>
-      <el-dialog title="添加比较" width="800px" :visible.sync="tableVisible">
-        <div class="TopWrapper">
-          <div class="item">已选择项
-            <span style="color:#71bfdb">{{chooseLen}}</span> / 最多可选
-            <span style="color:#71bfdb">1</span>项 {{chooseObj.code}}</div>
-          <div class="item2">
-            <el-input size="small" @change="remoteMethod" placeholder="请输入内容" suffix-icon="el-icon-search" v-model="searchCont">
-            </el-input>
-            <!-- <el-select v-model="searchCont" filterable clearable remote placeholder="请输入关键词" :remote-method="remoteMethod" :loading="loading">
+
+    <el-dialog title="添加比较" width="800px" :visible.sync="tableVisible">
+      <div class="TopWrapper">
+        <div class="item">已选择项
+          <span style="color:#71bfdb">{{chooseLen}}</span> / 最多可选
+          <span style="color:#71bfdb">1</span>项 {{chooseObj.code}}</div>
+        <div class="item2">
+          <el-input size="small" @change="remoteMethod" placeholder="请输入内容" suffix-icon="el-icon-search" v-model="searchCont">
+          </el-input>
+          <!-- <el-select v-model="searchCont" filterable clearable remote placeholder="请输入关键词" :remote-method="remoteMethod" :loading="loading">
               <el-option v-for="item in searchList" :key="item.id" :label="item.code" :value="item.id">
               </el-option>
             </el-select> -->
-          </div>
         </div>
-        <el-table :data="gridData" v-loading="loading">
-          <el-table-column property="code" label="电池编号"></el-table-column>
-          <el-table-column property="model" label="电池型号"></el-table-column>
-          <el-table-column property="norm" label="电池组规格"></el-table-column>
-          <el-table-column property="deviceId" label="监测设备编号"></el-table-column>
-          <el-table-column label="操作" width="55">
-            <template slot-scope="scope">
-              <el-checkbox @change="toggleCheck(scope.row)" v-model="scope.row.checked"></el-checkbox>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div class="page">
-          <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="8" layout="prev, pager, next" :total="total">
-          </el-pagination>
-        </div>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="small" @click="tableVisible = false">取 消</el-button>
-          <el-button size="small" type="primary" @click="sureBtn">确 定</el-button>
-        </div>
-      </el-dialog>
-    </div>
+      </div>
+      <el-table :data="gridData" v-loading="loading">
+        <el-table-column property="code" label="电池编号"></el-table-column>
+        <el-table-column property="model" label="电池型号"></el-table-column>
+        <el-table-column property="norm" label="电池组规格"></el-table-column>
+        <el-table-column property="deviceId" label="监测设备编号"></el-table-column>
+        <el-table-column label="操作" width="55">
+          <template slot-scope="scope">
+            <el-checkbox @change="toggleCheck(scope.row)" v-model="scope.row.checked"></el-checkbox>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="page">
+        <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="8" layout="prev, pager, next" :total="total">
+        </el-pagination>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="tableVisible = false">取 消</el-button>
+        <el-button size="small" type="primary" @click="sureBtn">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 <script>
 import utils from "@/utils/utils";
-import chartBar from "../../components/compare/echartBar";
 import comChart from "../../components/compare/compare-chart";
 
 export default {
   components: {
-    comChart,
-    chartBar
+    comChart
   },
   data() {
     return {
@@ -95,16 +90,34 @@ export default {
       loading: false,
       contrastData: false,
       total: 0,
+      dataObjFirst: {
+        timeArr: [],
+        singleVoltage: [],
+        temperature: [],
+        voltage: [],
+        current: []
+      },
+      dataObjSecond: {
+        timeArr: [],
+        singleVoltage: [],
+        temperature: [],
+        voltage: [],
+        current: []
+      },
       chooseObj: {},
       batteryGroup: "",
       chooseLen: 0,
       searchCont: "",
       tableVisible: false,
+      summary: {
+        now: {},
+        last: {}
+      },
       currentPage: 1,
       actived: "same",
-      start: "",
-      end: "",
-      timevalue: "",
+      start: utils.getWeek(),
+      end: new Date(),
+      timevalue: "week",
       compare: [
         {
           label: "同比",
@@ -142,13 +155,75 @@ export default {
         }
       ],
       searchList: [],
-      gridData: []
+      gridData: [],
+      compareTime: utils.m2m(utils.getWeek(), new Date(), "week") // 对比时间
     };
   },
   methods: {
+    sureBtnSearch() {
+      if (!this.start) {
+        this.$message.error("请选择开始时间");
+        return;
+      }
+      if (!this.end) {
+        this.$message.error("请选择结束时间");
+        return;
+      }
+
+      if (!this.contrastWay) {
+        this.$message.error("请选择对比方式");
+        return;
+      }
+      let nowStart = utils.sortTime(this.start);
+      let nowEnd = utils.sortTime(this.end);
+
+      if (this.contrastWay === "year") {
+        if (this.timevalue === "week") {
+          this.compareTime = utils.year2year(this.end, "week");
+        }
+        if (this.timevalue === "mounth") {
+          this.compareTime = utils.year2year(this.end, "mounth");
+        }
+        if (this.timevalue === "threemonth") {
+          this.compareTime = utils.year2year(this.end, "threemonth");
+        }
+        if (this.timevalue === "sixmounth") {
+          this.compareTime = utils.year2year(this.end, "sixmounth");
+        }
+        if (this.timevalue === "year") {
+          this.compareTime = utils.year2year(this.end, "year");
+        }
+        if (this.timevalue === "all") {
+          this.start = "2000-01-01";
+        }
+      }
+      if (this.contrastWay === "mounth") {
+        if (this.timevalue === "week") {
+          this.compareTime = utils.m2m(this.start, this.end, "week");
+        }
+        if (this.timevalue === "mounth") {
+          this.compareTime = utils.m2m(this.start, this.end, "mounth");
+        }
+        if (this.timevalue === "threemonth") {
+          this.compareTime = utils.m2m(this.start, this.end, "threemonth");
+        }
+        if (this.timevalue === "sixmounth") {
+          this.compareTime = utils.m2m(this.start, this.end, "sixmounth");
+        }
+        if (this.timevalue === "year") {
+          this.compareTime = utils.m2m(this.start, this.end, "year");
+        }
+        if (this.timevalue === "all") {
+          this.start = "2000-01-01";
+        }
+      }
+      this.getDataNow(nowStart, nowEnd);
+      console.log(nowStart);
+      console.log(nowEnd);
+      console.log("对比时间end", this.compareTime.end);
+      console.log("对比时间start", this.compareTime.start);
+    },
     changeTime() {
-      console.log(this.timevalue);
-      this.end = new Date();
       if (this.timevalue === "week") {
         this.start = utils.getWeek();
       }
@@ -157,7 +232,6 @@ export default {
       }
       if (this.timevalue === "threemonth") {
         this.start = utils.getThreeMounth();
-        this.getData();
       }
       if (this.timevalue === "sixmounth") {
         this.start = utils.getSixMounth();
@@ -169,11 +243,8 @@ export default {
         this.start = "2000-01-01";
       }
     },
-    getData() {
-      // let startTime = utils.dateFomats(utils.getYestoday());
-      // let endTime = utils.dateFomats(utils.getNowTime());
-      let startTime = 20170101010101;
-      let endTime = utils.dateFomats(utils.getNowTime());
+    getDataNow(startTime, endTime) {
+      this.loading = true;
       this.$axios
         .get(
           `/battery_group/${5}/data?startTime=${startTime}&endTime=${endTime}`
@@ -183,13 +254,37 @@ export default {
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
             result.forEach(key => {
-              this.dataObj.timeArr.push(utils.fomats(key.time)); // 时间
-              this.dataObj.singleVoltage.push(key.singleVoltage); // 单体电压
-              this.dataObj.temperature.push(key.temperature); // 温度
-              this.dataObj.voltage.push(key.voltage); // 电压
-              this.dataObj.current.push(key.current); // 电流
+              this.dataArr.dataObjFirst.timeArr.push(utils.fomats(key.time)); // 时间
+              this.dataArr.dataObjFirst.singleVoltage.push(key.singleVoltage); // 单体电压
+              this.dataArr.dataObjFirst.temperature.push(key.temperature); // 温度
+              this.dataArr.dataObjFirst.voltage.push(key.voltage); // 电压
+              this.dataArr.dataObjFirst.current.push(key.current); // 电流
             });
-            this.hasgetData = true;
+            this.summary.now = result.summary;
+            if (this.compareTime.start && this.compareTime.end) {
+              this.getDataPrev(this.compareTime.start, this.compareTime.end);
+            }
+          }
+        });
+    },
+    getDataPrev(startTime, endTime) {
+      this.$axios
+        .get(
+          `/battery_group/${5}/data?startTime=${startTime}&endTime=${endTime}`
+        )
+        .then(res => {
+          console.log(res);
+          if (res.data && res.data.code === 0) {
+            let result = res.data.data;
+            result.forEach(key => {
+              this.dataArr.dataObjSecond.timeArr.push(utils.fomats(key.time)); // 时间
+              this.dataArr.dataObjSecond.singleVoltage.push(key.singleVoltage); // 单体电压
+              this.dataArr.dataObjSecond.temperature.push(key.temperature); // 温度
+              this.dataArr.dataObjSecond.voltage.push(key.voltage); // 电压
+              this.dataArr.dataObjSecond.current.push(key.current); // 电流
+            });
+            this.loading = false;
+            this.summary.last = result.summary;
           }
         });
     },
@@ -204,9 +299,17 @@ export default {
       }
     },
     showSameData() {
+      if (this.actived !== "same") {
+        this.contrastData = false;
+        this.chooseObj = {};
+      }
       this.actived = "same";
     },
     showDiffData() {
+      if (this.actived !== "diff") {
+        this.contrastData = false;
+        this.chooseObj = {};
+      }
       this.actived = "diff";
     },
     openTable() {
@@ -253,7 +356,10 @@ export default {
     }
   },
   mounted() {
+    let nowStart = utils.sortTime(this.start);
+    let nowEnd = utils.sortTime(this.end);
     this.getBatteryList();
+    this.getDataNow(nowStart, nowEnd);
   }
 };
 </script>

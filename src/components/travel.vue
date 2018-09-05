@@ -15,8 +15,15 @@ export default {
   props: {
     travelData: {
       type: Array,
-      default: [],
-      required: true
+      default: () => []
+    }
+  },
+  watch: {
+    travelData: {
+      handler: function(vals) {
+        this.positionChange(vals);
+      },
+      deep: true
     }
   },
   data() {
@@ -28,13 +35,9 @@ export default {
     this.init();
   },
   methods: {
-    init() {
+    positionChange(travelData) {
       // console.log(this.travelData);
-      map = new AMap.Map("historyContent", {
-        resizeEnable: true,
-        zoom: 10
-      });
-      if (this.travelData.length < 1) {
+      if (!travelData || travelData.length < 1) {
         return;
       }
       AMapUI.load(["ui/misc/PathSimplifier"], PathSimplifier => {
@@ -108,7 +111,7 @@ export default {
           pathSimplifierIns.setData([
             {
               name: "轨迹",
-              path: this.travelData
+              path: travelData
             }
           ]);
           let distance = Number(this.alldistance) / 1000; // 米转成千米
@@ -129,8 +132,8 @@ export default {
             }
           });
         });
-        let startPot = this.travelData[0];
-        let endPot = this.travelData[this.travelData.length - 1];
+        let startPot = travelData[0];
+        let endPot = travelData[travelData.length - 1];
         let start = new AMap.Marker({
           map: map,
           position: [startPot[0], startPot[1]], // 基点位置  开始位置
@@ -143,10 +146,14 @@ export default {
           icon: "https://webapi.amap.com/theme/v1.3/markers/n/end.png",
           zIndex: 10
         });
-        // this.markerArr.push(start);
-        // this.markerArr.push(end);
       });
-      // console.log("end");
+    },
+    init() {
+      map = new AMap.Map("historyContent", {
+        resizeEnable: true,
+        zoom: 10
+      });
+      this.positionChange();
     }
   },
   beforeDestroy() {

@@ -21,12 +21,40 @@ import _ from "lodash";
 import options from "@/config/echartOptions";
 
 export default {
-  props: ["chartData"],
+  props: {
+    chartData: {
+      type: Object,
+      default() {
+        return {};
+      }
+    },
+    loading: {
+      type: Boolean,
+      default() {
+        return false;
+      }
+    }
+  },
   data() {
     return {
       myEcharts: null,
       isOptionAbnormal: false
     };
+  },
+  watch: {
+    loading: {
+      handler: function(curVal) {
+        console.log(curVal);
+        this.showLoading(curVal);
+      },
+      deep: true
+    },
+    chartData: {
+      handler: function(curVal) {
+        this.dataChange(curVal);
+      },
+      deep: true
+    }
   },
   mounted() {
     this.init();
@@ -37,415 +65,71 @@ export default {
       let $echartsDOM2 = document.getElementById("echart2");
       let $echartsDOM3 = document.getElementById("echart3");
       let $echartsDOM4 = document.getElementById("echart4");
-      let myEcharts1 = echarts.init($echartsDOM1);
-      let myEcharts2 = echarts.init($echartsDOM2);
-      let myEcharts3 = echarts.init($echartsDOM3);
-      let myEcharts4 = echarts.init($echartsDOM4);
+      this.myEcharts1 = echarts.init($echartsDOM1);
+      this.myEcharts2 = echarts.init($echartsDOM2);
+      this.myEcharts3 = echarts.init($echartsDOM3);
+      this.myEcharts4 = echarts.init($echartsDOM4);
+      echarts.connect([
+        this.myEcharts1,
+        this.myEcharts2,
+        this.myEcharts3,
+        this.myEcharts4
+      ]);
 
-      echarts.connect([myEcharts1, myEcharts2, myEcharts3, myEcharts4]);
-
-      myEcharts1.on("datazoom", param => {
+      this.myEcharts1.on("datazoom", param => {
         console.log(param);
         // console.log(option.dataZoom.start);
         // console.log(myEcharts1.dataZoom.start);
       });
       window.onresize = () => {
-        myEcharts1.resize();
-        myEcharts2.resize();
-        myEcharts3.resize();
-        myEcharts4.resize();
+        this.myEcharts1.resize();
+        this.myEcharts2.resize();
+        this.myEcharts3.resize();
+        this.myEcharts4.resize();
       };
-      options.xAxis.data = this.chartData.timeArr;
+      this.showLoading();
+      this.dataChange(this.chartData);
+    },
+    showLoading(curVal) {
+      if (curVal) {
+        this.myEcharts1.showLoading();
+        this.myEcharts2.showLoading();
+        this.myEcharts3.showLoading();
+        this.myEcharts4.showLoading();
+      } else {
+        this.myEcharts1.hideLoading();
+        this.myEcharts2.hideLoading();
+        this.myEcharts3.hideLoading();
+        this.myEcharts4.hideLoading();
+      }
+    },
+    dataChange(datas) {
+      options.xAxis.data = datas.timeArr;
 
       let voltageOptions = _.cloneDeep(options);
       voltageOptions.title.text = "电压";
       voltageOptions.yAxis.axisLabel = "{value} v";
-      voltageOptions.series[0].data = this.chartData.voltage;
-      myEcharts1.setOption(voltageOptions);
+      voltageOptions.series[0].data = datas.voltage;
+      this.myEcharts1.setOption(voltageOptions);
 
       let singleVoltageOptions = _.cloneDeep(options);
       singleVoltageOptions.title.text = "单体电压";
       singleVoltageOptions.yAxis.axisLabel = "{value} v";
-      singleVoltageOptions.series[0].data = this.chartData.singleVoltage;
-      myEcharts2.setOption(singleVoltageOptions);
+      singleVoltageOptions.series[0].data = datas.singleVoltage;
+      this.myEcharts2.setOption(singleVoltageOptions);
 
       let currentOptions = _.cloneDeep(options);
       currentOptions.title.text = "电流";
       currentOptions.yAxis.axisLabel = "{value} A";
-      currentOptions.series[0].data = this.chartData.current;
-      myEcharts3.setOption(currentOptions);
+      currentOptions.series[0].data = datas.current;
+      this.myEcharts3.setOption(currentOptions);
 
       let temperatureOptions = _.cloneDeep(options);
       temperatureOptions.title.text = "温度";
       temperatureOptions.yAxis.axisLabel = "{value} ℃";
-      temperatureOptions.series[0].data = this.chartData.temperature;
-      myEcharts4.setOption(temperatureOptions);
-      // myEcharts1.setOption({
-      //   title: {
-      //     text: "电压",
-      //     subtext: "监测数据变化",
-      //     textStyle: {
-      //       color: "#484848"
-      //     },
-      //     subtextStyle: {
-      //       color: "#484848"
-      //     }
-      //   },
-      //   tooltip: {
-      //     trigger: "axis"
-      //   },
-      //   grid: {
-      //     left: "3%",
-      //     right: "4%",
-      //     bottom: "20%",
-      //     containLabel: true
-      //   },
-      //   dataZoom: [
-      //     {
-      //       // show: true,
-      //       type: "slider",
-      //       start: 0,
-      //       end: 100,
-      //       startValue: "aaa",
-      //       endValue: "bbb",
-      //       fillerColor: "rgba(167,183,204,0.4)",
-      //       backgroundColor: "rgba(0,0,0,0)"
-      //     },
-      //     {
-      //       type: "inside",
-      //       start: 0,
-      //       end: 100,
-      //       startValue: "aaa",
-      //       endValue: "bbb"
-      //     }
-      //   ],
-      //   xAxis: {
-      //     type: "category",
-      //     boundaryGap: false,
-      //     data: this.chartData.timeArr,
-      //     axisLine: {
-      //       show: false
-      //     },
-      //     axisTick: {
-      //       show: false
-      //     },
-      //     axisLabel: {
-      //       fontSize: 11,
-      //       color: "#484848"
-      //     },
-      //     splitLine: {
-      //       show: false
-      //     }
-      //   },
-      //   yAxis: {
-      //     type: "value",
-      //     axisLabel: {
-      //       formatter: "{value} v"
-      //     },
-      //     axisLine: {
-      //       show: false
-      //     },
-      //     axisTick: {
-      //       show: false
-      //     },
-      //     splitLine: {
-      //       show: false
-      //     }
-      //   },
-      //   series: [
-      //     {
-      //       name: "电压",
-      //       type: "line",
-      //       smooth: true,
-      //       lineStyle: {
-      //         normal: {
-      //           color: "#2491fc"
-      //         }
-      //       },
-      //       areaStyle: {
-      //         normal: {
-      //           color: "rgba(36,145,252,0.25)"
-      //         }
-      //       },
-      //       data: this.chartData.voltage
-      //     }
-      //   ]
-      // });
-      // myEcharts2.setOption({
-      //   title: {
-      //     text: "单体电压",
-      //     subtext: "监测数据变化",
-      //     textStyle: {
-      //       color: "#484848"
-      //     },
-      //     subtextStyle: {
-      //       color: "#484848"
-      //     }
-      //   },
-      //   tooltip: {
-      //     trigger: "axis"
-      //   },
-      //   grid: {
-      //     left: "3%",
-      //     right: "4%",
-      //     bottom: "20%",
-      //     containLabel: true
-      //   },
-      //   dataZoom: [
-      //     {
-      //       // show: true,
-      //       type: "slider",
-      //       start: 0,
-      //       end: 100,
-      //       startValue: "aaa",
-      //       endValue: "bbb",
-      //       fillerColor: "rgba(167,183,204,0.4)",
-      //       backgroundColor: "rgba(0,0,0,0)"
-      //     },
-      //     {
-      //       type: "inside",
-      //       start: 0,
-      //       end: 100,
-      //       startValue: "aaa",
-      //       endValue: "bbb"
-      //     }
-      //   ],
-      //   xAxis: {
-      //     type: "category",
-      //     boundaryGap: false,
-      //     data: this.chartData.timeArr,
-      //     axisLine: {
-      //       show: false
-      //     },
-      //     axisTick: {
-      //       show: false
-      //     },
-      //     axisLabel: {
-      //       fontSize: 11,
-      //       color: "#484848"
-      //     },
-      //     splitLine: {
-      //       show: false
-      //     }
-      //   },
-      //   yAxis: {
-      //     type: "value",
-      //     axisLabel: {
-      //       formatter: "{value} v"
-      //     },
-      //     axisLine: {
-      //       show: false
-      //     },
-      //     axisTick: {
-      //       show: false
-      //     },
-      //     splitLine: {
-      //       show: false
-      //     }
-      //   },
-      //   series: [
-      //     {
-      //       name: "单体电压",
-      //       type: "line",
-      //       smooth: true,
-      //       lineStyle: {
-      //         normal: {
-      //           color: "#2491fc"
-      //         }
-      //       },
-      //       areaStyle: {
-      //         normal: {
-      //           color: "rgba(36,145,252,0.25)"
-      //         }
-      //       },
-      //       data: this.chartData.singleVoltage
-      //     }
-      //   ]
-      // });
-      // myEcharts3.setOption({
-      //   title: {
-      //     text: "电流",
-      //     subtext: "监测数据变化",
-      //     textStyle: {
-      //       color: "#484848"
-      //     },
-      //     subtextStyle: {
-      //       color: "#484848"
-      //     }
-      //   },
-      //   tooltip: {
-      //     trigger: "axis"
-      //   },
-      //   grid: {
-      //     left: "3%",
-      //     right: "4%",
-      //     bottom: "20%",
-      //     containLabel: true
-      //   },
-      //   dataZoom: [
-      //     {
-      //       // show: true,
-      //       type: "slider",
-      //       start: 0,
-      //       end: 100,
-      //       startValue: "aaa",
-      //       endValue: "bbb",
-      //       fillerColor: "rgba(167,183,204,0.4)",
-      //       backgroundColor: "rgba(0,0,0,0)"
-      //     },
-      //     {
-      //       type: "inside",
-      //       start: 0,
-      //       end: 100,
-      //       startValue: "aaa",
-      //       endValue: "bbb"
-      //     }
-      //   ],
-      //   xAxis: {
-      //     type: "category",
-      //     boundaryGap: false,
-      //     data: this.chartData.timeArr,
-      //     axisLine: {
-      //       show: false
-      //     },
-      //     axisTick: {
-      //       show: false
-      //     },
-      //     axisLabel: {
-      //       fontSize: 11,
-      //       color: "#484848"
-      //     },
-      //     splitLine: {
-      //       show: false
-      //     }
-      //   },
-      //   yAxis: {
-      //     type: "value",
-      //     axisLabel: {
-      //       formatter: "{value} A"
-      //     },
-      //     axisLine: {
-      //       show: false
-      //     },
-      //     axisTick: {
-      //       show: false
-      //     },
-      //     splitLine: {
-      //       show: false
-      //     }
-      //   },
-      //   series: [
-      //     {
-      //       name: "电流",
-      //       type: "line",
-      //       smooth: true,
-      //       lineStyle: {
-      //         normal: {
-      //           color: "#2491fc"
-      //         }
-      //       },
-      //       areaStyle: {
-      //         normal: {
-      //           color: "rgba(36,145,252,0.25)"
-      //         }
-      //       },
-      //       data: this.chartData.current
-      //     }
-      //   ]
-      // });
-      // myEcharts4.setOption({
-      //   title: {
-      //     text: "温度",
-      //     subtext: "监测数据变化",
-      //     textStyle: {
-      //       color: "#484848"
-      //     },
-      //     subtextStyle: {
-      //       color: "#484848"
-      //     }
-      //   },
-      //   tooltip: {
-      //     trigger: "axis"
-      //   },
-      //   grid: {
-      //     left: "3%",
-      //     right: "4%",
-      //     bottom: "20%",
-      //     containLabel: true
-      //   },
-      //   dataZoom: [
-      //     {
-      //       // show: true,
-      //       type: "slider",
-      //       start: 0,
-      //       end: 100,
-      //       startValue: "aaa",
-      //       endValue: "bbb",
-      //       fillerColor: "rgba(167,183,204,0.4)",
-      //       backgroundColor: "rgba(0,0,0,0)"
-      //     },
-      //     {
-      //       type: "inside",
-      //       start: 0,
-      //       end: 100,
-      //       startValue: "aaa",
-      //       endValue: "bbb"
-      //     }
-      //   ],
-      //   xAxis: {
-      //     type: "category",
-      //     boundaryGap: false,
-      //     data: this.chartData.timeArr,
-      //     axisLine: {
-      //       show: false
-      //     },
-      //     axisTick: {
-      //       show: false
-      //     },
-      //     axisLabel: {
-      //       fontSize: 11,
-      //       color: "#484848"
-      //     },
-      //     splitLine: {
-      //       show: false
-      //     }
-      //   },
-      //   yAxis: {
-      //     type: "value",
-      //     axisLabel: {
-      //       formatter: "{value} ℃"
-      //     },
-      //     axisLine: {
-      //       show: false
-      //     },
-      //     axisTick: {
-      //       show: false
-      //     },
-      //     splitLine: {
-      //       show: false
-      //     }
-      //   },
-      //   series: [
-      //     {
-      //       name: "温度",
-      //       type: "line",
-      //       smooth: true,
-      //       lineStyle: {
-      //         normal: {
-      //           color: "#2491fc"
-      //         }
-      //       },
-      //       areaStyle: {
-      //         normal: {
-      //           color: "rgba(36,145,252,0.25)"
-      //         }
-      //       },
-      //       data: this.chartData.temperature
-      //     }
-      //   ]
-      // });
-    },
-    getData() {}
+      temperatureOptions.series[0].data = datas.temperature;
+      this.myEcharts4.setOption(temperatureOptions);
+    }
   }
 };
 </script>

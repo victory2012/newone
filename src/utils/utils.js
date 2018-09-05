@@ -211,4 +211,201 @@ export default {
     day = day < 10 ? `0${day}` : day;
     return `${year}-${mounth}-${day}`;
   },
+  level: (num) => {
+    let Num = Number(num);
+    switch (Num) {
+      case 1:
+        return "高";
+      case 2:
+        return "中";
+      case 3:
+        return "低";
+      default:
+        break;
+    }
+  },
+  item: (str) => {
+    switch (str) {
+      case 'Voltage':
+        return "电压";
+      case 'Current':
+        return "电流";
+      case 'Temperature':
+        return "温度";
+      default:
+        break;
+    }
+  },
+  year2year: (end, type) => {
+    let obj = {};
+    // let startdate = new Date(start);
+    let enddate = new Date(end);
+
+    // let endyear = enddate.getFullYear();
+    let endMonth = enddate.getMonth() + 1;
+
+    let startMonth = enddate.getMonth() + 1;
+    let startyear = enddate.getFullYear() - 1;
+    let day = enddate.getDate();
+
+    endMonth = endMonth < 10 ? `0${endMonth}` : endMonth;
+    day = day < 10 ? `0${day}` : day;
+
+    if (type === "week") {
+      let result = `${startyear}-${startMonth}-${day}`;
+      obj.start = this.a.sortTime(new Date(result).getTime() - (7 * 24 * 3600 * 1000));
+      obj.end = this.a.sortTime(new Date(result).getTime());
+    }
+    if (type === "mounth") {
+      if (startMonth === 0) {
+        startyear -= 1;
+        startMonth = 12;
+      }
+      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
+      obj.start = `${startyear}${startMonth}${day}`;
+      obj.end = `${startyear}${endMonth}${day}`;
+    }
+    if (type === "threemonth") {
+      if (startMonth - 2 === 0) {
+        startyear -= 1;
+        startMonth = 12;
+      } else if (startMonth - 2 === -1) {
+        startyear -= 1;
+        startMonth = 11;
+      } else if (startMonth - 2 === -2) {
+        startyear -= 1;
+        startMonth = 10;
+      } else {
+        startMonth -= 3;
+      }
+      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
+      obj.start = `${startyear}${startMonth}${day}`;
+      obj.end = `${startyear}${endMonth}${day}`;
+    }
+    if (type === "sixmounth") {
+      if (startMonth - 5 === 0) {
+        startyear -= 1;
+        startMonth = 12;
+      } else if (startMonth - 5 === -1) {
+        startyear -= 1;
+        startMonth = 11;
+      } else if (startMonth - 5 === -2) {
+        startyear -= 1;
+        startMonth = 10;
+      } else if (startMonth - 5 === -3) {
+        startyear -= 1;
+        startMonth = 9;
+      } else if (startMonth - 5 === -4) {
+        startyear -= 1;
+        startMonth = 8;
+      } else if (startMonth - 5 === -5) {
+        startyear -= 1;
+        startMonth = 7;
+      } else {
+        startMonth -= 6;
+      }
+      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
+
+      obj.start = `${startyear}${startMonth}${day}`;
+      obj.end = `${startyear}${endMonth}${day}`;
+    }
+    if (type === "year") {
+      let startyears = startyear - 1;
+      // let startMonths = startMonth;
+      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
+      obj.start = `${startyears}${startMonth}${day}`;
+      obj.end = `${startyear}${endMonth}${day}`;
+    }
+    return obj;
+  },
+  m2m: (start, end, type) => {
+    let obj = {};
+    let startdate = new Date(start);
+    let enddate = new Date(end);
+
+    let endyear = startdate.getFullYear();
+    let endMonth = startdate.getMonth() + 1;
+
+    let startMonth = startdate.getMonth();
+    let startyear = startdate.getFullYear();
+    let day = startdate.getDate();
+
+    endMonth = endMonth < 10 ? `0${endMonth}` : endMonth;
+    day = day < 10 ? `0${day}` : day;
+
+    if (type === "week") {
+      obj.start = this.a.sortTime(startdate.getTime() - (7 * 24 * 3600 * 1000));
+      obj.end = this.a.sortTime(enddate.getTime() - (7 * 24 * 3600 * 1000));
+    }
+    if (type === "mounth") {
+      if (startMonth === 0) {
+        startyear -= 1;
+        startMonth = 12;
+      }
+      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
+      obj.start = `${startyear}${startMonth}${day}`;
+      obj.end = `${endyear}${endMonth}${day}`;
+    }
+    if (type === "threemonth") {
+      if (startMonth - 2 === 0) {
+        startyear -= 1;
+        startMonth = 12;
+      } else if (startMonth - 2 === -1) {
+        startyear -= 1;
+        startMonth = 11;
+      } else if (startMonth - 2 === -2) {
+        startyear -= 1;
+        startMonth = 10;
+      } else {
+        startMonth -= 3;
+      }
+      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
+      obj.start = `${startyear}${startMonth}${day}`;
+      obj.end = `${endyear}${endMonth}${day}`;
+    }
+    if (type === "sixmounth") {
+      if (startMonth - 5 === 0) {
+        startyear -= 1;
+        startMonth = 12;
+      } else if (startMonth - 5 === -1) {
+        startyear -= 1;
+        startMonth = 11;
+      } else if (startMonth - 5 === -2) {
+        startyear -= 1;
+        startMonth = 10;
+      } else if (startMonth - 5 === -3) {
+        startyear -= 1;
+        startMonth = 9;
+      } else if (startMonth - 5 === -4) {
+        startyear -= 1;
+        startMonth = 8;
+      } else if (startMonth - 5 === -5) {
+        startyear -= 1;
+        startMonth = 7;
+      } else {
+        startMonth -= 6;
+      }
+      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
+
+      obj.start = `${startyear}${startMonth}${day}`;
+      obj.end = `${endyear}${endMonth}${day}`;
+    }
+    if (type === "year") {
+      let startyears = startyear - 1;
+      let startMonths = startMonth + 1;
+      startMonths = startMonths < 10 ? `0${startMonths}` : startMonths;
+      obj.start = `${startyears}${startMonths}${day}`;
+      obj.end = `${endyear}${endMonth}${day}`;
+    }
+    return obj;
+  },
+  sortTime: (str) => {
+    let timeDate = new Date(str);
+    let year = timeDate.getFullYear();
+    let mounth = timeDate.getMonth() + 1;
+    let day = timeDate.getDate();
+    mounth = mounth < 10 ? `0${mounth}` : mounth;
+    day = day < 10 ? `0${day}` : day;
+    return `${year}${mounth}${day}`;
+  },
 };
