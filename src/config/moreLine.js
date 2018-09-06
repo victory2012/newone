@@ -68,7 +68,7 @@ export default {
     }
   },
   series: [{
-    name: "",
+    name: "本期",
     type: "line",
     smooth: true,
     lineStyle: {
@@ -83,7 +83,7 @@ export default {
     // },
     data: ""
   }, {
-    name: "",
+    name: "上期",
     type: "line",
     smooth: true,
     lineStyle: {

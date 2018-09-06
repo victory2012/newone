@@ -230,7 +230,7 @@ export default {
     };
   },
   mounted() {
-    this.deviceId = this.$route.query.deviceId;
+    this.hostId = this.$route.query.hostId;
     this.getAlarmData();
   },
   methods: {
@@ -261,7 +261,7 @@ export default {
         pageNum: this.currentPage
       };
       this.$axios
-        .get(`/battery_group_event/${this.deviceId}`, pageObj)
+        .get(`/battery_group_event?hostId=${this.hostId}`, pageObj)
         .then(res => {
           console.log(res);
           if (res.data && res.data.code === 0) {

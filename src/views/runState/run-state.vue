@@ -9,7 +9,7 @@
         <a @click="showAlarmData" :class="{'active': actived == 'alarm'}">告警数据</a>
       </div>
       <div class="search">
-        <el-autocomplete size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入内容" @select="handleSelect"></el-autocomplete>
+        <el-autocomplete v-show="actived == 'real'" size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入内容" @select="handleSelect"></el-autocomplete>
       </div>
     </div>
     <div v-show="hasHostId" class="tips">

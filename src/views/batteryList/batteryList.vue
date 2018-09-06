@@ -354,7 +354,9 @@ export default {
       this.$router.push({
         path: "battery/run",
         query: {
-          deviceId: row.deviceId
+          deviceId: row.deviceId,
+          batteryId: row.code,
+          hostId: row.hostId
         }
       });
     },

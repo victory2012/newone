@@ -5,7 +5,7 @@
     </div>
     <div class="circelInfo">
       <div class="item-history_alarm_divider">
-        <p class="times">1</p>
+        <p class="times">{{alarmTime ||0}}</p>
         <p>累计告警</p>
       </div>
     </div>
@@ -78,7 +78,8 @@ export default {
             }
           }
         ]
-      }
+      },
+      alarmTime: 0
     };
   },
   watch: {
@@ -106,13 +107,12 @@ export default {
       this.peiEcharts1 = echarts.init(BarDOM1);
       this.peiEcharts2 = echarts.init(BarDOM2);
 
-      window.onresize = () => {
-        this.peiEcharts1.resize();
-        this.peiEcharts2.resize();
-      };
+      // window.onresize = () => {
+      //   this.peiEcharts1.resize();
+      //   this.peiEcharts2.resize();
+      // };
       this.loadingChange(this.loading);
       this.dataChange(this.peiData);
-      console.log(this.peiData);
     },
     loadingChange(loading) {
       if (loading) {
@@ -124,6 +124,7 @@ export default {
       }
     },
     dataChange(peiData) {
+      console.log(peiData);
       let voltageOptions = _.cloneDeep(this.pieOption);
       voltageOptions.legend.data = ["充电时间", "放电时间", "空载时间"];
       voltageOptions.series[0].data = [
@@ -132,14 +133,18 @@ export default {
         { value: peiData.summary.idleDuration, name: "空载时间" }
       ];
       this.peiEcharts1.setOption(voltageOptions);
-
+      this.alarmTime =
+        Number(peiData.eventSummary.temperature) +
+        Number(peiData.eventSummary.fluidLevel) +
+        Number(peiData.eventSummary.voltage) +
+        Number(peiData.eventSummary.current);
       let currentOptions = _.cloneDeep(this.pieOption);
       currentOptions.legend.data = ["温度", "液位", "电压", "电流"];
       currentOptions.series[0].data = [
-        { value: 335, name: "温度" },
-        { value: 335, name: "液位" },
-        { value: 335, name: "电压" },
-        { value: 335, name: "电流" }
+        { value: peiData.eventSummary.temperature, name: "温度" },
+        { value: peiData.eventSummary.fluidLevel, name: "液位" },
+        { value: peiData.eventSummary.voltage, name: "电压" },
+        { value: peiData.eventSummary.current, name: "电流" }
       ];
       this.peiEcharts2.setOption(currentOptions);
     }

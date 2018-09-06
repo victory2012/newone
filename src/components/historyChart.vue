@@ -139,6 +139,7 @@ export default {
   background: #ffffff;
 }
 .chartWarrp {
+  margin-bottom: 30px;
   display: flex;
   .chartInfo {
     padding: 0 15px;

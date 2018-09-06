@@ -5,7 +5,7 @@
       <el-date-picker class="queryTime" size="small" v-model="start" type="date" placeholder="选择日期"></el-date-picker>
       <span class="lable">至</span>
       <el-date-picker class="queryTime" size="small" v-model="end" type="date" placeholder="选择日期"></el-date-picker>
-      <el-select class="timeSelect queryTime" size="small" v-model="timevalue" placeholder="请选择">
+      <el-select class="timeSelect queryTime" size="small" @change="changeTime" v-model="timevalue" placeholder="请选择">
         <el-option v-for="item in weekOption" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select>
@@ -49,13 +49,18 @@
     </div>
     <div class="alarmTab">
       <div class="tabInfo">
-        <a class="active">历史告警</a>
+        <a :class="{'active': active === 'alarm'}" @click="historAlarm">历史告警</a>
         <span class="divider"></span>
-        <a>历史补水</a>
+        <a :class="{'active': active === 'liquid'}" @click="historyLiquid">历史补水</a>
       </div>
     </div>
     <div class="tables">
-      <i-alarm></i-alarm>
+      <i-alarm :alarmData="alarmData" v-show="active === 'alarm'"></i-alarm>
+      <liquid :liquidData="liquidData" v-show="active === 'liquid'"></liquid>
+      <div class="page">
+        <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" layout="prev, pager, next" :total="total">
+        </el-pagination>
+      </div>
     </div>
     <div class="maps">
       <i-map :travelData="dataObj.positions"></i-map>
@@ -71,6 +76,7 @@ import iEchart from "../../components/echart";
 import iAlarm from "../../components/alarm-data";
 import iMap from "../../components/travel";
 import chartPie from "../../components/echartPie";
+import liquid from "../../components/alarm-liquid";
 
 export default {
   components: {
@@ -78,10 +84,12 @@ export default {
     echartMap,
     iEchart,
     iAlarm,
-    iMap
+    iMap,
+    liquid
   },
   data() {
     return {
+      active: "alarm",
       hasgetData: false,
       loading: false,
       eventSummary: {},
@@ -98,8 +106,8 @@ export default {
         current: [],
         positions: []
       },
-      start: "",
-      end: "",
+      start: utils.getWeek(),
+      end: new Date(),
       timevalue: "week",
       weekOption: [
         {
@@ -107,11 +115,11 @@ export default {
           label: "最近一周"
         },
         {
-          value: "onemounth",
+          value: "mounth",
           label: "最近一月"
         },
         {
-          value: "threemounth",
+          value: "threemonth",
           label: "最近三个月"
         },
         {
@@ -126,25 +134,39 @@ export default {
           value: "all",
           label: "全生命周期"
         }
-      ]
+      ],
+      pageSize: 10,
+      currentPage: 1,
+      total: 0,
+      alarmData: [],
+      liquidData: []
     };
   },
   mounted() {
+    this.hostId = this.$route.query.hostId;
     // this.getChartData();
   },
   methods: {
     getChartData() {
-      // let startTime = utils.dateFomats(utils.getYestoday());
-      // let endTime = utils.dateFomats(utils.getNowTime());
-      let startTime = 20170101010101;
-      let endTime = utils.dateFomats(utils.getNowTime());
+      let startTime = utils.sortTime(this.start);
+      let endTime = utils.sortTime(this.end);
       this.loading = true;
       this.$axios
         .get(
-          `/battery_group/${5}/data2?startTime=${startTime}&endTime=${endTime}`
+          `/battery_group/${
+            this.hostId
+          }/data2?startTime=${startTime}&endTime=${endTime}`
         )
         .then(res => {
           console.log(res);
+          this.dataObj = {
+            timeArr: [],
+            singleVoltage: [],
+            temperature: [],
+            voltage: [],
+            current: [],
+            positions: []
+          };
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
             result.list.forEach(key => {
@@ -156,18 +178,101 @@ export default {
               this.dataObj.current.push(key.current); // 电流
               this.dataObj.positions.push([key.gcjLongitude, key.gcjLatitude]); // 电流
             });
-            this.peiObj.eventSummary = result.eventSummary;
-            this.peiObj.summary = result.summary;
+            this.peiObj.eventSummary = result.eventSummary || {};
+            this.peiObj.summary = result.summary || {};
             this.loading = false;
 
-            this.eventSummary = result.eventSummary;
-            this.summary = result.summary;
+            this.eventSummary = result.eventSummary || {};
+            this.summary = result.summary || {};
+          }
+        });
+      this.getAlarmData();
+    },
+    changeTime() {
+      console.log(this.timevalue);
+      if (this.timevalue === "week") {
+        this.start = utils.getWeek();
+      }
+      if (this.timevalue === "mounth") {
+        this.start = utils.getMouth();
+      }
+      if (this.timevalue === "threemonth") {
+        this.start = utils.getThreeMounth();
+      }
+      if (this.timevalue === "sixmounth") {
+        this.start = utils.getSixMounth();
+      }
+      if (this.timevalue === "year") {
+        this.start = utils.getYear();
+      }
+      if (this.timevalue === "all") {
+        this.start = "2000-01-01";
+      }
+    },
+    getAlarmData() {
+      let startTime = utils.sortTime(this.start);
+      let endTime = utils.sortTime(this.end);
+      let pageObj = {
+        pageSize: this.pageSize,
+        pageNum: this.currentPage
+      };
+      this.$axios
+        .get(
+          `/battery_group_event?hostId=${
+            this.hostId
+          }&startTime=${startTime}&endTime=${endTime}`,
+          pageObj
+        )
+        .then(res => {
+          console.log(res);
+          if (res.data && res.data.code === 0) {
+            let result = res.data.data;
+            if (result) {
+              this.total = result.total;
+              this.liquidData = [];
+              if (result.pageData.length > 0) {
+                this.liquidData = result.pageData;
+              }
+            }
           }
         });
     },
-    sureSearch() {
-      console.log(utils.dateFomats(this.start));
-      console.log(utils.dateFomats(this.end));
+    getliquidData() {
+      let startTime = utils.sortTime(this.start);
+      let endTime = utils.sortTime(this.end);
+      let pageObj = {
+        pageSize: this.pageSize,
+        pageNum: this.currentPage,
+        startTime,
+        endTime
+      };
+      this.$axios
+        .get(`/battery_group/${this.hostId}/fluid`, pageObj)
+        .then(res => {
+          console.log(res);
+          if (res.data && res.data.code === 0) {
+            let result = res.data.data;
+            if (result) {
+              this.total = result.total;
+              this.alarmData = [];
+              if (result.pageData.length > 0) {
+                this.liquidData = result.pageData;
+              }
+            }
+          }
+        });
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.getAlarmData();
+    },
+    historAlarm() {
+      this.active = "alarm";
+    },
+    historyLiquid() {
+      this.active = "liquid";
+      this.currentPage = 1;
+      this.getliquidData();
     }
   }
 };
@@ -315,5 +420,9 @@ export default {
 }
 .pt {
   padding-top: 60px;
+}
+.page {
+  padding-top: 20px;
+  text-align: right;
 }
 </style>

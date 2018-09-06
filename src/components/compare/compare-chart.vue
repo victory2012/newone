@@ -36,30 +36,32 @@ export default {
       type: Object,
       default: () => {
         return {
-          timeArr: [],
-          singleVoltage: [],
-          temperature: [],
-          voltage: [],
-          current: []
-        };
-      }
-    },
-    secondData: {
-      type: Object,
-      default: () => {
-        return {
-          timeArr: [],
-          singleVoltage: [],
-          temperature: [],
-          voltage: [],
-          current: []
+          dataObjFirst: {
+            timeArr: [],
+            singleVoltage: [],
+            temperature: [],
+            voltage: [],
+            current: []
+          },
+          dataObjSecond: {
+            timeArr: [],
+            singleVoltage: [],
+            temperature: [],
+            voltage: [],
+            current: []
+          }
         };
       }
     },
     chartBarData: {
       type: Object,
       default: () => {
-        return {};
+        return {
+          now: {},
+          last: {},
+          last_eventSummary: {},
+          now_eventSummary: {}
+        };
       }
     },
     loading: {
@@ -83,13 +85,8 @@ export default {
   watch: {
     chartData: {
       handler: function(vals) {
-        console.log(vals);
-      },
-      deep: true
-    },
-    secondData: {
-      handler: function(vals) {
-        console.log(vals);
+        // console.log(vals);
+        this.dataChange(vals);
       },
       deep: true
     },
@@ -103,6 +100,7 @@ export default {
     chartBarData: {
       handler: function(vals) {
         this.barDataChange(vals);
+        console.log(vals);
       },
       deep: true
     }
@@ -153,8 +151,13 @@ export default {
         this.myBarEcharts4.resize();
       };
       this.dataChange(this.chartData);
-      this.showLoading();
-      this.barDataChange();
+      this.showLoading(this.loading);
+      this.barDataChange({
+        now: {},
+        last: {},
+        last_eventSummary: {},
+        now_eventSummary: {}
+      });
     },
     showLoading(curVal) {
       if (curVal) {
@@ -178,12 +181,13 @@ export default {
       }
     },
     dataChange(datas) {
-      options.xAxis.data = datas.timeArr;
+      console.log(datas);
+      options.xAxis.data = datas.dataObjFirst.timeArr;
 
       let voltageOptions = _.cloneDeep(options);
       voltageOptions.title.text = "电压";
-      voltageOptions.series[0].name = "电压";
-      voltageOptions.series[1].name = "电压";
+      // voltageOptions.series[0].name = "电压";
+      // voltageOptions.series[1].name = "电压";
       voltageOptions.yAxis.axisLabel = "{value} v";
       voltageOptions.series[0].data = datas.dataObjFirst.voltage;
       voltageOptions.series[1].data = datas.dataObjSecond.voltage;
@@ -191,8 +195,8 @@ export default {
 
       let singleVoltageOptions = _.cloneDeep(options);
       singleVoltageOptions.title.text = "单体电压";
-      singleVoltageOptions.series[0].name = "单体电压";
-      singleVoltageOptions.series[1].name = "单体电压";
+      // singleVoltageOptions.series[0].name = "单体电压";
+      // singleVoltageOptions.series[1].name = "单体电压";
       singleVoltageOptions.yAxis.axisLabel = "{value} v";
       singleVoltageOptions.series[0].data = datas.dataObjFirst.singleVoltage;
       singleVoltageOptions.series[1].data = datas.dataObjSecond.singleVoltage;
@@ -200,8 +204,8 @@ export default {
 
       let currentOptions = _.cloneDeep(options);
       currentOptions.title.text = "电流";
-      currentOptions.series[0].name = "电流";
-      currentOptions.series[1].name = "电流";
+      // currentOptions.series[0].name = "电流";
+      // currentOptions.series[1].name = "电流";
       currentOptions.yAxis.axisLabel = "{value} A";
       currentOptions.series[0].data = datas.dataObjFirst.current;
       currentOptions.series[1].data = datas.dataObjSecond.current;
@@ -209,14 +213,15 @@ export default {
 
       let temperatureOptions = _.cloneDeep(options);
       temperatureOptions.title.text = "温度";
-      temperatureOptions.series[0].name = "温度";
-      temperatureOptions.series[1].name = "温度";
+      // temperatureOptions.series[0].name = "温度";
+      // temperatureOptions.series[1].name = "温度";
       temperatureOptions.yAxis.axisLabel = "{value} ℃";
       temperatureOptions.series[0].data = datas.dataObjFirst.temperature;
       temperatureOptions.series[1].data = datas.dataObjSecond.temperature;
       this.lineEcharts4.setOption(temperatureOptions);
     },
-    barDataChange() {
+    barDataChange(datas) {
+      console.log(datas);
       let voltageBarOptions = _.cloneDeep(BarOptions);
       voltageBarOptions.title.text = "充电情况";
       voltageBarOptions.xAxis[0].data = [
@@ -224,8 +229,16 @@ export default {
         "充电时间",
         "平均充电时间"
       ];
-      voltageBarOptions.series[0].data = [10, 65, 15];
-      voltageBarOptions.series[1].data = [30, 45, 15];
+      voltageBarOptions.series[0].data = [
+        datas.now.chargeTimes,
+        datas.now.chargeDuration,
+        datas.now.avgChargeDuration
+      ];
+      voltageBarOptions.series[1].data = [
+        datas.last.chargeTimes,
+        datas.last.chargeDuration,
+        datas.last.avgChargeDuration
+      ];
       this.myBarEcharts1.setOption(voltageBarOptions);
 
       let singleVoltageBarOptions = _.cloneDeep(BarOptions);
@@ -235,17 +248,43 @@ export default {
         "放电时间",
         "平均放电时间"
       ];
-      singleVoltageBarOptions.series[0].data = [10, 65, 15];
-      singleVoltageBarOptions.series[1].data = [30, 45, 15];
+      singleVoltageBarOptions.series[0].data = [
+        datas.now.dischargeTimes,
+        datas.now.dischargeDuration,
+        datas.now.avgDischargeDuration
+      ];
+      singleVoltageBarOptions.series[1].data = [
+        datas.last.dischargeTimes,
+        datas.last.dischargeDuration,
+        datas.last.avgDischargeDuration
+      ];
       this.myBarEcharts2.setOption(singleVoltageBarOptions);
 
       let currentBarOptions = _.cloneDeep(BarOptions);
       currentBarOptions.title.text = "电池使用情况";
       currentBarOptions.xAxis[0].data = ["充电时间", "放电时间", "空截时间"];
-      currentBarOptions.series[0].data = [10, 65, 15];
-      currentBarOptions.series[1].data = [30, 45, 15];
+      currentBarOptions.series[0].data = [
+        datas.now.chargeDuration,
+        datas.now.dischargeDuration,
+        datas.now.idleDuration
+      ];
+      currentBarOptions.series[1].data = [
+        datas.last.chargeDuration,
+        datas.last.dischargeDuration,
+        datas.last.idleDuration
+      ];
       this.myBarEcharts3.setOption(currentBarOptions);
 
+      let result1 =
+        Number(datas.now_eventSummary.temperature) +
+        Number(datas.now_eventSummary.fluidLevel) +
+        Number(datas.now_eventSummary.current) +
+        Number(datas.now_eventSummary.voltage);
+      let result2 =
+        Number(datas.last_eventSummary.temperature) +
+        Number(datas.last_eventSummary.fluidLevel) +
+        Number(datas.last_eventSummary.current) +
+        Number(datas.last_eventSummary.voltage);
       let temperatureBarOptions = _.cloneDeep(BarOptions);
       temperatureBarOptions.title.text = "告警情况";
       temperatureBarOptions.xAxis[0].data = [
@@ -254,8 +293,18 @@ export default {
         "液位",
         "电流"
       ];
-      temperatureBarOptions.series[0].data = [10, 65, 15, 20];
-      temperatureBarOptions.series[1].data = [30, 45, 15, 60];
+      temperatureBarOptions.series[0].data = [
+        result1,
+        datas.now_eventSummary.temperature,
+        datas.now_eventSummary.fluidLevel,
+        datas.now_eventSummary.current
+      ];
+      temperatureBarOptions.series[1].data = [
+        result2,
+        datas.last_eventSummary.temperature,
+        datas.last_eventSummary.fluidLevel,
+        datas.last_eventSummary.current
+      ];
       this.myBarEcharts4.setOption(temperatureBarOptions);
     }
   }

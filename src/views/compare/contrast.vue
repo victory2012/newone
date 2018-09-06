@@ -11,7 +11,11 @@
       <h2 class="textAlain title">比较数据</h2>
       <div class="textAlain">
         <div class="compare-add addone" v-show="contrastData">
-          电池编号1: {{chooseObj.code}}
+          <p>电池编号1: {{chooseObj.code}}</p><br />
+        </div>
+        <div class="compare-add addone" v-show="contrastDatas">
+          <p v-for="(tag, index) in stacks1" :key="tag.hostId">电池编号{{index+1}}: {{tag.code}}</p>
+          <!-- <p>电池编号2: {{stacks1[1].code}}</p> -->
         </div>
         <div @click="openTable" class="compare-add">
           添加比较
@@ -36,14 +40,18 @@
       </div>
     </div>
     <div class="chart">
-      <com-chart :loading="loading" :chartData="dataArr" :chartBarData="summary"></com-chart>
+      <com-chart :loading="chartloading" :chartData="dataArr" :chartBarData="summary"></com-chart>
     </div>
 
     <el-dialog title="添加比较" width="800px" :visible.sync="tableVisible">
       <div class="TopWrapper">
-        <div class="item">已选择项
-          <span style="color:#71bfdb">{{chooseLen}}</span> / 最多可选
-          <span style="color:#71bfdb">1</span>项 {{chooseObj.code}}</div>
+        <div class="item">最多可选
+          <span style="color:#71bfdb">{{chooseLen}}</span>项 设备ID：
+          <el-tag v-for="tag in stacks1" :key="tag.hostId+new Date()" @close="closeTags(tag)" closable :type="''">
+            {{tag.deviceId}}
+          </el-tag>
+        </div>
+
         <div class="item2">
           <el-input size="small" @change="remoteMethod" placeholder="请输入内容" suffix-icon="el-icon-search" v-model="searchCont">
           </el-input>
@@ -78,6 +86,7 @@
 </template>
 <script>
 import utils from "@/utils/utils";
+// import _ from "lodash";
 import comChart from "../../components/compare/compare-chart";
 
 export default {
@@ -86,10 +95,29 @@ export default {
   },
   data() {
     return {
+      contrastDatas: false,
       contrastWay: "",
       loading: false,
+      chartloading: false,
       contrastData: false,
       total: 0,
+      dataArr: {
+        dataObjFirst: {
+          timeArr: [],
+          singleVoltage: [],
+          temperature: [],
+          voltage: [],
+          current: []
+        },
+        dataObjSecond: {
+          timeArr: [],
+          singleVoltage: [],
+          temperature: [],
+          voltage: [],
+          current: []
+        }
+      },
+      chooseObj: {},
       dataObjFirst: {
         timeArr: [],
         singleVoltage: [],
@@ -104,15 +132,15 @@ export default {
         voltage: [],
         current: []
       },
-      chooseObj: {},
       batteryGroup: "",
-      chooseLen: 0,
+      chooseLen: 1,
       searchCont: "",
       tableVisible: false,
-      summary: {
-        now: {},
-        last: {}
-      },
+      summary: {},
+      now_eventSummary: {},
+      last_eventSummary: {},
+      now: {},
+      last: {},
       currentPage: 1,
       actived: "same",
       start: utils.getWeek(),
@@ -156,11 +184,24 @@ export default {
       ],
       searchList: [],
       gridData: [],
-      compareTime: utils.m2m(utils.getWeek(), new Date(), "week") // 对比时间
+      stacks1: [],
+      stacks2: [],
+      compareTime: "" // 对比时间
     };
   },
   methods: {
     sureBtnSearch() {
+      console.log(this.actived);
+      console.log(!JSON.stringify(this.chooseObj) === "{}");
+      console.log(this.stacks1);
+      if (JSON.stringify(this.chooseObj) === "{}" && this.actived === "same") {
+        this.$message.error("请选择电池组");
+        return;
+      }
+      if (this.stacks1.length !== 2 && this.actived === "diff") {
+        this.$message.error("请选择电池组");
+        return;
+      }
       if (!this.start) {
         this.$message.error("请选择开始时间");
         return;
@@ -170,10 +211,11 @@ export default {
         return;
       }
 
-      if (!this.contrastWay) {
+      if (!this.contrastWay && this.actived === "same") {
         this.$message.error("请选择对比方式");
         return;
       }
+
       let nowStart = utils.sortTime(this.start);
       let nowEnd = utils.sortTime(this.end);
 
@@ -196,8 +238,7 @@ export default {
         if (this.timevalue === "all") {
           this.start = "2000-01-01";
         }
-      }
-      if (this.contrastWay === "mounth") {
+      } else if (this.contrastWay === "mounth") {
         if (this.timevalue === "week") {
           this.compareTime = utils.m2m(this.start, this.end, "week");
         }
@@ -216,12 +257,13 @@ export default {
         if (this.timevalue === "all") {
           this.start = "2000-01-01";
         }
+      } else {
+        this.compareTime = {
+          start: nowStart,
+          end: nowEnd
+        };
       }
       this.getDataNow(nowStart, nowEnd);
-      console.log(nowStart);
-      console.log(nowEnd);
-      console.log("对比时间end", this.compareTime.end);
-      console.log("对比时间start", this.compareTime.start);
     },
     changeTime() {
       if (this.timevalue === "week") {
@@ -244,47 +286,90 @@ export default {
       }
     },
     getDataNow(startTime, endTime) {
-      this.loading = true;
+      let deviceId;
+      let otherId;
+      if (this.actived === "same") {
+        deviceId = this.chooseObj.deviceId;
+        otherId = this.chooseObj.deviceId;
+      }
+      if (this.actived === "diff") {
+        deviceId = this.stacks1[0].deviceId;
+        otherId = this.stacks1[1].deviceId;
+      }
+      this.chartloading = true;
       this.$axios
         .get(
-          `/battery_group/${5}/data?startTime=${startTime}&endTime=${endTime}`
+          `/battery_group/${deviceId}/data2?startTime=${startTime}&endTime=${endTime}`
         )
         .then(res => {
           console.log(res);
+          this.dataObjFirst = {
+            timeArr: [],
+            singleVoltage: [],
+            temperature: [],
+            voltage: [],
+            current: []
+          };
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
-            result.forEach(key => {
-              this.dataArr.dataObjFirst.timeArr.push(utils.fomats(key.time)); // 时间
-              this.dataArr.dataObjFirst.singleVoltage.push(key.singleVoltage); // 单体电压
-              this.dataArr.dataObjFirst.temperature.push(key.temperature); // 温度
-              this.dataArr.dataObjFirst.voltage.push(key.voltage); // 电压
-              this.dataArr.dataObjFirst.current.push(key.current); // 电流
+            result.list.forEach(key => {
+              this.dataObjFirst.timeArr.push(utils.fomats(key.time)); // 时间
+              this.dataObjFirst.singleVoltage.push(key.singleVoltage); // 单体电压
+              this.dataObjFirst.temperature.push(key.temperature); // 温度
+              this.dataObjFirst.voltage.push(key.voltage); // 电压
+              this.dataObjFirst.current.push(key.current); // 电流
             });
-            this.summary.now = result.summary;
+            this.now = result.summary || {};
+            this.now_eventSummary =
+              result.eventSummary === null ? {} : result.eventSummary;
             if (this.compareTime.start && this.compareTime.end) {
-              this.getDataPrev(this.compareTime.start, this.compareTime.end);
+              this.getDataPrev(
+                this.compareTime.start,
+                this.compareTime.end,
+                otherId
+              );
             }
           }
         });
     },
-    getDataPrev(startTime, endTime) {
+    getDataPrev(startTime, endTime, id) {
       this.$axios
         .get(
-          `/battery_group/${5}/data?startTime=${startTime}&endTime=${endTime}`
+          `/battery_group/${id}/data2?startTime=${startTime}&endTime=${endTime}`
         )
         .then(res => {
           console.log(res);
+          this.dataObjSecond = {
+            timeArr: [],
+            singleVoltage: [],
+            temperature: [],
+            voltage: [],
+            current: []
+          };
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
-            result.forEach(key => {
-              this.dataArr.dataObjSecond.timeArr.push(utils.fomats(key.time)); // 时间
-              this.dataArr.dataObjSecond.singleVoltage.push(key.singleVoltage); // 单体电压
-              this.dataArr.dataObjSecond.temperature.push(key.temperature); // 温度
-              this.dataArr.dataObjSecond.voltage.push(key.voltage); // 电压
-              this.dataArr.dataObjSecond.current.push(key.current); // 电流
+            result.list.forEach(key => {
+              this.dataObjSecond.timeArr.push(utils.fomats(key.time)); // 时间
+              this.dataObjSecond.singleVoltage.push(key.singleVoltage); // 单体电压
+              this.dataObjSecond.temperature.push(key.temperature); // 温度
+              this.dataObjSecond.voltage.push(key.voltage); // 电压
+              this.dataObjSecond.current.push(key.current); // 电流
             });
-            this.loading = false;
-            this.summary.last = result.summary;
+            this.chartloading = false;
+            this.last = result.summary || {};
+            this.last_eventSummary =
+              result.eventSummary === null ? {} : result.eventSummary;
+            this.dataArr = {
+              dataObjFirst: this.dataObjFirst,
+              dataObjSecond: this.dataObjSecond
+            };
+            this.summary = {
+              now: this.now,
+              last: this.last,
+              now_eventSummary: this.now_eventSummary,
+              last_eventSummary: this.last_eventSummary
+            };
+            console.log(this.summary);
           }
         });
     },
@@ -294,40 +379,71 @@ export default {
     },
     sureBtn() {
       this.tableVisible = false;
-      if ("code" in this.chooseObj) {
+      // if ("code" in this.chooseObj) {
+      //   this.contrastData = true;
+      // }
+      if (this.actived === "same") {
         this.contrastData = true;
+      }
+      if (this.actived === "diff") {
+        this.contrastDatas = true;
       }
     },
     showSameData() {
-      if (this.actived !== "same") {
-        this.contrastData = false;
-        this.chooseObj = {};
-      }
+      this.contrastDatas = false;
+      this.chooseObj = {};
+      this.gridData.forEach(key => {
+        key.checked = false;
+      });
+      this.chooseLen = 1;
       this.actived = "same";
     },
     showDiffData() {
-      if (this.actived !== "diff") {
-        this.contrastData = false;
-        this.chooseObj = {};
-      }
+      this.contrastData = false;
+      this.chooseObj = {};
+      this.stacks1 = [];
+
+      this.gridData.forEach(key => {
+        key.checked = false;
+      });
       this.actived = "diff";
+      this.chooseLen = 2;
     },
     openTable() {
-      // this.chooseObj = {};
+      // this.stacks1 = [];
       this.tableVisible = true;
     },
     handleSizeChange() {},
     handleCurrentChange() {},
     toggleCheck(data) {
-      console.log(data);
-      this.gridData.forEach(key => {
-        key.checked = false;
-      });
-      data.checked = !data.checked;
-      if (data.checked) {
-        this.chooseObj = data;
-        this.chooseLen = 1;
+      // console.log(data);
+      if (this.actived === "same") {
+        this.stacks1 = [];
+        this.gridData.forEach(key => {
+          key.checked = false;
+        });
+        data.checked = !data.checked;
+        if (data.checked) {
+          // this.chooseObj.push();
+          this.stacks1.push(data);
+          this.chooseObj = data;
+          this.chooseLen = 1;
+        }
+      } else {
+        this.chooseLen = 2;
+        this.gridData.forEach(key => {
+          if (key.checked) {
+            this.stacks1.push(key);
+            if (this.stacks1.length > 2) {
+              this.stacks1[0].checked = false;
+              this.stacks1.shift();
+            }
+          }
+        });
       }
+    },
+    closeTags(tag) {
+      this.stacks1.splice(this.stacks1.indexOf(tag), 1);
     },
     /* 获取电池列表 */
     getBatteryList() {
@@ -356,10 +472,7 @@ export default {
     }
   },
   mounted() {
-    let nowStart = utils.sortTime(this.start);
-    let nowEnd = utils.sortTime(this.end);
     this.getBatteryList();
-    this.getDataNow(nowStart, nowEnd);
   }
 };
 </script>
@@ -411,8 +524,6 @@ export default {
     height: 120px;
     border-radius: 10px;
     font-weight: 550;
-    display: -webkit-inline-box;
-    display: -ms-inline-flexbox;
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -422,6 +533,11 @@ export default {
     font-size: 12px;
     &.addone {
       border: none;
+      flex-direction: column;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      justify-content: center;
+      vertical-align: middle;
       background: #ffffff;
     }
   }
