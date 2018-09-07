@@ -2,6 +2,7 @@
   <div class="container">
     <div class="search">
       <el-button @click="modifyThreshold" size="small" type="primary">修改阈值</el-button>
+      <el-button @click="getTemplate" size="small" plain>恢复模板</el-button>
     </div>
     <div class="warrp">
       <el-form :model="batteryForm" :rules="batteryFormRules" ref="batteryForm">

@@ -9,7 +9,7 @@
         <a @click="showAlarmData" :class="{'active': actived == 'alarm'}">告警数据</a>
       </div>
       <div class="search">
-        <el-autocomplete v-show="actived == 'real'" size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入内容" @select="handleSelect"></el-autocomplete>
+        <el-autocomplete v-show="actived == 'real'" size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入电池编号" @select="handleSelect"></el-autocomplete>
       </div>
     </div>
     <div v-show="hasHostId" class="tips">
@@ -36,15 +36,42 @@ export default {
   // },
   data() {
     return {
+      loading: false,
       state: "",
       actived: "real",
       showCompontent: "",
-      hasHostId: false
+      hasHostId: false,
+      tableData: [
+        {
+          id: "123",
+          value: "aaa"
+        },
+        {
+          id: "6558",
+          value: "aaavvv"
+        },
+        {
+          id: "12322",
+          value: "bbbb"
+        },
+        {
+          id: "12333",
+          value: "cccc"
+        },
+        {
+          id: "1231234",
+          value: "dddd"
+        },
+        {
+          id: "12asd3",
+          value: "ffff"
+        }
+      ]
     };
   },
   mounted() {
-    this.deviceId = this.$route.query.deviceId;
-    if (this.deviceId) {
+    this.hostId = this.$route.query.hostId;
+    if (this.hostId) {
       this.hasHostId = false;
       this.showCompontent = "real-time";
     } else {
@@ -54,7 +81,7 @@ export default {
   },
   methods: {
     init() {
-      if (this.deviceId) {
+      if (this.hostId) {
         this.hasHostId = false;
         this.showCompontent = "real-time";
         // this.getData(deviceId);
@@ -63,30 +90,66 @@ export default {
         this.showCompontent = "";
       }
     },
-    querySearchAsync() {},
-    handleSelect() {},
+    querySearchAsync(queryString, callback) {
+      let restaurants = this.tableData;
+      let results = queryString
+        ? restaurants.filter(this.createStateFilter(queryString))
+        : restaurants;
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        callback(results);
+      }, 80);
+    },
+    createStateFilter(queryString) {
+      return state => {
+        return (
+          state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+        );
+      };
+    },
+    handleSelect(val) {
+      console.log(val);
+    },
     showRealData() {
       this.actived = "real";
-      if (this.deviceId) {
+      if (this.hostId) {
         this.hasHostId = false;
         this.showCompontent = "real-time";
       }
     },
     showHistoryData() {
       this.actived = "history";
-      if (this.deviceId) {
+      if (this.hostId) {
         this.hasHostId = false;
         this.showCompontent = "i-history";
       }
     },
     showAlarmData() {
       this.actived = "alarm";
-      if (this.deviceId) {
+      if (this.hostId) {
         this.hasHostId = false;
         this.showCompontent = "i-alarm";
       }
     },
-    getData() {}
+    getBindBatteryList() {
+      let options = {
+        pageSize: 9999,
+        pageNum: 1,
+        companyName: "",
+        batteryGroupOrDeviceCode: "",
+        modelId: "",
+        bindingStatus: 1
+      };
+      this.$axios.get("/battery_group", options).then(res => {
+        console.log(res);
+        this.tableData = [];
+        if (res.data && res.data.code === 0) {
+          let result = res.data.data;
+          this.total = result.total;
+          this.tableData = result.pageData;
+        }
+      });
+    }
   }
 };
 </script>

@@ -11,7 +11,12 @@
       </el-select>
       <el-button @click="getChartData" class="queryBtn" size="small" type="primary">确定</el-button>
     </div>
-    <echart-map :chartData="dataObj" :loading="loading"></echart-map>
+    <div class="btns">
+      <el-button type="primary" @click="narrow" icon="el-icon-remove-outline"></el-button>
+      <el-button type="primary" @click="enlarge" icon="el-icon-circle-plus-outline"></el-button>
+      <el-button type="primary" @click="exportExcel">导出Excel</el-button>
+    </div>
+    <echart-map :chartData="dataObj" :loading="loading" @timeZoom="timeZoom"></echart-map>
     <div class="batteryChart">
       <div class="addbattery">
         <ul>
@@ -139,7 +144,8 @@ export default {
       currentPage: 1,
       total: 0,
       alarmData: [],
-      liquidData: []
+      liquidData: [],
+      zoomArr: []
     };
   },
   mounted() {
@@ -150,6 +156,9 @@ export default {
     getChartData() {
       let startTime = utils.sortTime(this.start);
       let endTime = utils.sortTime(this.end);
+      this.getChartDatafun(startTime, endTime);
+    },
+    getChartDatafun(startTime, endTime) {
       this.loading = true;
       this.$axios
         .get(
@@ -273,6 +282,52 @@ export default {
       this.active = "liquid";
       this.currentPage = 1;
       this.getliquidData();
+    },
+    timeZoom(data) {
+      console.log(data);
+      this.zoomBar = data;
+    },
+    /* 缩小 */
+    narrow() {
+      if (!this.zoomBar || this.zoomArr.length < 1 || this.Timeindex < 0) {
+        return;
+      }
+      let timeObj = this.zoomArr[this.Timeindex];
+      this.getChartDatafun(timeObj.start, timeObj.end);
+      this.Timeindex--;
+    },
+    /* 放大 */
+    enlarge() {
+      if (!this.zoomBar) {
+        return;
+      }
+      let time = utils.zoomTime(this.start, this.end);
+      // console.log(time);
+      let perStart = Math.round(this.zoomBar.start) / 100;
+      let perEnd = Math.round(this.zoomBar.end) / 100;
+      let startTime = new Date(this.start).getTime() + time * Number(perStart);
+      let endTime = new Date(this.start).getTime() + time * Number(perEnd);
+      let obj = {
+        start: utils.sortTime(startTime),
+        end: utils.sortTime(endTime)
+      };
+      this.zoomArr.push(obj);
+      this.getChartDatafun(obj.start, obj.end);
+      let len = this.zoomArr.length;
+      this.Timeindex = len - 2;
+      // console.log(this.zoomArr);
+    },
+    exportExcel() {
+      let arr = [
+        ["制表时间", new Date()],
+        ["制表人", "摩融信息"],
+        ["制表人", "摩融信息"],
+        ["温度", "电压", "电流", "单体电压"],
+        [3, 4, 4],
+        [5, 6, 6, 8]
+      ];
+      this.$outputXlsxFile(arr, "aaaaa");
+      console.log(this.$outputXlsxFile);
     }
   }
 };

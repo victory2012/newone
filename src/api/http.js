@@ -1,7 +1,7 @@
 import axios from 'axios';
 // import qs from 'qs';
+/* eslint-disable */
 import {
-  // Loading,
   Message
 } from 'element-ui';
 

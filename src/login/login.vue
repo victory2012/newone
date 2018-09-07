@@ -53,7 +53,11 @@ export default {
       phoneRules: {
         phone: [
           { required: true, message: "请输入手机号", trigger: "change" },
-          { pattern: /^1[3|4|5|7|8][0-9]\d{8}$/, message: "手机号格式错误" }
+          {
+            pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
+            message: "手机号格式错误",
+            trigger: "change"
+          }
         ],
         smsCode: [
           { required: true, message: "请输入短信验证码", trigger: "blur" }
@@ -139,8 +143,10 @@ export default {
           this.$axios.post("/login/sms/verify", phoneObj).then(res => {
             console.log(res);
             if (res.data && res.data.code === 0) {
-              this.$store.commit("setStorage", JSON.stringify(res.data));
+              // this.$store.commit("setStorage", JSON.stringify(res.data));
+              // this.$store.commit("setTokenStorage", res.headers.token);
               this.$store.commit("setTokenStorage", res.headers.token);
+              this.$store.commit("setStorage", JSON.stringify(res.data.data));
               this.$router.push("/battery");
             }
           });

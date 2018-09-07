@@ -47,7 +47,7 @@
         </el-table-column>
         <el-table-column prop="companyName" align="center" label="企业名称">
         </el-table-column>
-        <el-table-column prop="regstate" align="center" label="设备注册状态">
+        <el-table-column prop="registerCode" align="center" label="设备注册状态">
         </el-table-column>
         <el-table-column prop="bindState" align="center" label="电池绑定状态">
         </el-table-column>
@@ -119,7 +119,9 @@ export default {
       regState: "",
       bindState: "",
       regRules: {
-        name: [{ required: true, message: "请输入设备编号", trigger: "blur" }],
+        name: [
+          { required: true, message: "请输入设备编号", trigger: "change" }
+        ],
         deviceType: [
           { required: true, message: "请选择设备类别", trigger: "change" }
         ],
@@ -269,6 +271,7 @@ export default {
       });
     },
     resetRegform(form) {
+      this.regDevice = false;
       this.$refs[form].resetFields();
     },
     submitRegForm(form) {
@@ -368,15 +371,6 @@ export default {
     },
     /* 设备升级 */
     uplevel() {},
-    // flieError() {
-    //   console.log("上传失败");
-    // },
-    // onGoing() {
-    //   console.log("上传中");
-    // },
-    // flieSuccess() {
-    //   console.log("成功");
-    // },
     /* 设备注册 -- 按钮 */
     regDialog() {
       this.regDevice = true;
@@ -385,7 +379,7 @@ export default {
     /* 获取公司列表 */
     getCompany() {
       let json = {
-        layerId: 1
+        layer: 1
       };
       this.categoryArr = [];
       this.companyArr = [];
@@ -418,16 +412,21 @@ export default {
       this.content = "";
       this.getDeviceList();
     },
+    searchDevice() {
+      this.getDeviceList();
+    },
     /* 获取设备列表 */
     getDeviceList() {
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage,
         registerStatus: this.regState,
-        code: this.content,
         status: 0,
         bindingStatus: this.bindState
       };
+      if (this.content || this.content === 0) {
+        pageObj.code = this.content;
+      }
       this.$axios.get("/device", pageObj).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
@@ -438,6 +437,8 @@ export default {
             result.pageData.forEach(key => {
               key.online = key.onlineStatus === 0;
               key.blackStatus = key.status === -1;
+              key.registerCode =
+                key.registerCode === null ? "未注册" : "已注册";
               key.bindStatus = key.hostId === null;
               key.bindState = key.hostId === null ? "未绑定" : "已绑定";
               this.tableData.push(key);

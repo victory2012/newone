@@ -408,4 +408,10 @@ export default {
     day = day < 10 ? `0${day}` : day;
     return `${year}${mounth}${day}`;
   },
+  zoomTime: (start, end) => {
+    let startTime = new Date(start).getTime();
+    let endTime = new Date(end).getTime();
+    let days = endTime - startTime;
+    return days;
+  }
 };

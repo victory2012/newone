@@ -93,20 +93,15 @@ const menu = [{
     ]
   }
 ];
-console.log(menu);
+// console.log(menu);
 if (!utils.getStorage('userRoles')) {
   window.location.href = "/login"
 }
 let userRoles = JSON.parse(JSON.parse(utils.getStorage('userRoles')));
 
-console.log(userRoles);
-// console.log(JSON.parse(userRoles));
-// export default menu;
 let listData1 = _.cloneDeep(menu);
 let listData2 = _.cloneDeep(menu);
-// manifac[0].children[0].children[1] = "";
-// manifac[1].children[0] = "";
-// manifac[2] = "";
+
 export default {
   /* 生产企业 */
   getManifactor: () => {

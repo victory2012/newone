@@ -16,7 +16,8 @@
 </template>
 
 <script>
-import echarts from "echarts";
+/* eslint-disable */
+import echarts from "echarts"; /* eslint-disable */
 import _ from "lodash";
 
 export default {

@@ -191,9 +191,6 @@ export default {
   },
   methods: {
     sureBtnSearch() {
-      console.log(this.actived);
-      console.log(!JSON.stringify(this.chooseObj) === "{}");
-      console.log(this.stacks1);
       if (JSON.stringify(this.chooseObj) === "{}" && this.actived === "same") {
         this.$message.error("请选择电池组");
         return;
@@ -410,8 +407,11 @@ export default {
       this.chooseLen = 2;
     },
     openTable() {
-      // this.stacks1 = [];
+      this.stacks1 = [];
       this.tableVisible = true;
+      this.gridData.forEach(key => {
+        key.checked = false;
+      });
     },
     handleSizeChange() {},
     handleCurrentChange() {},
@@ -431,15 +431,11 @@ export default {
         }
       } else {
         this.chooseLen = 2;
-        this.gridData.forEach(key => {
-          if (key.checked) {
-            this.stacks1.push(key);
-            if (this.stacks1.length > 2) {
-              this.stacks1[0].checked = false;
-              this.stacks1.shift();
-            }
-          }
-        });
+        this.stacks1.push(data);
+        if (this.stacks1.length > 2) {
+          this.stacks1[0].checked = false;
+          this.stacks1.shift();
+        }
       }
     },
     closeTags(tag) {

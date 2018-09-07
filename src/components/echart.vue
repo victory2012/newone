@@ -3,7 +3,8 @@
 </template>
 
 <script>
-import echarts from "echarts";
+/* eslint-disable */
+import echarts from "echarts"; /* eslint-disable */
 // import { isValidOption } from "../utils/valated";
 
 export default {

@@ -24,7 +24,8 @@
 </template>
 
 <script>
-import echarts from "echarts";
+/* eslint-disable */
+import echarts from "echarts"; /* eslint-disable */
 import _ from "lodash";
 // import utils from "@/utils/utils";
 import options from "@/config/moreLine";

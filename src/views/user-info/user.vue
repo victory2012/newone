@@ -64,20 +64,20 @@
       </el-row>
     </div>
     <el-dialog width="600px" title="编辑用户信息" @close="closeIt" :visible.sync="userMsgBox">
-      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="210px" class="demo-ruleForm">
-        <el-form-item label="手机号码" prop="phoneNum">
-          <el-input size="small" v-model="ruleForm.phoneNum" type="tel" style="width:200px;"></el-input>
+      <el-form :model="InfoForm" :rules="Inforules" ref="InfoForm" label-width="200px">
+        <el-form-item label="手机号" prop="phones">
+          <el-input size="small" v-model="InfoForm.phones" style="width:160px;"></el-input>
         </el-form-item>
         <el-form-item label="用户名" prop="userName">
-          <el-input size="small" v-model="ruleForm.userName" style="width:200px;"></el-input>
+          <el-input size="small" v-model="InfoForm.userName" style="width:160px;"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input size="small" v-model="ruleForm.email" style="width:200px;"></el-input>
+          <el-input size="small" v-model="InfoForm.email" style="width:160px;"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button size="small" type="primary" @click="submitForm('ruleForm')">确认</el-button>
-        <el-button size="small" @click="resetForm('ruleForm')">取消</el-button>
+        <el-button size="small" type="primary" @click="submitForm">确认</el-button>
+        <el-button size="small" @click="resetForm">取消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -90,13 +90,15 @@ export default {
     return {
       userMsgBox: false,
       userArr: {},
-      ruleForm: {},
-      rules: {
-        // email: [{ required: false, message: "请输入用户名", trigger: "blur" }],
-        // phoneNum: [
-        //   // { required: false, message: "请输入手机号码", trigger: "change" },
-        //   { pattern: /^1[3|4|5|7|8][0-9]\d{8}$/, message: "手机号格式错误" }
-        // ]
+      InfoForm: {},
+      Inforules: {
+        phones: [
+          {
+            pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
+            message: "手机号格式错误",
+            trigger: "change"
+          }
+        ]
       }
     };
   },
@@ -106,26 +108,26 @@ export default {
     },
     closeMsgBox(formName) {
       this.userMsgBox = false;
-      this.ruleForm = {};
+      this.InfoForm = {};
       this.$refs[formName].resetFields();
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
+    resetForm() {
+      this.userMsgBox = false;
+      this.$refs.InfoForm.resetFields();
     },
-    submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+    submitForm() {
+      this.$refs.InfoForm.validate(valid => {
         if (valid) {
-          console.log(this.ruleForm);
-          console.log(this.userArr);
           let userObj = {};
-          if (this.ruleForm.phoneNum !== this.userArr.phone) {
-            userObj.phone = this.ruleForm.phoneNum;
+          console.log(this.InfoForm);
+          if (this.InfoForm.phones !== this.userArr.phone) {
+            userObj.phone = this.InfoForm.phones;
           }
-          if (this.ruleForm.userName !== this.userArr.nickName) {
-            userObj.nickName = this.ruleForm.userName;
+          if (this.InfoForm.userName !== this.userArr.nickName) {
+            userObj.nickName = this.InfoForm.userName;
           }
-          if (this.ruleForm.email !== this.userArr.email) {
-            userObj.email = this.ruleForm.email;
+          if (this.InfoForm.email !== this.userArr.email) {
+            userObj.email = this.InfoForm.email;
           }
           console.log(userObj);
           if (JSON.stringify(userObj) !== "{}") {
@@ -137,18 +139,10 @@ export default {
                   message: "修改成功"
                 });
                 this.init();
-                this.closeMsgBox('ruleForm');
+                this.closeMsgBox("InfoForm");
               }
             });
           }
-          // let userObj = {
-          //   email: this.ruleForm.email,
-          //   phone: this.ruleForm.phoneNum,
-          //   nickName: this.ruleForm.userName
-          // };
-        } else {
-          console.log("error submit!!");
-          return false;
         }
       });
     },
@@ -159,9 +153,9 @@ export default {
           this.userArr = res.data.data;
           this.userArr.accountType = utils.accountType(this.userArr.type);
           this.userArr.email = res.data.data.email || "暂无";
-          this.ruleForm.email = this.userArr.email;
-          this.ruleForm.phoneNum = res.data.data.phone;
-          this.ruleForm.userName = res.data.data.nickName;
+          // this.InfoForm.email = this.userArr.email;
+          // this.InfoForm.phones = res.data.data.phone;
+          // this.InfoForm.userName = res.data.data.nickName;
         }
       });
     }

@@ -42,23 +42,23 @@
       <div class="address">
         <div>
           <img width="21px" src="../../assets/img/me.png" alt="">
-          <span>上海摩融</span>
+          <span>{{companyInfo.companyName}}</span>
         </div>
         <div>
           <img width="22px" src="../../assets/img/address.png" alt="">
-          <span>山东省烟台市招远市大秦家街道</span>
+          <span>{{companyInfo.address}}</span>
         </div>
         <div>
           <img width="25px" src="../../assets/img/battery.png" alt="">
-          <span>jinchaoyuke001</span>
+          <span>{{companyInfo.voltage}}</span>
         </div>
         <div>
           <img width="26px" src="../../assets/img/device.png" alt="">
-          <span>1365ACC1981A</span>
+          <span>{{companyInfo.current}}</span>
         </div>
         <div>
           <img width="25px" src="../../assets/img/device-flesh.png" alt="">
-          <span>00.00.05</span>
+          <span>{{companyInfo.version}}</span>
         </div>
       </div>
     </div>
@@ -90,11 +90,14 @@ export default {
         temperature: [],
         voltage: [],
         current: []
-      }
+      },
+      companyInfo: {}
     };
   },
   mounted() {
+    this.hostId = this.$route.query.hostId;
     this.init();
+    this.getCompanyInfo();
   },
   methods: {
     init() {
@@ -104,11 +107,14 @@ export default {
       });
       this.getData();
     },
-    // getBatteryInfo() {
-    //   this.$axios.get(`/battery_group/{id}/info`).then(res => {
-    //     console.log(res);
-    //   });
-    // },
+    getCompanyInfo() {
+      this.$axios.get(`/battery_group/${this.hostId}/info`).then(res => {
+        console.log(res);
+        if (res.data && res.data.code === 0 && res.data.data) {
+          this.companyInfo = res.data.data;
+        }
+      });
+    },
     getData() {
       // let startTime = utils.dateFomats(utils.getYestoday());
       // let endTime = utils.dateFomats(utils.getNowTime());

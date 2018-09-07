@@ -1,9 +1,5 @@
 <template>
   <div class="bgFFF">
-    <div class="btns">
-      <el-button type="primary" icon="el-icon-remove-outline"></el-button>
-      <el-button type="primary" icon="el-icon-circle-plus-outline"></el-button>
-    </div>
     <div class="chartWarrp">
       <div class="chartInfo" id="echart1"></div>
       <div class="chartInfo" id="echart2"></div>
@@ -16,6 +12,7 @@
 </template>
 
 <script>
+/* eslint-disable */
 import echarts from "echarts";
 import _ from "lodash";
 import options from "@/config/echartOptions";
@@ -77,9 +74,15 @@ export default {
       ]);
 
       this.myEcharts1.on("datazoom", param => {
-        console.log(param);
-        // console.log(option.dataZoom.start);
-        // console.log(myEcharts1.dataZoom.start);
+        // console.log(param);
+        clearTimeout(this.timeoutId);
+        this.timeoutId = setTimeout(() => {
+          if ("batch" in param) {
+            this.$emit("timeZoom", param.batch[0]);
+          } else {
+            this.$emit("timeZoom", param);
+          }
+        }, 800);
       });
       window.onresize = () => {
         this.myEcharts1.resize();
