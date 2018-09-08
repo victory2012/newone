@@ -13,14 +13,15 @@ import axios from './api/http';
 import utils from "./utils/utils";
 import ElementUI from './UI/element';
 import {
-  Message
+  Message,
+  MessageBox
 } from "element-ui";
 
 const isDebug_mode = process.env.NODE_ENV !== 'production'
 Vue.config.debug = isDebug_mode
 Vue.config.devtools = isDebug_mode
 Vue.config.productionTip = isDebug_mode
-// Vue.config.productionTip = false;
+
 /**
  * 导出数据报表xlsx文件
  * 已注入所有Vue实例，
@@ -40,6 +41,7 @@ ElementUI();
 Vue.prototype.$outputXlsxFile = outputXlsxFile;
 Vue.prototype.$axios = axios;
 Vue.prototype.$message = Message;
+Vue.prototype.$messageBox = MessageBox;
 
 Vue.use(Vuex);
 const store = createStore();

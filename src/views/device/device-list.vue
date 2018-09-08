@@ -349,8 +349,7 @@ export default {
     },
     /* 删除设备 */
     deleteRow(data) {
-      console.log(data);
-      this.$alert("确定删除此设备吗？", {
+      this.$messageBox.alert("确定删除此设备吗？", {
         showCancelButton: true,
         confirmButtonText: "确定",
         cancelButtonText: "取消",

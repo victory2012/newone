@@ -328,10 +328,11 @@ export default {
         [3, 4, 4],
         [5, 6, 6, 8]
       ];
-      this.$prompt("请输入导出文件名", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消"
-      })
+      this.$messageBox
+        .prompt("请输入导出文件名", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消"
+        })
         .then(({ value }) => {
           console.log(value);
           this.$outputXlsxFile(arr, value);

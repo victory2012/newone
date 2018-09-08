@@ -364,14 +364,23 @@ export default {
     },
     deleteBattery(row) {
       if (!row.id) return;
-      this.$axios.delete(`/host/${row.id}`).then(res => {
-        if (res.data && res.data.code === 0) {
-          // console.log(res);
-          this.$message({
-            type: "success",
-            message: res.data.msg
-          });
-          this.getBatteryList();
+      this.$messageBox.alert("确定删除此电池组吗？", {
+        showCancelButton: true,
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        callback: action => {
+          if (action === "confirm") {
+            this.$axios.delete(`/host/${row.id}`).then(res => {
+              if (res.data && res.data.code === 0) {
+                // console.log(res);
+                this.$message({
+                  type: "success",
+                  message: res.data.msg
+                });
+                this.getBatteryList();
+              }
+            });
+          }
         }
       });
     },

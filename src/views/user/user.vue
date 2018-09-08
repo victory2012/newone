@@ -153,7 +153,7 @@ export default {
       }
     },
     secondary(item) {
-      this.$alert("确定删除此用户吗？", {
+      this.$messageBox.alert("确定删除此用户吗？", {
         showCancelButton: true,
         confirmButtonText: "确定",
         cancelButtonText: "取消",
