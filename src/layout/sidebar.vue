@@ -17,7 +17,12 @@
 </template>
 
 <script>
+// import { Submenu, MenuItem } from "element-ui";
 export default {
+  // components: {
+  //   "el-submenu": Submenu,
+  //   "el-menu-item": MenuItem
+  // },
   props: ["menuData"],
   name: "MenuTree"
 };

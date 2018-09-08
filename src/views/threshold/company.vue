@@ -95,6 +95,8 @@
   </div>
 </template>
 <script>
+import { Message } from "element-ui";
+
 export default {
   data() {
     return {
@@ -201,7 +203,7 @@ export default {
         if (res.data && res.data.code === 0) {
           let result = res.data;
           if (result.data === null) {
-            this.$message({
+            Message({
               message: "暂未设置全局阈值",
               type: "warning"
             });
@@ -247,7 +249,7 @@ export default {
       this.$axios.post(`battery_group_event_policy`, data).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
-          this.$message({
+          Message({
             message: "添加成功",
             type: "success"
           });
@@ -259,7 +261,7 @@ export default {
       this.$axios.put(`battery_group_event_policy`, data).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
-          this.$message({
+          Message({
             message: "修改成功",
             type: "success"
           });

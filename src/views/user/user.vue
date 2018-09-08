@@ -56,6 +56,7 @@
   </div>
 </template>
 <script>
+/* eslint-disable */
 import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
 import addData from "../../config/add-user-data";

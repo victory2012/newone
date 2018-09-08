@@ -3,8 +3,6 @@
 /* eslint-disable */
 import Vue from 'vue';
 import Vuex from 'vuex';
-/* eslint-disable */
-import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import XLSX from 'xlsx';
 import '../static/icon/iconfont.css';
@@ -13,6 +11,16 @@ import router from './router';
 import createStore from "./store/store";
 import axios from './api/http';
 import utils from "./utils/utils";
+import ElementUI from './UI/element';
+import {
+  Message
+} from "element-ui";
+
+const isDebug_mode = process.env.NODE_ENV !== 'production'
+Vue.config.debug = isDebug_mode
+Vue.config.devtools = isDebug_mode
+Vue.config.productionTip = isDebug_mode
+// Vue.config.productionTip = false;
 /**
  * 导出数据报表xlsx文件
  * 已注入所有Vue实例，
@@ -23,19 +31,16 @@ import utils from "./utils/utils";
  */
 // const outputXlsxFile = (data, wscols, xlsxName) => {
 const outputXlsxFile = (data, xlsxName) => {
-  /* convert state to workbook */
   const ws = XLSX.utils.aoa_to_sheet(data);
-  // ws['!cols'] = wscols;
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, xlsxName);
-  /* generate file and send to client */
   XLSX.writeFile(wb, `${xlsxName}.xlsx`);
 };
-
+ElementUI();
 Vue.prototype.$outputXlsxFile = outputXlsxFile;
 Vue.prototype.$axios = axios;
-Vue.config.productionTip = false;
-Vue.use(ElementUI);
+Vue.prototype.$message = Message;
+
 Vue.use(Vuex);
 const store = createStore();
 /* eslint-disable no-new */

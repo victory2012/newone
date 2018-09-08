@@ -1,4 +1,5 @@
 import Vue from 'vue';
+/* eslint-disable */
 import Router from 'vue-router';
 
 /* eslint-disable */

@@ -12,9 +12,13 @@
       <el-button @click="getChartData" class="queryBtn" size="small" type="primary">确定</el-button>
     </div>
     <div class="btns">
-      <el-button type="primary" @click="narrow" icon="el-icon-remove-outline"></el-button>
-      <el-button type="primary" @click="enlarge" icon="el-icon-circle-plus-outline"></el-button>
-      <el-button type="primary" @click="exportExcel">导出Excel</el-button>
+      <div class="btns-item">
+        <el-button type="primary" plain @click="narrow" icon="el-icon-remove-outline"></el-button>
+        <el-button type="primary" plain @click="enlarge" icon="el-icon-circle-plus-outline"></el-button>
+      </div>
+      <div class="btns-item">
+        <el-button type="primary" plain @click="exportExcel">导出Excel</el-button>
+      </div>
     </div>
     <echart-map :chartData="dataObj" :loading="loading" @timeZoom="timeZoom"></echart-map>
     <div class="batteryChart">
@@ -302,7 +306,6 @@ export default {
         return;
       }
       let time = utils.zoomTime(this.start, this.end);
-      // console.log(time);
       let perStart = Math.round(this.zoomBar.start) / 100;
       let perEnd = Math.round(this.zoomBar.end) / 100;
       let startTime = new Date(this.start).getTime() + time * Number(perStart);
@@ -315,7 +318,6 @@ export default {
       this.getChartDatafun(obj.start, obj.end);
       let len = this.zoomArr.length;
       this.Timeindex = len - 2;
-      // console.log(this.zoomArr);
     },
     exportExcel() {
       let arr = [
@@ -326,8 +328,15 @@ export default {
         [3, 4, 4],
         [5, 6, 6, 8]
       ];
-      this.$outputXlsxFile(arr, "aaaaa");
-      console.log(this.$outputXlsxFile);
+      this.$prompt("请输入导出文件名", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消"
+      })
+        .then(({ value }) => {
+          console.log(value);
+          this.$outputXlsxFile(arr, value);
+        })
+        .catch(() => {});
     }
   }
 };
@@ -479,5 +488,17 @@ export default {
 .page {
   padding-top: 20px;
   text-align: right;
+}
+.btns {
+  display: flex;
+  justify-content: space-between;
+  .btns-item {
+    flex: 1;
+    padding-left: 50px;
+    &:nth-last-child(1) {
+      text-align: right;
+      padding-right: 50px;
+    }
+  }
 }
 </style>

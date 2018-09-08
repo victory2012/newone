@@ -35,6 +35,7 @@
   </div>
 </template>
 <script>
+/* eslint-disable */
 import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
 import MenuTree from "./sidebar";

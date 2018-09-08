@@ -17,7 +17,7 @@
 
 <script>
 /* eslint-disable */
-import echarts from "echarts"; /* eslint-disable */
+import echarts from "echarts";
 import _ from "lodash";
 
 export default {
@@ -107,11 +107,6 @@ export default {
 
       this.peiEcharts1 = echarts.init(BarDOM1);
       this.peiEcharts2 = echarts.init(BarDOM2);
-
-      // window.onresize = () => {
-      //   this.peiEcharts1.resize();
-      //   this.peiEcharts2.resize();
-      // };
       this.loadingChange(this.loading);
       this.dataChange(this.peiData);
     },
@@ -125,7 +120,6 @@ export default {
       }
     },
     dataChange(peiData) {
-      console.log(peiData);
       let voltageOptions = _.cloneDeep(this.pieOption);
       voltageOptions.legend.data = ["充电时间", "放电时间", "空载时间"];
       voltageOptions.series[0].data = [

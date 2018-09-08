@@ -2,12 +2,12 @@
   <div class="updateCenter">
     <div class="topTab">
       <div class="items">
-        <el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-success="flieSuccess" :on-progress="onGoing" :on-error="flieError" :show-file-list="false" :multiple="false" :auto-upload="true">
+        <!-- <el-upload class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/" :on-success="flieSuccess" :on-progress="onGoing" :on-error="flieError" :show-file-list="false" :multiple="false" :auto-upload="true">
           <div slot="trigger">
             <img src="../../../static/img/device_import.png" alt="">
             <p>文件导入</p>
           </div>
-        </el-upload>
+        </el-upload> -->
       </div>
     </div>
     <div class="container">

@@ -27,7 +27,7 @@ module.exports = {
   output: {
     path: config.build.assetsRoot,
     filename: '[name].[hash].js',
-    chunkFilename: '[name].[chunkhash].js',
+    chunkFilename: '[name].chunk[hash].js',
     publicPath: process.env.NODE_ENV === 'production' ?
       config.build.assetsPublicPath : config.dev.assetsPublicPath
   },
@@ -96,6 +96,11 @@ module.exports = {
   externals: {
     'AMap': 'window.AMap',
     'AMapUI': 'window.AMapUI',
-    'echarts': 'echarts'
+    'echarts': 'echarts',
+    'axios': 'axios',
+    'vuex': 'Vuex',
+    'vue-router': 'VueRouter',
+    'lodash': '_',
+    'xlsx': 'XLSX'
   }
 }

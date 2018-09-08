@@ -101,6 +101,7 @@
   </div>
 </template>
 <script>
+/* eslint-disable */
 import XLSX from "xlsx";
 
 let wb; // 读取完成的数据
@@ -437,8 +438,7 @@ export default {
             result.pageData.forEach(key => {
               key.online = key.onlineStatus === 0;
               key.blackStatus = key.status === -1;
-              key.registerCode =
-                key.registerCode === null ? "未注册" : "已注册";
+              // key.registerCode = key.registerCode === null ? "未注册" : "已注册";
               key.bindStatus = key.hostId === null;
               key.bindState = key.hostId === null ? "未绑定" : "已绑定";
               this.tableData.push(key);
