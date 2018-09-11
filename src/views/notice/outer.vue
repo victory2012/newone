@@ -1,9 +1,15 @@
 <template>
   <div class="container">
     <div class="phoneAdd">
-      <div class="item tips">手机号码:</div>
+      <!-- <div class="item tips">手机号码:</div> -->
+      <div class="item tips"></div>
       <div class="item input">
-        <el-input size="small" type="tel" v-model="input" placeholder="请输入手机号"></el-input>
+        <!-- <el-input size="small" type="tel" v-model="input" placeholder="请输入手机号"></el-input> -->
+        <el-form :model="validateForm" :rules="rules" ref="validateForm" label-width="100px" class="demo-ruleForm">
+          <el-form-item label="手机号码" prop="input">
+            <el-input type="tel" size="small" v-model.number="validateForm.input" auto-complete="off" placeholder="请输入手机号"></el-input>
+          </el-form-item>
+        </el-form>
       </div>
       <div class="item">
         <el-button @click="addPerson" size="small" type="primary">添加</el-button>
@@ -36,24 +42,40 @@ export default {
   data() {
     return {
       input: "",
-      dataArr: []
+      dataArr: [],
+      validateForm: {},
+      rules: {
+        input: [
+          { required: true, message: "手机号码不能为空", trigger: "change" },
+          {
+            pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
+            message: "手机号格式错误",
+            trigger: "change"
+          }
+        ]
+      }
     };
   },
   methods: {
     addPerson() {
-      let obj = {
-        contactWay: this.input,
-        type: 0
-      };
-      this.$axios.post("/company_global_external_notice", obj).then(res => {
-        console.log(res);
-        if (res.data && res.data.code === 0) {
-          this.$message({
-            type: "success",
-            message: res.data.msg
+      if (this.dataArr.length > 2) return;
+      this.$refs.validateForm.validate(valid => {
+        if (valid) {
+          let obj = {
+            contactWay: this.validateForm.input,
+            type: 0
+          };
+          this.$axios.post("/company_global_external_notice", obj).then(res => {
+            console.log(res);
+            if (res.data && res.data.code === 0) {
+              this.$message({
+                type: "success",
+                message: res.data.msg
+              });
+              this.validateForm.input = "";
+              this.getList();
+            }
           });
-          this.input = "";
-          this.getList();
         }
       });
     },

@@ -4,7 +4,7 @@
       <el-row :gutter="60">
         <el-col :span="12">
           <el-form-item label="电池组生产企业" prop="account">
-            <el-input size="small" disabled v-model="account" auto-complete="off"></el-input>
+            <el-input size="small" disabled v-model="account" auto-complete="off" style="width:210px;"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -19,7 +19,7 @@
       <el-row :gutter="60">
         <el-col :span="12">
           <el-form-item label="电池组编号" prop="groupNum">
-            <el-input size="small" v-model="batteryForm.groupNum" auto-complete="off"></el-input>
+            <el-input size="small" v-model="batteryForm.groupNum" style="width:210px;" placeholder="电池组编号"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -42,14 +42,14 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="电池组额定电压" prop="batteryVoltage">
-            <el-input size="small" v-model.number="batteryForm.batteryVoltage" auto-complete="off"></el-input>
+            <el-input size="small" v-model.number="batteryForm.batteryVoltage" style="width:210px;" placeholder="电池组额定电压"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="60">
         <el-col :span="12">
           <el-form-item label="电池组额定容量" prop="batteryCapacity">
-            <el-input size="small" v-model.number="batteryForm.batteryCapacity" auto-complete="off"></el-input>
+            <el-input size="small" v-model.number="batteryForm.batteryCapacity" style="width:210px;" placeholder="电池组额定容量"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -166,18 +166,17 @@ export default {
       this.batteryForm = {};
     },
     submitBatteryAdd() {
-      // console.log(this.batteryForm);
       this.$refs.batteryForm.validate(valid => {
         if (valid) {
           console.log("submit!");
           this.GroupModelOpts.forEach(key => {
             if (key.id === this.batteryForm.batGroupModel) {
-              this.batteryForm.model = key.dicValue;
+              this.batteryForm.model = key.dicKey;
             }
           });
           this.batGroupSpecifOpts.forEach(key => {
             if (key.id === this.batteryForm.batGroupSpecif) {
-              this.batteryForm.norm = key.dicValue;
+              this.batteryForm.norm = key.dicKey;
             }
           });
           this.batCustomOpts.forEach(key => {
@@ -187,7 +186,7 @@ export default {
           });
           this.singleBatteryOpts.forEach(key => {
             if (key.id === this.batteryForm.singleBattery) {
-              this.batteryForm.singleMode = key.dicValue;
+              this.batteryForm.singleMode = key.dicKey;
             }
           });
           let params = {

@@ -88,6 +88,7 @@ import chartPie from "../../components/echartPie";
 import liquid from "../../components/alarm-liquid";
 
 export default {
+  props: ["hostId", "propData"],
   components: {
     chartPie,
     echartMap,
@@ -153,8 +154,12 @@ export default {
     };
   },
   mounted() {
-    this.hostId = this.$route.query.hostId;
-    // this.getChartData();
+    console.log("propData", this.propData);
+    // if (JSON.stringify(this.propData)) {
+
+    // }
+    // this.hostId = this.$route.query.hostId;
+    this.getChartData();
   },
   methods: {
     getChartData() {
@@ -164,11 +169,12 @@ export default {
     },
     getChartDatafun(startTime, endTime) {
       this.loading = true;
+      let endTimes = `${endTime}235959`;
       this.$axios
         .get(
           `/battery_group/${
             this.hostId
-          }/data2?startTime=${startTime}&endTime=${endTime}`
+          }/data2?startTime=${startTime}&endTime=${endTimes}`
         )
         .then(res => {
           console.log(res);
@@ -182,6 +188,7 @@ export default {
           };
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
+            this.exportData = result.list;
             result.list.forEach(key => {
               // console.log(key);
               this.dataObj.timeArr.push(utils.fomats(key.time)); // 时间
@@ -225,6 +232,7 @@ export default {
     getAlarmData() {
       let startTime = utils.sortTime(this.start);
       let endTime = utils.sortTime(this.end);
+      let endTimes = `${endTime}235959`;
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage
@@ -233,7 +241,7 @@ export default {
         .get(
           `/battery_group_event?hostId=${
             this.hostId
-          }&startTime=${startTime}&endTime=${endTime}`,
+          }&startTime=${startTime}&endTime=${endTimes}`,
           pageObj
         )
         .then(res => {
@@ -320,13 +328,18 @@ export default {
       this.Timeindex = len - 2;
     },
     exportExcel() {
+      // console.log(this.exportData);
+      let storage = JSON.parse(utils.getStorage("loginData"));
       let arr = [
         ["制表时间", new Date()],
-        ["制表人", "摩融信息"],
-        ["制表人", "摩融信息"],
-        ["温度", "电压", "电流", "单体电压"],
-        [3, 4, 4],
-        [5, 6, 6, 8]
+        ["制表人", `${storage.companyName}-${storage.account}`],
+        [
+          "设备编号",
+          this.propData.deviceCode,
+          "电池组编号",
+          this.propData.code
+        ],
+        ["温度", "电压", "电流", "单体电压"]
       ];
       this.$messageBox
         .prompt("请输入导出文件名", "提示", {
@@ -334,8 +347,22 @@ export default {
           cancelButtonText: "取消"
         })
         .then(({ value }) => {
-          console.log(value);
-          this.$outputXlsxFile(arr, value);
+          if (!value) {
+            this.$message("请输入文件名");
+          } else {
+            if (this.exportData.length < 1) return;
+            this.exportData.forEach(key => {
+              let opts = [
+                key.temperature,
+                key.voltage,
+                key.current,
+                key.singleVoltage
+              ];
+              arr.push(opts);
+            });
+            this.$outputXlsxFile(arr, value);
+          }
+          // this.$outputXlsxFile(arr, value);
         })
         .catch(() => {});
     }

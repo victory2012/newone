@@ -108,10 +108,10 @@
     </el-dialog>
     <!-- 电池绑定 -->
     <el-dialog width="600px" title="电池与检测设备绑定" :visible.sync="bindDevice">
-      <el-form :model="deviceModel" label-width="150px" label-position="right" ref="deviceModel">
+      <el-form :model="deviceModel" label-width="150px" label-position="right" ref="deviceModel" style="margin-top:20px;">
         <el-form-item label="监测设备编号" prop="deviceId" :rules="[{ required: true, message: '请输入内容', trigger: 'change' }]">
           <el-select size="small" style="width:210px" v-model="deviceModel.deviceId" placeholder="设备编号">
-            <el-option v-for="item in deviceIdOpts" :key="item.code" :label="item.code" :value="item.id" :disabled="item.disabled">
+            <el-option v-for="item in deviceIdOpts" :key="item.id" :label="item.code" :value="item.id" :disabled="item.disabled">
             </el-option>
           </el-select>
         </el-form-item>
@@ -198,6 +198,7 @@ export default {
   },
   data() {
     return {
+      fullscreenLoading: false,
       showAdd: "",
       deviceModel: {},
       bindDevice: false,
@@ -259,9 +260,16 @@ export default {
     submitBind() {
       this.$refs.deviceModel.validate(vlited => {
         if (vlited) {
+          this.deviceIdOpts.forEach(key => {
+            if (this.deviceModel.deviceId === key.id) {
+              this.deviceModel.code = key.code;
+            }
+          });
           let bindObj = {
-            hostId: this.bindHostId,
-            deviceId: this.deviceModel.deviceId
+            hostId: this.bindRows.hostId,
+            deviceId: this.deviceModel.deviceId,
+            hostCode: this.bindRows.code,
+            deviceCode: this.deviceModel.code
           };
           this.$axios.put("host/bind", bindObj).then(res => {
             if (res.data && res.data.code === 0) {
@@ -352,7 +360,6 @@ export default {
       this.getBatteryList();
     },
     lookFor(row) {
-      console.log(row);
       this.$router.push({
         path: "battery/run",
         query: {
@@ -372,7 +379,6 @@ export default {
           if (action === "confirm") {
             this.$axios.delete(`/host/${row.id}`).then(res => {
               if (res.data && res.data.code === 0) {
-                // console.log(res);
                 this.$message({
                   type: "success",
                   message: res.data.msg
@@ -389,7 +395,7 @@ export default {
       console.log(row);
       this.getDeviceList();
       this.bindDevice = true;
-      this.bindHostId = row.hostId;
+      this.bindRows = row;
     },
     /* 解绑按钮 */
     unbindClick(row) {
@@ -406,6 +412,13 @@ export default {
     },
     fileUpload(event) {
       console.log(event);
+      this.fullscreenLoading = true;
+      // const loading = this.$loading({
+      //   lock: true,
+      //   text: "Loading",
+      //   spinner: "el-icon-loading",
+      //   background: "rgba(0, 0, 0, 0.7)"
+      // });
       this.eventUpload = event.target;
       let obj = event.target;
       if (!obj.files) {
@@ -423,6 +436,7 @@ export default {
           message: "请导入xls格式或者xlsx格式"
         });
         this.eventUpload.value = "";
+        this.fullscreenLoading = false;
         return;
       }
       if (obj.files[0].size / 1024 > IMPORTFILE_MAXSIZE) {
@@ -431,6 +445,7 @@ export default {
           message: "导入的表格文件不能大于1M"
         });
         this.eventUpload.value = "";
+        this.fullscreenLoading = false;
         return;
       }
       let f = obj.files[0];
@@ -457,6 +472,7 @@ export default {
         console.log(resultObj);
         if (resultObj.length < 1) {
           this.$message.error("上传的文件内容为空，请检查文件");
+          this.fullscreenLoading = false;
         } else {
           for (let i = 0; i < resultObj.length; i++) {
             let results = resultObj[i];
@@ -473,6 +489,8 @@ export default {
               !results["质保期"]
             ) {
               this.$message.error("请文件填写完整");
+              this.eventUpload.value = "";
+              this.fullscreenLoading = false;
               return;
             }
             if (
@@ -480,6 +498,8 @@ export default {
               results["电池组编号"] === resultObj[i + 1]["电池组编号"]
             ) {
               this.$message.error("电池组编号不能重复，请检查文件");
+              this.eventUpload.value = "";
+              this.fullscreenLoading = false;
               return;
             }
             if (
@@ -487,9 +507,10 @@ export default {
               !utils.checkDate(results["出产日期"]) ||
               !utils.checkDate(results["质保期"])
             ) {
-              this.$message.warning(
-                "时间格式不支持，请检查；（支持：2020/2/3）"
-              );
+              this.$message.warning("时间格式不支持，请选择文本形式");
+              this.eventUpload.value = "";
+              this.fullscreenLoading = false;
+              return;
             }
             let ItemObj = {
               code: results["电池组编号"],
@@ -536,6 +557,7 @@ export default {
     fileUploadTo(data) {
       this.$axios.post(`/battery_group/batch`, data).then(res => {
         console.log(res);
+        this.fullscreenLoading = false;
         if (res.data && res.data.code === 0) {
           this.$message.success("批量添加成功");
           this.eventUpload.value = "";
@@ -573,8 +595,15 @@ export default {
           this.total = result.total;
           result.pageData.forEach(key => {
             key.onLine = key.onlineStatus === 0 || key.onlineStatus === null;
-            key.hasbind = key.deviceId === null;
-            key.bindingName = key.deviceId === null ? "未绑定" : "已绑定";
+            if (key.deviceId) {
+              key.hasbind = false;
+              key.deviceCode = key.deviceCode;
+              key.bindingName = "已绑定";
+            } else {
+              key.bindingName = "未绑定";
+              key.hasbind = true;
+              key.deviceCode = "无";
+            }
             this.tableData.push(key);
           });
         }
@@ -593,7 +622,7 @@ export default {
     },
     /* 获取电池组客户企业表 */
     getCompanyId() {
-      this.$axios.get("/company/names?layer=2").then(res => {
+      this.$axios.get("/company/purchase_names").then(res => {
         console.log("获取电池组客户企业表", res);
         if (res.data && res.data.code === 0) {
           this.batCustomOpts = res.data.data;
@@ -621,6 +650,7 @@ export default {
     this.getBatteryModelList();
     this.getCompanyId();
     this.getBatteryList();
+    this.getDeviceList();
     this.userRole();
   }
 };

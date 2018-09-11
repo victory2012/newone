@@ -222,7 +222,7 @@ export default {
       this.lineEcharts4.setOption(temperatureOptions);
     },
     barDataChange(datas) {
-      console.log(datas);
+      // console.log(datas);
       let voltageBarOptions = _.cloneDeep(BarOptions);
       voltageBarOptions.title.text = "充电情况";
       voltageBarOptions.xAxis[0].data = [

@@ -48,7 +48,7 @@
         <div class="item">最多可选
           <span style="color:#71bfdb">{{chooseLen}}</span>项 设备ID：
           <el-tag v-for="tag in stacks1" :key="tag.hostId+new Date()" @close="closeTags(tag)" closable :type="''">
-            {{tag.deviceId}}
+            {{tag.code}}
           </el-tag>
         </div>
 
@@ -65,7 +65,7 @@
         <el-table-column property="code" label="电池编号"></el-table-column>
         <el-table-column property="model" label="电池型号"></el-table-column>
         <el-table-column property="norm" label="电池组规格"></el-table-column>
-        <el-table-column property="deviceId" label="监测设备编号"></el-table-column>
+        <el-table-column property="deviceCode" label="监测设备编号"></el-table-column>
         <el-table-column label="操作" width="55">
           <template slot-scope="scope">
             <el-checkbox @change="toggleCheck(scope.row)" v-model="scope.row.checked"></el-checkbox>
@@ -285,18 +285,19 @@ export default {
     getDataNow(startTime, endTime) {
       let deviceId;
       let otherId;
+      let endTimes = `${endTime}235959`;
       if (this.actived === "same") {
-        deviceId = this.chooseObj.deviceId;
-        otherId = this.chooseObj.deviceId;
+        deviceId = this.chooseObj.hostId;
+        otherId = this.chooseObj.hostId;
       }
       if (this.actived === "diff") {
-        deviceId = this.stacks1[0].deviceId;
-        otherId = this.stacks1[1].deviceId;
+        deviceId = this.stacks1[0].hostId;
+        otherId = this.stacks1[1].hostId;
       }
       this.chartloading = true;
       this.$axios
         .get(
-          `/battery_group/${deviceId}/data2?startTime=${startTime}&endTime=${endTime}`
+          `/battery_group/${deviceId}/data2?startTime=${startTime}&endTime=${endTimes}`
         )
         .then(res => {
           console.log(res);
@@ -330,9 +331,10 @@ export default {
         });
     },
     getDataPrev(startTime, endTime, id) {
+      let endTimess = `${endTime}235959`;
       this.$axios
         .get(
-          `/battery_group/${id}/data2?startTime=${startTime}&endTime=${endTime}`
+          `/battery_group/${id}/data2?startTime=${startTime}&endTime=${endTimess}`
         )
         .then(res => {
           console.log(res);
@@ -376,9 +378,6 @@ export default {
     },
     sureBtn() {
       this.tableVisible = false;
-      // if ("code" in this.chooseObj) {
-      //   this.contrastData = true;
-      // }
       if (this.actived === "same") {
         this.contrastData = true;
       }

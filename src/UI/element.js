@@ -25,7 +25,8 @@ import {
   Checkbox,
   Col,
   Row,
-  InputNumber
+  InputNumber,
+  Tag
 } from 'element-ui';
 
 export default function elementui() {
@@ -55,4 +56,5 @@ export default function elementui() {
   Vue.use(Row);
   Vue.use(Col);
   Vue.use(InputNumber);
+  Vue.use(Tag);
 }

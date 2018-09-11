@@ -42,23 +42,23 @@
       <div class="address">
         <div>
           <img width="21px" src="../../assets/img/me.png" alt="">
-          <span>{{companyInfo.companyName}}</span>
+          <span>{{propData.companyName}}</span>
         </div>
         <div>
           <img width="22px" src="../../assets/img/address.png" alt="">
-          <span>{{companyInfo.address}}</span>
+          <span>{{propData.address}}</span>
         </div>
         <div>
           <img width="25px" src="../../assets/img/battery.png" alt="">
-          <span>{{companyInfo.voltage}}</span>
+          <span>{{propData.code}}</span>
         </div>
         <div>
           <img width="26px" src="../../assets/img/device.png" alt="">
-          <span>{{companyInfo.current}}</span>
+          <span>{{propData.deviceCode}}</span>
         </div>
         <div>
           <img width="25px" src="../../assets/img/device-flesh.png" alt="">
-          <span>{{companyInfo.version}}</span>
+          <span>{{propData.version}}</span>
         </div>
       </div>
     </div>
@@ -76,6 +76,7 @@ import utils from "@/utils/utils";
 import echartMap from "../../components/realTime";
 
 export default {
+  props: ["hostId", "propData"],
   components: {
     echartMap
   },
@@ -95,9 +96,11 @@ export default {
     };
   },
   mounted() {
-    this.hostId = this.$route.query.hostId;
+    console.log(this.hostId);
+    console.log("propData", this.propData);
+    // this.companyInfo = this.propData;
     this.init();
-    this.getCompanyInfo();
+    // this.getCompanyInfo();
   },
   methods: {
     init() {
@@ -107,14 +110,14 @@ export default {
       });
       this.getData();
     },
-    getCompanyInfo() {
-      this.$axios.get(`/battery_group/${this.hostId}/info`).then(res => {
-        console.log(res);
-        if (res.data && res.data.code === 0 && res.data.data) {
-          this.companyInfo = res.data.data;
-        }
-      });
-    },
+    // getCompanyInfo() {
+    //   this.$axios.get(`/battery_group/${this.hostId}/info`).then(res => {
+    //     console.log(res);
+    //     if (res.data && res.data.code === 0 && res.data.data) {
+    //       this.companyInfo = res.data.data;
+    //     }
+    //   });
+    // },
     getData() {
       // let startTime = utils.dateFomats(utils.getYestoday());
       // let endTime = utils.dateFomats(utils.getNowTime());

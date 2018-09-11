@@ -1,5 +1,5 @@
 <template>
-  <el-dialog width="600px" title="创建生产企业管理员" @close="closedIt" :visible.sync="manfictor">
+  <el-dialog width="600px" :title="userText" @close="closedIt" :visible.sync="manfictor">
     <el-form :model="adminForm" :rules="customerRules" ref="adminForm">
       <el-row :gutter="40">
         <el-col :span="12">
@@ -51,6 +51,7 @@ export default {
   },
   data() {
     return {
+      userText: "",
       creatAdmin: true,
       adminForm: {},
       // manfictor: true,
@@ -104,6 +105,9 @@ export default {
       },
       set: function() {}
     }
+  },
+  mounted() {
+    this.userText = sessionStorage.getItem("useItem");
   },
   methods: {
     resetAdmin(formName) {
@@ -167,7 +171,7 @@ export default {
     closedIt() {
       console.log("it closed");
       this.$store.state.manfictor = false;
-      this.resetAdmin('adminForm');
+      this.resetAdmin("adminForm");
     }
   }
 };

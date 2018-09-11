@@ -9,19 +9,28 @@
         <a @click="showAlarmData" :class="{'active': actived == 'alarm'}">告警数据</a>
       </div>
       <div class="search">
-        <el-autocomplete v-show="actived == 'real'" size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入电池编号" @select="handleSelect"></el-autocomplete>
+        <!-- <el-autocomplete v-show="actived === 'real'" size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入电池编号" @select="handleSelect"></el-autocomplete> -->
+        <el-select v-show="actived === 'real'" v-model="state" filterable placeholder="请输入电池编号" clearable @change="changeBatteryCode">
+          <el-option v-for="item in tableData" :key="item.value" :label="item.value" :value="item.hostId">
+          </el-option>
+        </el-select>
+        <div v-show="actived !== 'real'" class="devicecode">
+          <p><img src="../../assets/img/battery.png" alt="" srcset="">{{companyInfo.code}}</p>
+          <p><img src="../../assets/img/device.png" alt="" srcset="">{{companyInfo.deviceCode}}</p>
+        </div>
       </div>
     </div>
     <div v-show="hasHostId" class="tips">
       请先选择一个电池组！
     </div>
-    <component :is="showCompontent"></component>
+    <component :is="showCompontent" :hostId="hostId" :propData="companyInfo"></component>
   </div>
 </template>
 <script>
 import real from "./real";
 import history from "./history";
 import alearm from "./alearm";
+// import utils from "../..//utils/utils";
 
 export default {
   components: {
@@ -36,59 +45,37 @@ export default {
   // },
   data() {
     return {
+      companyInfo: "",
       loading: false,
+      propData: {},
       state: "",
       actived: "real",
+      hostId: "",
       showCompontent: "",
       hasHostId: false,
-      tableData: [
-        {
-          id: "123",
-          value: "aaa"
-        },
-        {
-          id: "6558",
-          value: "aaavvv"
-        },
-        {
-          id: "12322",
-          value: "bbbb"
-        },
-        {
-          id: "12333",
-          value: "cccc"
-        },
-        {
-          id: "1231234",
-          value: "dddd"
-        },
-        {
-          id: "12asd3",
-          value: "ffff"
-        }
-      ]
+      tableData: []
     };
   },
   mounted() {
+    // let pro = utils.getStorage("propData");
+    // if (pro) {
+    //   this.propData = JSON.parse(pro);
+    // }
     this.hostId = this.$route.query.hostId;
-    if (this.hostId) {
-      this.hasHostId = false;
-      this.showCompontent = "real-time";
-    } else {
-      this.hasHostId = true;
-      this.showCompontent = "";
-    }
+    this.init();
+    this.getCompanyInfo();
   },
   methods: {
     init() {
       if (this.hostId) {
         this.hasHostId = false;
         this.showCompontent = "real-time";
-        // this.getData(deviceId);
       } else {
         this.hasHostId = true;
         this.showCompontent = "";
       }
+      this.batteryId = "";
+      this.getBatteryList();
     },
     querySearchAsync(queryString, callback) {
       let restaurants = this.tableData;
@@ -107,8 +94,11 @@ export default {
         );
       };
     },
-    handleSelect(val) {
-      console.log(val);
+    changeBatteryCode() {
+      if (this.state) {
+        this.hostId = this.state;
+        this.getCompanyInfo();
+      }
     },
     showRealData() {
       this.actived = "real";
@@ -147,6 +137,39 @@ export default {
           let result = res.data.data;
           this.total = result.total;
           this.tableData = result.pageData;
+        }
+      });
+    },
+    /* 获取电池列表 */
+    getBatteryList() {
+      let options = {
+        pageSize: 99999,
+        pageNum: 1,
+        bindingStatus: 1
+      };
+      this.$axios.get("/battery_group", options).then(res => {
+        console.log(res);
+        this.tableData = [];
+        if (res.data && res.data.code === 0) {
+          let result = res.data.data;
+          result.pageData.forEach(key => {
+            let obj = {
+              id: key.id,
+              value: key.code,
+              hostId: key.hostId,
+              device: key.deviceCode
+            };
+            this.tableData.push(obj);
+          });
+        }
+      });
+    },
+    getCompanyInfo() {
+      this.$axios.get(`/battery_group/${this.hostId}/info`).then(res => {
+        console.log(res);
+        this.companyInfo = "";
+        if (res.data && res.data.code === 0 && res.data.data) {
+          this.companyInfo = res.data.data;
         }
       });
     }
@@ -190,6 +213,22 @@ export default {
     position: absolute;
     top: 32px;
     right: 20px;
+    .devicecode {
+      background: #ffffff;
+      width: 182px;
+      height: 70px;
+      font-size: 13px;
+      p {
+        padding-left: 5px;
+        height: 25px;
+        line-height: 25px;
+        padding: 5px 0;
+        img {
+          margin-right: 20px;
+          vertical-align: top;
+        }
+      }
+    }
   }
 }
 .tips {

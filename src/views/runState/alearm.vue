@@ -120,6 +120,7 @@
 import utils from "@/utils/utils";
 
 export default {
+  props: ["hostId"],
   data() {
     return {
       total: 0,
@@ -134,7 +135,8 @@ export default {
     };
   },
   mounted() {
-    this.hostId = this.$route.query.hostId;
+    // console.log(this.hostId);
+    // this.hostId = this.$route.query.hostId;
     this.getAlarmData();
   },
   methods: {

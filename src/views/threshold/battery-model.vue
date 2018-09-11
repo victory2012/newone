@@ -46,8 +46,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="放电电流上限阈值系数" prop="minChargeCurrent">
-              <el-input-number controls-position="right" size="small" v-model.number="batteryForm.minChargeCurrent" style="width:200px;"></el-input-number>
+            <el-form-item label="放电电流上限阈值系数" prop="maxDischargeCurrent">
+              <el-input-number controls-position="right" size="small" v-model.number="batteryForm.maxDischargeCurrent" style="width:200px;"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -146,7 +146,7 @@ export default {
             trigger: "change"
           }
         ],
-        minChargeCurrent: [
+        maxDischargeCurrent: [
           {
             required: true,
             message: "请输入放电电流上限阈值系数",
@@ -223,7 +223,7 @@ export default {
             maxChargeVoltage: this.batteryForm.maxChargeVoltage,
             minDischargeVoltage: this.batteryForm.minDischargeVoltage,
             maxChargeCurrent: this.batteryForm.maxChargeCurrent,
-            minChargeCurrent: this.batteryForm.minChargeCurrent,
+            maxDisChargeCurrent: this.batteryForm.maxDischargeCurrent,
             maxChargeTemperature: this.batteryForm.maxChargeTemperature,
             minChargeTemperature: this.batteryForm.minChargeTemperature,
             maxDischargeTemperature: this.batteryForm.maxDischargeTemperature,
@@ -232,6 +232,7 @@ export default {
             maxChargeCapacity: this.batteryForm.maxChargeCapacity,
             minChargeCapacity: this.batteryForm.minChargeCapacity
           };
+          console.log(params);
           if (this.hasTemp) {
             params.id = this.batteryModelTempId;
             this.modifyFunction(params);

@@ -1,7 +1,7 @@
 <template>
   <div class="alarmTable">
     <div class="addWarrp">
-      <div @click="adduser(index)" v-for="(key, index) in userData" class="addBox" :key="key.role">
+      <div @click="adduser(index, key)" v-for="(key, index) in userData" class="addBox" :key="key.role">
         <img :src="key.default" alt="">
         <p>{{key.text}}</p>
       </div>
@@ -24,7 +24,7 @@
           <el-button :disabled="!scope.row.userType" size="small" class="limite" @click.native.prevent="changeQuanxian(scope.row)" type="text">
             修改权限
           </el-button>
-          <el-button size="small" type="text" @click="secondary(scope.row)">删除</el-button>
+          <el-button size="small" type="text" @click="secondary(scope.row)" :disabled="scope.row.canNotDelete">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -70,7 +70,6 @@ export default {
   },
   data() {
     return {
-      // secondary: false, // 二次确认
       checked1: false,
       jurisdiction: false, // 权限
       componentId: "",
@@ -152,7 +151,9 @@ export default {
         this.userData = addData.getProduct();
       }
     },
+    /* 删除用户 */
     secondary(item) {
+      console.log(item);
       this.$messageBox.alert("确定删除此用户吗？", {
         showCancelButton: true,
         confirmButtonText: "确定",
@@ -220,21 +221,6 @@ export default {
         }
       });
     },
-    /* 删除用户 */
-    doDelete(item) {
-      // console.log(item);
-      this.secondary = false;
-      this.$axios.delete(`/user/${item.id}`).then(res => {
-        console.log(res);
-        if (res.data && res.data.code === 0) {
-          this.$message({
-            message: "删除成功",
-            type: "success"
-          });
-          this.getUserList();
-        }
-      });
-    },
     handleSizeChange(val) {
       console.log(val);
       this.pageSize = val;
@@ -244,7 +230,9 @@ export default {
       this.currentPage = val;
       this.getUserList();
     },
-    adduser(index) {
+    adduser(index, key) {
+      console.log(key);
+      sessionStorage.setItem("useItem", key.text);
       // this.userData = addData();
       this.clicked = this.userData[index].role;
       this.addType = this.userData[index].role;
@@ -272,10 +260,16 @@ export default {
           this.tableData = [];
           this.total = result.data.total;
           // this.currentPage = result.data.totalPage;
+          let storge = JSON.parse(utils.getStorage("loginData"));
           if (result.data.pageData.length > 0) {
             result.data.pageData.forEach(key => {
               key.role = utils.accountType(key.type);
               key.userType = key.type > 2;
+              if (key.type === 3 && storge.companyId !== key.companyId) {
+                key.canNotDelete = false;
+              } else {
+                key.canNotDelete = true;
+              }
               this.tableData.push(key);
             });
           }

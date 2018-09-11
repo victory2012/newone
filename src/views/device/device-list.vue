@@ -378,12 +378,9 @@ export default {
     },
     /* 获取公司列表 */
     getCompany() {
-      let json = {
-        layer: 1
-      };
       this.categoryArr = [];
       this.companyArr = [];
-      this.$axios.get(`company/names`, json).then(res => {
+      this.$axios.get(`company/manufacturer_names`).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.companyArr = res.data.data;
@@ -437,7 +434,8 @@ export default {
             result.pageData.forEach(key => {
               key.online = key.onlineStatus === 0;
               key.blackStatus = key.status === -1;
-              // key.registerCode = key.registerCode === null ? "未注册" : "已注册";
+              key.registerCode =
+                key.registerCode === null ? "未注册" : "已注册";
               key.bindStatus = key.hostId === null;
               key.bindState = key.hostId === null ? "未绑定" : "已绑定";
               this.tableData.push(key);
