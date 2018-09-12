@@ -51,6 +51,16 @@ export default {
     second = second < 10 ? `0${second}` : second;
     return `${year}-${mounth}-${day} ${hours}:${minute}:${second}`;
   },
+  UTCTime: (str) => {
+    let yy = str.substring(0, 4);
+    let mm = str.substring(4, 6);
+    let day = str.substring(6, 8);
+    let hour = str.substring(8, 10);
+    let minute = str.substring(10, 12);
+    let seconds = str.substring(12, 14);
+    let utc = `${yy}-${mm}-${day} ${hour}:${minute}:${seconds} UTC`;
+    return this.a.dateFomat(utc);
+  },
   setStorage: (key, data) => {
     sessionStorage.setItem(key, data);
   },
@@ -415,5 +425,28 @@ export default {
     let endTime = new Date(end).getTime();
     let days = endTime - startTime;
     return days;
+  },
+  RexTime: (str) => {
+    let start = str.replace(/-/g, "");
+    let starts = start.replace(/:/g, "");
+    let startss = starts.replace(/ /g, "");
+    return startss;
+  },
+  toUTCTime: (data) => {
+    let res = new Date(data).toISOString();
+    let res1 = res.replace(/-/g, '');
+    let res2 = res1.replace(/T/g, '');
+    let res3 = res2.replace(/:/g, '');
+    return res3.substr(0, 14);
+  },
+  TimeSconds: (str) => {
+    let yy = str.substring(0, 4);
+    let mm = str.substring(4, 6);
+    let day = str.substring(6, 8);
+    let hour = str.substring(8, 10);
+    let minute = str.substring(10, 12);
+    let seconds = str.substring(12, 14);
+    let utc = `${yy}-${mm}-${day} ${hour}:${minute}:${seconds} UTC`;
+    return new Date(utc).getTime();
   }
 };

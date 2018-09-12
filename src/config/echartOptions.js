@@ -10,7 +10,10 @@ export default {
     }
   },
   tooltip: {
-    trigger: "axis"
+    trigger: "axis",
+    axisPointer: {
+      animation: false
+    }
   },
   grid: {
     left: "3%",
@@ -23,6 +26,7 @@ export default {
       // show: true,
       type: "slider",
       start: 0,
+      realtime: true,
       end: 100,
       fillerColor: "rgba(167,183,204,0.4)",
       backgroundColor: "rgba(0,0,0,0)"
@@ -30,11 +34,13 @@ export default {
     {
       type: "inside",
       start: 0,
+      realtime: true,
       end: 100
     }
   ],
   xAxis: {
-    type: "category",
+    type: "time",
+    // type: "category",
     boundaryGap: false,
     data: "",
     axisLine: {

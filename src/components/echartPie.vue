@@ -120,6 +120,13 @@ export default {
       }
     },
     dataChange(peiData) {
+      // console.log("peiData", peiData.eventSummary === "{}");
+      // if (JSON.stringify(peiData.eventSummary)) {
+      //   peiData.eventSummary.temperature = 2;
+      //   peiData.eventSummary.fluidLevel = 2;
+      //   peiData.eventSummary.voltage = 2;
+      //   peiData.eventSummary.current = 2;
+      // }
       let voltageOptions = _.cloneDeep(this.pieOption);
       voltageOptions.legend.data = ["充电时间", "放电时间", "空载时间"];
       voltageOptions.series[0].data = [

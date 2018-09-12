@@ -154,11 +154,6 @@ export default {
     };
   },
   mounted() {
-    console.log("propData", this.propData);
-    // if (JSON.stringify(this.propData)) {
-
-    // }
-    // this.hostId = this.$route.query.hostId;
     this.getChartData();
   },
   methods: {
@@ -169,7 +164,7 @@ export default {
     },
     getChartDatafun(startTime, endTime) {
       this.loading = true;
-      let endTimes = `${endTime}235959`;
+      let endTimes = `${endTime}`.length > 8 ? endTime : `${endTime}235959`;
       this.$axios
         .get(
           `/battery_group/${
@@ -189,15 +184,35 @@ export default {
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
             this.exportData = result.list;
+            // result.list.forEach(key => {
+            //   this.dataObj.timeArr.push(utils.UTCTime(key.time)); // 时间
+            //   this.dataObj.singleVoltage.push(key.singleVoltage); // 单体电压
+            //   this.dataObj.temperature.push(key.temperature); // 温度
+            //   this.dataObj.voltage.push(key.voltage); // 电压
+            //   this.dataObj.current.push(key.current); // 电流
+            //   this.dataObj.positions.push([key.gcjLongitude, key.gcjLatitude]); // 电流
+            // });
             result.list.forEach(key => {
-              // console.log(key);
-              this.dataObj.timeArr.push(utils.fomats(key.time)); // 时间
-              this.dataObj.singleVoltage.push(key.singleVoltage); // 单体电压
-              this.dataObj.temperature.push(key.temperature); // 温度
-              this.dataObj.voltage.push(key.voltage); // 电压
-              this.dataObj.current.push(key.current); // 电流
+              // this.dataObj.timeArr.push(utils.TimeSconds(key.time)); // 时间
+              this.dataObj.singleVoltage.push({
+                name: utils.TimeSconds(key.time),
+                value: [utils.TimeSconds(key.time), key.singleVoltage]
+              });
+              this.dataObj.temperature.push({
+                name: utils.TimeSconds(key.time),
+                value: [utils.TimeSconds(key.time), key.temperature]
+              });
+              this.dataObj.voltage.push({
+                name: utils.TimeSconds(key.time),
+                value: [utils.TimeSconds(key.time), key.voltage]
+              });
+              this.dataObj.current.push({
+                name: utils.TimeSconds(key.time),
+                value: [utils.TimeSconds(key.time), key.current]
+              });
               this.dataObj.positions.push([key.gcjLongitude, key.gcjLatitude]); // 电流
             });
+            console.log("this.dataObj", this.dataObj);
             this.peiObj.eventSummary = result.eventSummary || {};
             this.peiObj.summary = result.summary || {};
             this.loading = false;
@@ -301,28 +316,34 @@ export default {
     },
     /* 缩小 */
     narrow() {
-      if (!this.zoomBar || this.zoomArr.length < 1 || this.Timeindex < 0) {
+      console.log("this.zoomArr", this.zoomArr);
+      if (!this.zoomBar || this.zoomArr.length < 1 || this.Timeindex < -2) {
         return;
       }
-      let timeObj = this.zoomArr[this.Timeindex];
-      this.getChartDatafun(timeObj.start, timeObj.end);
-      this.Timeindex--;
+      if (this.Timeindex === -1) {
+        this.getChartDatafun(this.zoomArr[0].start, this.zoomArr[0].end);
+        this.Timeindex--;
+      } else if (this.Timeindex === -2) {
+        this.getChartData();
+        this.Timeindex--;
+      } else {
+        let timeObj = this.zoomArr[this.Timeindex];
+        this.getChartDatafun(timeObj.start, timeObj.end);
+        this.Timeindex--;
+      }
     },
     /* 放大 */
     enlarge() {
       if (!this.zoomBar) {
         return;
       }
-      let time = utils.zoomTime(this.start, this.end);
-      let perStart = Math.round(this.zoomBar.start) / 100;
-      let perEnd = Math.round(this.zoomBar.end) / 100;
-      let startTime = new Date(this.start).getTime() + time * Number(perStart);
-      let endTime = new Date(this.start).getTime() + time * Number(perEnd);
+      // _m.utc().format()new Date("2018-09-11 15:12:05").toISOString()
       let obj = {
-        start: utils.sortTime(startTime),
-        end: utils.sortTime(endTime)
+        start: utils.toUTCTime(this.zoomBar.tstart),
+        end: utils.toUTCTime(this.zoomBar.tend)
       };
       this.zoomArr.push(obj);
+      console.log("this.zoomArr", this.zoomArr);
       this.getChartDatafun(obj.start, obj.end);
       let len = this.zoomArr.length;
       this.Timeindex = len - 2;
@@ -339,7 +360,7 @@ export default {
           "电池组编号",
           this.propData.code
         ],
-        ["温度", "电压", "电流", "单体电压"]
+        ["时间", "温度", "电压", "电流", "单体电压"]
       ];
       this.$messageBox
         .prompt("请输入导出文件名", "提示", {
@@ -353,6 +374,7 @@ export default {
             if (this.exportData.length < 1) return;
             this.exportData.forEach(key => {
               let opts = [
+                utils.UTCTime(key.time),
                 key.temperature,
                 key.voltage,
                 key.current,

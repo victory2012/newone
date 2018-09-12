@@ -115,87 +115,87 @@ export default {
           {
             required: true,
             message: "请输入单体充电电压上限阈值",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         singleMinDischargeVoltage: [
           {
             required: true,
             message: "请输入单体放电电压下限阈值",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         maxChargeVoltage: [
           {
             required: true,
             message: "请输入整组充电电压上限阈值",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         minDischargeVoltage: [
           {
             required: true,
             message: "请输入整组放电电压下限阈值",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         maxChargeCurrent: [
           {
             required: true,
             message: "请输入充电电流上限阈值系数",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         maxDischargeCurrent: [
           {
             required: true,
             message: "请输入放电电流上限阈值系数",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         maxChargeTemperature: [
           {
             required: true,
             message: "请输入充电温度上限阈值",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         minChargeTemperature: [
           {
             required: true,
             message: "请输入充电温度下限阈值",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         maxDischargeTemperature: [
           {
             required: true,
             message: "请输入放电温度上限阈值",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         minDischargeTemperature: [
           {
             required: true,
             message: "请输入放电温度下限阈值",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         maxFluidOverDays: [
-          { required: true, message: "请输入补水超限天数", trigger: "change" }
+          { required: true, message: "请输入补水超限天数", trigger: "blur" }
         ],
         maxChargeCapacity: [
           {
             required: true,
             message: "请输入充电容量上限阈值系数",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         minChargeCapacity: [
           {
             required: true,
             message: "请输入充电容量下限阈值系数",
-            trigger: "change"
+            trigger: "blur"
           }
         ]
       },
@@ -223,7 +223,7 @@ export default {
             maxChargeVoltage: this.batteryForm.maxChargeVoltage,
             minDischargeVoltage: this.batteryForm.minDischargeVoltage,
             maxChargeCurrent: this.batteryForm.maxChargeCurrent,
-            maxDisChargeCurrent: this.batteryForm.maxDischargeCurrent,
+            maxDischargeCurrent: this.batteryForm.maxDischargeCurrent,
             maxChargeTemperature: this.batteryForm.maxChargeTemperature,
             minChargeTemperature: this.batteryForm.minChargeTemperature,
             maxDischargeTemperature: this.batteryForm.maxDischargeTemperature,
@@ -267,7 +267,7 @@ export default {
       });
     },
     ChooseBatteryModel() {
-      console.log(this.batteryModelId);
+      this.batteryForm = {};
       this.$axios
         .get(`/battery_group_event_policy?modelId=${this.batteryModelId}`)
         .then(res => {

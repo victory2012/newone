@@ -15,6 +15,7 @@
 /* eslint-disable */
 import echarts from "echarts";
 import _ from "lodash";
+import utils from "@/utils/utils";
 import options from "@/config/echartOptions";
 
 export default {
@@ -75,13 +76,15 @@ export default {
 
       this.myEcharts1.on("datazoom", param => {
         // console.log(param);
+        let opt = this.myEcharts1.getOption();
+        let dz = opt.dataZoom[0];
+        let tstart = opt.xAxis[0].rangeStart;
+        let tend = opt.xAxis[0].rangeEnd;
+        // console.log("tstart", dz);
+        // console.log("tend", opt);
         clearTimeout(this.timeoutId);
         this.timeoutId = setTimeout(() => {
-          if ("batch" in param) {
-            this.$emit("timeZoom", param.batch[0]);
-          } else {
-            this.$emit("timeZoom", param);
-          }
+          this.$emit("timeZoom", { tstart, tend });
         }, 800);
       });
       window.onresize = () => {
@@ -107,30 +110,82 @@ export default {
       }
     },
     dataChange(datas) {
-      options.xAxis.data = datas.timeArr;
+      // options.xAxis.data = datas.timeArr;
 
       let voltageOptions = _.cloneDeep(options);
       voltageOptions.title.text = "电压";
-      voltageOptions.yAxis.axisLabel = "{value} v";
+      voltageOptions.yAxis.axisLabel.formatter = "{value} v";
       voltageOptions.series[0].data = datas.voltage;
+      voltageOptions.tooltip.formatter = p => {
+        let item = "";
+        p.forEach(v => {
+          item +=
+            utils.dateFomat(v.value[0]) +
+            "<br/>" +
+            "电压" +
+            " : " +
+            v.value[1] +
+            "<br/>";
+        });
+        return item;
+      };
       this.myEcharts1.setOption(voltageOptions);
 
       let singleVoltageOptions = _.cloneDeep(options);
       singleVoltageOptions.title.text = "单体电压";
-      singleVoltageOptions.yAxis.axisLabel = "{value} v";
+      singleVoltageOptions.yAxis.axisLabel.formatter = "{value} v";
       singleVoltageOptions.series[0].data = datas.singleVoltage;
+      singleVoltageOptions.tooltip.formatter = p => {
+        let item = "";
+        p.forEach(v => {
+          item +=
+            utils.dateFomat(v.value[0]) +
+            "<br/>" +
+            "单体电压" +
+            " : " +
+            v.value[1] +
+            "<br/>";
+        });
+        return item;
+      };
       this.myEcharts2.setOption(singleVoltageOptions);
 
       let currentOptions = _.cloneDeep(options);
       currentOptions.title.text = "电流";
-      currentOptions.yAxis.axisLabel = "{value} A";
+      currentOptions.yAxis.axisLabel.formatter = "{value} A";
       currentOptions.series[0].data = datas.current;
+      currentOptions.tooltip.formatter = p => {
+        let item = "";
+        p.forEach(v => {
+          item +=
+            utils.dateFomat(v.value[0]) +
+            "<br/>" +
+            "电流" +
+            " : " +
+            v.value[1] +
+            "<br/>";
+        });
+        return item;
+      };
       this.myEcharts3.setOption(currentOptions);
 
       let temperatureOptions = _.cloneDeep(options);
       temperatureOptions.title.text = "温度";
-      temperatureOptions.yAxis.axisLabel = "{value} ℃";
+      temperatureOptions.yAxis.axisLabel.formatter = "{value} ℃";
       temperatureOptions.series[0].data = datas.temperature;
+      temperatureOptions.tooltip.formatter = p => {
+        let item = "";
+        p.forEach(v => {
+          item +=
+            utils.dateFomat(v.value[0]) +
+            "<br/>" +
+            "温度" +
+            " : " +
+            v.value[1] +
+            "<br/>";
+        });
+        return item;
+      };
       this.myEcharts4.setOption(temperatureOptions);
     }
   }
