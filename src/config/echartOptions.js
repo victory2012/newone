@@ -74,12 +74,14 @@ export default {
     }
   },
   series: [{
-    name: "",
-    type: "line",
+    name: '',
+    type: 'line',
     smooth: true,
+    showSymbol: false, // 是否显示 symbol, 如果 false 则只有在 tooltip hover 的时候显示。
+    // hoverAnimation: true, // 是否开启 hover 在拐点标志上的提示动画效果。
     lineStyle: {
       normal: {
-        color: "#2491fc"
+        color: '#71bfdb'
       }
     },
     areaStyle: {
@@ -87,6 +89,6 @@ export default {
         color: "rgba(36,145,252,0.25)"
       }
     },
-    data: ""
+    data: []
   }]
 };

@@ -72,7 +72,7 @@
       </div>
     </div>
     <div class="maps">
-      <i-map :travelData="dataObj.positions"></i-map>
+      <i-map :travelData="positions"></i-map>
     </div>
   </div>
 </template>
@@ -113,9 +113,9 @@ export default {
         singleVoltage: [],
         temperature: [],
         voltage: [],
-        current: [],
-        positions: []
+        current: []
       },
+      positions: [],
       start: utils.getWeek(),
       end: new Date(),
       timevalue: "week",
@@ -172,14 +172,13 @@ export default {
           }/data2?startTime=${startTime}&endTime=${endTimes}`
         )
         .then(res => {
-          console.log(res);
+          // console.log(res);
           this.dataObj = {
             timeArr: [],
             singleVoltage: [],
             temperature: [],
             voltage: [],
-            current: [],
-            positions: []
+            current: []
           };
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
@@ -192,27 +191,28 @@ export default {
             //   this.dataObj.current.push(key.current); // 电流
             //   this.dataObj.positions.push([key.gcjLongitude, key.gcjLatitude]); // 电流
             // });
+            this.positions = [];
             result.list.forEach(key => {
-              // this.dataObj.timeArr.push(utils.TimeSconds(key.time)); // 时间
+              let timeArr = utils.TimeSconds(key.time); // 时间
               this.dataObj.singleVoltage.push({
-                name: utils.TimeSconds(key.time),
-                value: [utils.TimeSconds(key.time), key.singleVoltage]
+                name: timeArr,
+                value: [timeArr, key.singleVoltage]
               });
               this.dataObj.temperature.push({
-                name: utils.TimeSconds(key.time),
-                value: [utils.TimeSconds(key.time), key.temperature]
+                name: timeArr,
+                value: [timeArr, key.temperature]
               });
               this.dataObj.voltage.push({
-                name: utils.TimeSconds(key.time),
-                value: [utils.TimeSconds(key.time), key.voltage]
+                name: timeArr,
+                value: [timeArr, key.voltage]
               });
               this.dataObj.current.push({
-                name: utils.TimeSconds(key.time),
-                value: [utils.TimeSconds(key.time), key.current]
+                name: timeArr,
+                value: [timeArr, -key.current]
               });
-              this.dataObj.positions.push([key.gcjLongitude, key.gcjLatitude]); // 电流
+              this.positions.push([key.gcjLongitude, key.gcjLatitude]); // 电流
             });
-            console.log("this.dataObj", this.dataObj);
+            // console.log("this.dataObj", this.dataObj);
             this.peiObj.eventSummary = result.eventSummary || {};
             this.peiObj.summary = result.summary || {};
             this.loading = false;
@@ -260,7 +260,7 @@ export default {
           pageObj
         )
         .then(res => {
-          console.log(res);
+          // console.log(res);
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
             if (result) {
@@ -311,26 +311,29 @@ export default {
       this.getliquidData();
     },
     timeZoom(data) {
-      console.log(data);
+      // console.log(data);
       this.zoomBar = data;
     },
     /* 缩小 */
     narrow() {
-      console.log("this.zoomArr", this.zoomArr);
-      if (!this.zoomBar || this.zoomArr.length < 1 || this.Timeindex < -2) {
+      if (!this.zoomBar || this.Timeindex < -2) {
         return;
       }
       if (this.Timeindex === -1) {
         this.getChartDatafun(this.zoomArr[0].start, this.zoomArr[0].end);
+        this.zoomArr = [];
         this.Timeindex--;
       } else if (this.Timeindex === -2) {
         this.getChartData();
+        this.zoomArr = [];
         this.Timeindex--;
       } else {
         let timeObj = this.zoomArr[this.Timeindex];
         this.getChartDatafun(timeObj.start, timeObj.end);
+        this.zoomArr.pop();
         this.Timeindex--;
       }
+      console.log("this.zoomArr", this.zoomArr);
     },
     /* 放大 */
     enlarge() {

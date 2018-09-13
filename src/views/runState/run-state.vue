@@ -27,10 +27,10 @@
   </div>
 </template>
 <script>
+import utils from "@/utils/utils";
 import real from "./real";
 import history from "./history";
 import alearm from "./alearm";
-// import utils from "../..//utils/utils";
 
 export default {
   components: {
@@ -169,7 +169,11 @@ export default {
         console.log(res);
         this.companyInfo = "";
         if (res.data && res.data.code === 0 && res.data.data) {
-          this.companyInfo = res.data.data;
+          let result = res.data.data;
+          this.companyInfo = result;
+          this.companyInfo.fluid = result.fluidLevel === 1 ? "正常" : "异常";
+          this.companyInfo.yyddmm = utils.yyyymmdd(new Date());
+          this.companyInfo.hhmmss = utils.hhmmss(new Date());
         }
       });
     }

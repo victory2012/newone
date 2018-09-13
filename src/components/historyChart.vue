@@ -42,7 +42,7 @@ export default {
   watch: {
     loading: {
       handler: function(curVal) {
-        console.log(curVal);
+        // console.log(curVal);
         this.showLoading(curVal);
       },
       deep: true
@@ -116,19 +116,8 @@ export default {
       voltageOptions.title.text = "电压";
       voltageOptions.yAxis.axisLabel.formatter = "{value} v";
       voltageOptions.series[0].data = datas.voltage;
-      voltageOptions.tooltip.formatter = p => {
-        let item = "";
-        p.forEach(v => {
-          item +=
-            utils.dateFomat(v.value[0]) +
-            "<br/>" +
-            "电压" +
-            " : " +
-            v.value[1] +
-            "<br/>";
-        });
-        return item;
-      };
+      // voltageOptions.series[0].seriesName = "电压";
+      voltageOptions.tooltip.formatter = this.formatter;
       this.myEcharts1.setOption(voltageOptions);
 
       let singleVoltageOptions = _.cloneDeep(options);
@@ -187,6 +176,14 @@ export default {
         return item;
       };
       this.myEcharts4.setOption(temperatureOptions);
+    },
+    formatter(p, str) {
+      // console.log(p);
+      let item = "";
+      p.forEach(v => {
+        item += `${utils.dateFomat(v.value[0])}<br/>电压:${v.value[1]}<br/>`;
+      });
+      return item;
     }
   }
 };

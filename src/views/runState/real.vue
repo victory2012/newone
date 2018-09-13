@@ -3,27 +3,27 @@
     <div class="dashboad">
       <div>
         <img src="../../assets/img/temp.png" alt="">
-        <p class="info">47℃</p>
+        <p class="info">{{propData.temperature}}℃</p>
         <p>温度</p>
       </div>
       <div>
         <img src="../../assets/img/level.png" alt="">
-        <p class="info">47℃</p>
+        <p class="info">{{propData.fluid}}</p>
         <p>液位</p>
       </div>
       <div>
         <img src="../../assets/img/voltage_total.png" alt="">
-        <p class="info">47℃</p>
+        <p class="info">{{propData.voltage}}V</p>
         <p>电压</p>
       </div>
       <div>
         <img src="../../assets/img/voltage.png" alt="">
-        <p class="info">47℃</p>
+        <p class="info">{{propData.singleVoltage}}V</p>
         <p>单体电压</p>
       </div>
       <div>
         <img src="../../assets/img/current.png" alt="">
-        <p class="info">47℃</p>
+        <p class="info">{{propData.current}}A</p>
         <p>电流</p>
       </div>
     </div>
@@ -33,10 +33,10 @@
           <div class="mapContent" id="mapContent"></div>
         </div>
         <div class="timeCenter">
-          <p class="map-time">11:29:17</p>
-          <p class="map-date">2018-08-08</p>
+          <p class="map-time">{{propData.hhmmss}}</p>
+          <p class="map-date">{{propData.yyddmm}}</p>
           <p class="map-des">刷新时间</p>
-          <p class="map-line">主动查询</p>
+          <p @click="activeQuery" class="map-line">主动查询</p>
         </div>
       </div>
       <div class="address">
@@ -66,15 +66,19 @@
       <span>过去24小时监测数据</span>
       <el-checkbox v-model="checked">是否自动更新数据</el-checkbox>
     </div>
-    <echart-map v-if="hasgetData" :chartData="dataObj"></echart-map>
+    <echart-map v-if="hasgetData" :chartData="dataObj" :mqttData="ReceiveObj"></echart-map>
   </div>
 </template>
 <script>
 /* eslint-disable */
 import AMap from "AMap";
+import Paho from "Paho";
 import utils from "@/utils/utils";
 import echartMap from "../../components/realTime";
+import mqttConfig from "@/api/mqtt.config";
 
+let mqttClient;
+let map;
 export default {
   props: ["hostId", "propData"],
   components: {
@@ -82,6 +86,7 @@ export default {
   },
   data() {
     return {
+      ReceiveObj: {},
       hasgetData: false,
       checked: true,
       mapData: null,
@@ -96,51 +101,143 @@ export default {
     };
   },
   mounted() {
-    console.log(this.hostId);
-    console.log("propData", this.propData);
-    // this.companyInfo = this.propData;
     this.init();
-    // this.getCompanyInfo();
+  },
+  beforeDestroy() {
+    if (mqttClient) {
+      mqttClient.disconnect();
+    }
   },
   methods: {
     init() {
-      new AMap.Map("mapContent", {
+      map = new AMap.Map("mapContent", {
         resizeEnable: true,
+        // center: [this.propData.gcjLongitude, this.propData.gcjLatitude],
         zoom: 10
       });
+      setTimeout(() => {
+        if (this.propData.gcjLongitude) {
+          let marker = new AMap.Marker({
+            icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+            position: [this.propData.gcjLongitude, this.propData.gcjLatitude]
+          });
+          map.on("zoomend", () => {
+            map.getCity(data => {
+              console.log(data);
+
+              // if (data["province"] && typeof data["province"] === "string") {
+              //   document.getElementById("info").innerHTML =
+              //     "城市：" + (data["city"] || data["province"]);
+              // }
+            });
+          });
+          marker.setMap(map);
+          map.setFitView();
+        }
+      }, 800);
+      // map.setCenter();
       this.getData();
     },
-    // getCompanyInfo() {
-    //   this.$axios.get(`/battery_group/${this.hostId}/info`).then(res => {
-    //     console.log(res);
-    //     if (res.data && res.data.code === 0 && res.data.data) {
-    //       this.companyInfo = res.data.data;
-    //     }
-    //   });
-    // },
+    connectMqtt() {
+      mqttClient = new Paho.MQTT.Client(
+        mqttConfig.hostname,
+        mqttConfig.port,
+        mqttConfig.clientId
+      );
+      mqttClient.connect({
+        onSuccess: this.onConnect
+      });
+      mqttClient.onConnectionLost = responseObject => {
+        console.log("onConnectionLost:", responseObject);
+      };
+      mqttClient.onMessageArrived = message => {
+        console.log("message:", message);
+        let payload = message.payloadString;
+        if (payload) {
+          console.log(payload);
+          let payloadType = payload.toString().split("]");
+          if (payloadType[1]) {
+            console.log("有ccid");
+            // console.log("payloadType", payloadType);
+          } else {
+            let payloadString = JSON.parse(payload);
+            this.ReceiveObj = {
+              times: utils.TimeSconds(payloadString[1]), // 时间
+              singleVoltage: payloadString[3], // 单体电压
+              voltage: payloadString[4], // 电压
+              current: payloadString[5], // 电流
+              temperature: payloadString[6], // 温度
+              liquid: payloadString[7], // 液位
+              longitude: payloadString[8], // 经度
+              latitude: payloadString[9], // 纬度
+              loop: payloadString[10], // 循环次数
+              chargeingTime: payloadString[11], // 充电时间
+              chargeTimes: payloadString[12], // 充电次数
+              disChargeingTime: payloadString[13], // 放电时间
+              disChargeTimes: payloadString[14], // 放电次数
+              emptyTime: payloadString[15], // 空截时间
+              addLiquidingTime: payloadString[16], // 补水时间
+              addLiquidTimes: payloadString[17], // 补水次数
+              addLiquidTimeOut: payloadString[18], //补水超限时间
+              battery: payloadString[19], // 充电电量
+              version: payloadString[20], // 版本号
+              batteryCode: payloadString[21] // 电池编号
+            };
+          }
+        }
+      };
+    },
+    onConnect() {
+      console.log(`onConnect====>dev/${this.propData.deviceCode}`);
+      mqttClient.subscribe(`dev/${this.propData.deviceCode}`);
+      // let message = new Paho.MQTT.Message("Hello");
+      // message.destinationName = "World";
+      // mqttClient.send(message);
+    },
     getData() {
-      // let startTime = utils.dateFomats(utils.getYestoday());
-      // let endTime = utils.dateFomats(utils.getNowTime());
-      let startTime = 20170101010101;
-      let endTime = utils.dateFomats(utils.getNowTime());
+      let startTime = utils.getYestoday();
+      let endTime = utils.getNowTime();
       this.$axios
         .get(
-          `/battery_group/${5}/data?startTime=${startTime}&endTime=${endTime}`
+          `/battery_group/${
+            this.hostId
+          }/data?startTime=${startTime}&endTime=${endTime}`
         )
         .then(res => {
           console.log(res);
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
             result.forEach(key => {
-              this.dataObj.timeArr.push(utils.fomats(key.time)); // 时间
-              this.dataObj.singleVoltage.push(key.singleVoltage); // 单体电压
-              this.dataObj.temperature.push(key.temperature); // 温度
-              this.dataObj.voltage.push(key.voltage); // 电压
-              this.dataObj.current.push(key.current); // 电流
+              let timeArr = utils.TimeSconds(key.time); // 时间
+              this.dataObj.singleVoltage.push({
+                name: timeArr,
+                value: [timeArr, key.singleVoltage]
+              });
+              this.dataObj.temperature.push({
+                name: timeArr,
+                value: [timeArr, key.temperature]
+              });
+              this.dataObj.voltage.push({
+                name: timeArr,
+                value: [timeArr, key.voltage]
+              });
+              this.dataObj.current.push({
+                name: timeArr,
+                value: [timeArr, -key.current]
+              });
             });
             this.hasgetData = true;
+            this.connectMqtt();
           }
         });
+    },
+    activeQuery() {
+      if (mqttClient.isConnected()) {
+        // console.log('isConnected')
+        let message = new Paho.MQTT.Message("c:get");
+        message.destinationName = `cmd/${this.propData.deviceCode}`;
+        mqttClient.send(message);
+      }
     }
   }
 };

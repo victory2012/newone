@@ -101,6 +101,7 @@ module.exports = {
     'vuex': 'Vuex',
     'vue-router': 'VueRouter',
     'lodash': '_',
-    'xlsx': 'XLSX'
+    'xlsx': 'XLSX',
+    'Paho': 'window.Paho'
   }
 }

@@ -90,12 +90,14 @@ export default {
   },
   getNowTime: () => {
     let now = new Date().getTime();
-    return now;
+    let nowTime = this.a.dateFomat(now);
+    return this.a.toUTCTime(nowTime);
   },
   getYestoday: () => {
     let now = new Date().getTime();
     let yestoday = Number(now) - 86400000;
-    return yestoday;
+    let yesTime = this.a.dateFomat(yestoday);
+    return this.a.toUTCTime(yesTime);
   },
   getWeek: () => {
     let now = new Date().getTime();
@@ -222,6 +224,16 @@ export default {
     mounth = mounth < 10 ? `0${mounth}` : mounth;
     day = day < 10 ? `0${day}` : day;
     return `${year}-${mounth}-${day}`;
+  },
+  hhmmss: (str) => {
+    let timeDate = new Date(str);
+    let hours = timeDate.getHours();
+    let minute = timeDate.getMinutes();
+    let second = timeDate.getSeconds();
+    hours = hours < 10 ? `0${hours}` : hours;
+    minute = minute < 10 ? `0${minute}` : minute;
+    second = second < 10 ? `0${second}` : second;
+    return `${hours}:${minute}:${second}`;
   },
   level: (num) => {
     let Num = Number(num);
