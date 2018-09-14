@@ -57,13 +57,11 @@ export default {
     };
   },
   mounted() {
-    // let pro = utils.getStorage("propData");
-    // if (pro) {
-    //   this.propData = JSON.parse(pro);
-    // }
     this.hostId = this.$route.query.hostId;
     this.init();
-    this.getCompanyInfo();
+    if (this.hostId) {
+      this.getCompanyInfo();
+    }
   },
   methods: {
     init() {
@@ -174,6 +172,7 @@ export default {
           this.companyInfo.fluid = result.fluidLevel === 1 ? "正常" : "异常";
           this.companyInfo.yyddmm = utils.yyyymmdd(new Date());
           this.companyInfo.hhmmss = utils.hhmmss(new Date());
+          this.showRealData();
         }
       });
     }

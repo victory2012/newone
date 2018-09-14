@@ -183,6 +183,17 @@ export default {
     },
     dataChange(datas) {
       console.log(datas);
+      let name1;
+      let name2;
+      if (datas.battertCode) {
+        name1 = datas.battertCode[0].code;
+        name2 = datas.battertCode[1].code;
+      } else {
+        name1 = "本期";
+        name2 = "上期";
+      }
+      options.series[0].name = name1;
+      options.series[1].name = name2;
       options.xAxis.data = datas.dataObjFirst.timeArr;
 
       let voltageOptions = _.cloneDeep(options);
@@ -222,7 +233,19 @@ export default {
       this.lineEcharts4.setOption(temperatureOptions);
     },
     barDataChange(datas) {
-      // console.log(datas);
+      // console.log(datas);legend
+      let name1;
+      let name2;
+      if (datas.battertCode) {
+        name1 = datas.battertCode[0].code;
+        name2 = datas.battertCode[1].code;
+      } else {
+        name1 = "本期";
+        name2 = "上期";
+      }
+      BarOptions.legend.data = [name1, name2];
+      BarOptions.series[0].name = name1;
+      BarOptions.series[1].name = name2;
       let voltageBarOptions = _.cloneDeep(BarOptions);
       voltageBarOptions.title.text = "充电情况";
       voltageBarOptions.xAxis[0].data = [

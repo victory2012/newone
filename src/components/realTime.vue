@@ -52,8 +52,14 @@ export default {
   watch: {
     mqttData: {
       handler: function(val) {
-        console.log(val);
         this.formatter(val);
+      },
+      deep: true
+    },
+    chartData: {
+      handler: function(val) {
+        // console.log("chartData changes", val);
+        this.dataChange(val);
       },
       deep: true
     }

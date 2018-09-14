@@ -172,7 +172,6 @@ export default {
           }/data2?startTime=${startTime}&endTime=${endTimes}`
         )
         .then(res => {
-          // console.log(res);
           this.dataObj = {
             timeArr: [],
             singleVoltage: [],
@@ -183,14 +182,6 @@ export default {
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
             this.exportData = result.list;
-            // result.list.forEach(key => {
-            //   this.dataObj.timeArr.push(utils.UTCTime(key.time)); // 时间
-            //   this.dataObj.singleVoltage.push(key.singleVoltage); // 单体电压
-            //   this.dataObj.temperature.push(key.temperature); // 温度
-            //   this.dataObj.voltage.push(key.voltage); // 电压
-            //   this.dataObj.current.push(key.current); // 电流
-            //   this.dataObj.positions.push([key.gcjLongitude, key.gcjLatitude]); // 电流
-            // });
             this.positions = [];
             result.list.forEach(key => {
               let timeArr = utils.TimeSconds(key.time); // 时间
@@ -210,15 +201,24 @@ export default {
                 name: timeArr,
                 value: [timeArr, -key.current]
               });
-              this.positions.push([key.gcjLongitude, key.gcjLatitude]); // 电流
+              if (key.gcjLongitude > 1 || key.gcjLatitude > 1) {
+                this.positions.push([key.gcjLongitude, key.gcjLatitude]); // 坐标
+              }
             });
-            // console.log("this.dataObj", this.dataObj);
             this.peiObj.eventSummary = result.eventSummary || {};
             this.peiObj.summary = result.summary || {};
             this.loading = false;
-
+            let sums = result.summary;
             this.eventSummary = result.eventSummary || {};
-            this.summary = result.summary || {};
+            this.summary = {
+              chargeTimes: (sums.chargeTimes / 60).toFixed(2),
+              dischargeTimes: (sums.dischargeTimes / 60).toFixed(2),
+              cycle: sums.cycle,
+              avgChargeDuration: sums.avgChargeDuration,
+              avgDischargeDuration: sums.avgDischargeDuration,
+              fluidSupplementTimes: sums.fluidSupplementTimes,
+              avgFluidSupplementDuration: sums.avgFluidSupplementDuration
+            };
           }
         });
       this.getAlarmData();

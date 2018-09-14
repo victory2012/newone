@@ -93,9 +93,9 @@ export default {
     let nowTime = this.a.dateFomat(now);
     return this.a.toUTCTime(nowTime);
   },
-  getYestoday: () => {
+  getFourHours: () => {
     let now = new Date().getTime();
-    let yestoday = Number(now) - 86400000;
+    let yestoday = Number(now) - (4 * 60 * 60 * 1000);
     let yesTime = this.a.dateFomat(yestoday);
     return this.a.toUTCTime(yesTime);
   },
@@ -260,168 +260,36 @@ export default {
         break;
     }
   },
-  year2year: (end, type) => {
-    let obj = {};
-    // let startdate = new Date(start);
-    let enddate = new Date(end);
-
-    // let endyear = enddate.getFullYear();
-    let endMonth = enddate.getMonth() + 1;
-
-    let startMonth = enddate.getMonth() + 1;
-    let startyear = enddate.getFullYear() - 1;
-    let day = enddate.getDate();
-
-    endMonth = endMonth < 10 ? `0${endMonth}` : endMonth;
-    day = day < 10 ? `0${day}` : day;
-
-    if (type === "week") {
-      let result = `${startyear}-${startMonth}-${day}`;
-      obj.start = this.a.sortTime(new Date(result).getTime() - (7 * 24 * 3600 * 1000));
-      obj.end = this.a.sortTime(new Date(result).getTime());
-    }
-    if (type === "mounth") {
-      if (startMonth === 0) {
-        startyear -= 1;
-        startMonth = 12;
-      }
-      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
-      obj.start = `${startyear}${startMonth}${day}`;
-      obj.end = `${startyear}${endMonth}${day}`;
-    }
-    if (type === "threemonth") {
-      if (startMonth - 2 === 0) {
-        startyear -= 1;
-        startMonth = 12;
-      } else if (startMonth - 2 === -1) {
-        startyear -= 1;
-        startMonth = 11;
-      } else if (startMonth - 2 === -2) {
-        startyear -= 1;
-        startMonth = 10;
-      } else {
-        startMonth -= 3;
-      }
-      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
-      obj.start = `${startyear}${startMonth}${day}`;
-      obj.end = `${startyear}${endMonth}${day}`;
-    }
-    if (type === "sixmounth") {
-      if (startMonth - 5 === 0) {
-        startyear -= 1;
-        startMonth = 12;
-      } else if (startMonth - 5 === -1) {
-        startyear -= 1;
-        startMonth = 11;
-      } else if (startMonth - 5 === -2) {
-        startyear -= 1;
-        startMonth = 10;
-      } else if (startMonth - 5 === -3) {
-        startyear -= 1;
-        startMonth = 9;
-      } else if (startMonth - 5 === -4) {
-        startyear -= 1;
-        startMonth = 8;
-      } else if (startMonth - 5 === -5) {
-        startyear -= 1;
-        startMonth = 7;
-      } else {
-        startMonth -= 6;
-      }
-      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
-
-      obj.start = `${startyear}${startMonth}${day}`;
-      obj.end = `${startyear}${endMonth}${day}`;
-    }
-    if (type === "year") {
-      let startyears = startyear - 1;
-      // let startMonths = startMonth;
-      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
-      obj.start = `${startyears}${startMonth}${day}`;
-      obj.end = `${startyear}${endMonth}${day}`;
-    }
-    return obj;
-  },
-  m2m: (start, end, type) => {
-    let obj = {};
+  year2year: (start, end) => {
     let startdate = new Date(start);
     let enddate = new Date(end);
 
-    let endyear = startdate.getFullYear();
-    let endMonth = startdate.getMonth() + 1;
+    let startyear = startdate.getFullYear() - 1;
+    let startMonth = startdate.getMonth() + 1;
+    let startday = startdate.getDate();
 
-    let startMonth = startdate.getMonth();
-    let startyear = startdate.getFullYear();
-    let day = startdate.getDate();
+    let endyear = enddate.getFullYear() - 1;
+    let endMonth = enddate.getMonth() + 1;
+    let endday = enddate.getDate();
 
     endMonth = endMonth < 10 ? `0${endMonth}` : endMonth;
-    day = day < 10 ? `0${day}` : day;
-
-    if (type === "week") {
-      obj.start = this.a.sortTime(startdate.getTime() - (7 * 24 * 3600 * 1000));
-      obj.end = this.a.sortTime(enddate.getTime() - (7 * 24 * 3600 * 1000));
-    }
-    if (type === "mounth") {
-      if (startMonth === 0) {
-        startyear -= 1;
-        startMonth = 12;
-      }
-      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
-      obj.start = `${startyear}${startMonth}${day}`;
-      obj.end = `${endyear}${endMonth}${day}`;
-    }
-    if (type === "threemonth") {
-      if (startMonth - 2 === 0) {
-        startyear -= 1;
-        startMonth = 12;
-      } else if (startMonth - 2 === -1) {
-        startyear -= 1;
-        startMonth = 11;
-      } else if (startMonth - 2 === -2) {
-        startyear -= 1;
-        startMonth = 10;
-      } else {
-        startMonth -= 3;
-      }
-      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
-      obj.start = `${startyear}${startMonth}${day}`;
-      obj.end = `${endyear}${endMonth}${day}`;
-    }
-    if (type === "sixmounth") {
-      if (startMonth - 5 === 0) {
-        startyear -= 1;
-        startMonth = 12;
-      } else if (startMonth - 5 === -1) {
-        startyear -= 1;
-        startMonth = 11;
-      } else if (startMonth - 5 === -2) {
-        startyear -= 1;
-        startMonth = 10;
-      } else if (startMonth - 5 === -3) {
-        startyear -= 1;
-        startMonth = 9;
-      } else if (startMonth - 5 === -4) {
-        startyear -= 1;
-        startMonth = 8;
-      } else if (startMonth - 5 === -5) {
-        startyear -= 1;
-        startMonth = 7;
-      } else {
-        startMonth -= 6;
-      }
-      startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
-
-      obj.start = `${startyear}${startMonth}${day}`;
-      obj.end = `${endyear}${endMonth}${day}`;
-    }
-    if (type === "year") {
-      let startyears = startyear - 1;
-      let startMonths = startMonth + 1;
-      startMonths = startMonths < 10 ? `0${startMonths}` : startMonths;
-      obj.start = `${startyears}${startMonths}${day}`;
-      obj.end = `${endyear}${endMonth}${day}`;
-    }
-    return obj;
+    endday = endday < 10 ? `0${endday}` : endday;
+    startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
+    startday = startday < 10 ? `0${startday}` : startday;
+    return {
+      startTime: `${startyear}${startMonth}${startday}000000`,
+      endTime: `${endyear}${endMonth}${endday}235959`
+    };
+  },
+  m2m: (start, end) => {
+    let startdate = new Date(start).getTime();
+    let enddate = new Date(end).getTime();
+    let different = enddate - startdate;
+    let prev = startdate - different;
+    return {
+      startTime: `${this.a.sortTime(prev)}000000`,
+      endTime: `${this.a.sortTime(startdate)}235959`
+    };
   },
   sortTime: (str) => {
     let timeDate = new Date(str);

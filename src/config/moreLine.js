@@ -34,7 +34,8 @@ export default {
     }
   ],
   xAxis: {
-    type: "category",
+    type: "time",
+    // type: "category",
     boundaryGap: false,
     data: "",
     axisLine: {
@@ -71,6 +72,7 @@ export default {
     name: "本期",
     type: "line",
     smooth: true,
+    showSymbol: false,
     lineStyle: {
       normal: {
         color: "#65D7FA"
@@ -86,6 +88,7 @@ export default {
     name: "上期",
     type: "line",
     smooth: true,
+    showSymbol: false,
     lineStyle: {
       normal: {
         color: "#6B769E"
@@ -96,6 +99,6 @@ export default {
     //     color: "rgba(36,145,252,0.25)"
     //   }
     // },
-    data: ""
+    data: []
   }]
 };
