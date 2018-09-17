@@ -10,7 +10,18 @@ export default {
     }
   },
   tooltip: {
-    trigger: "axis"
+    trigger: "axis",
+    axisPointer: {
+      animation: false
+    }
+  },
+  color: ['#65D7FA', '#6B769E'],
+  legend: {
+    orient: "vertical",
+    x: "left",
+    top: 10,
+    left: "center",
+    // data: ["本期", "上期"]
   },
   grid: {
     left: "3%",
@@ -23,6 +34,7 @@ export default {
       // show: true,
       type: "slider",
       start: 0,
+      realtime: true,
       end: 100,
       fillerColor: "rgba(167,183,204,0.4)",
       backgroundColor: "rgba(0,0,0,0)"
@@ -30,6 +42,7 @@ export default {
     {
       type: "inside",
       start: 0,
+      realtime: true,
       end: 100
     }
   ],

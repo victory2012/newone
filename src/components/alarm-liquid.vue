@@ -3,11 +3,11 @@
     <el-table :data="tableData" style="width: 100%">
       <el-table-column type="index" align="center" label="序号" width="100">
       </el-table-column>
-      <el-table-column prop="time" align="center" label="补水时间">
+      <el-table-column prop="Replenishing" align="center" label="补水时间">
       </el-table-column>
       <el-table-column prop="temperature" align="center" label="补水温度">
       </el-table-column>
-      <el-table-column prop="thresholdValue" align="center" label="距上次补水时长">
+      <el-table-column prop="updateWater" align="center" label="距上次补水时长">
       </el-table-column>
       <el-table-column prop="hostCode" align="center" label="位置">
       </el-table-column>
@@ -16,6 +16,8 @@
 </template>
 
 <script>
+// import utils from "@/utils/utils";
+
 export default {
   props: {
     liquidData: {
@@ -25,8 +27,9 @@ export default {
   },
   data() {
     return {
-      currentPage: 2,
-      tableData: this.liquidData
+      currentPage: 1,
+      tableData: this.liquidData,
+      total: 0
     };
   },
   watch: {
@@ -37,17 +40,10 @@ export default {
       deep: true
     }
   },
-  methods: {
-    // handleClick(data) {
-    //   data.forEach(key => {
-    //     // key.alarmtime = utils.fomats(key.time);
-    //     key.levels = utils.level(key.level);
-    //     key.hierarchy = key.hierarchy === "Group" ? "整组" : "单体";
-    //     key.items = utils.item(key.item);
-    //     this.alarmData.push(key);
-    //   });
-    // }
-  }
+  mounted() {
+    // this.getliquidData();
+  },
+  methods: {}
 };
 </script>
 <style lang="scss" scoped>

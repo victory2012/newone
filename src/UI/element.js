@@ -26,7 +26,8 @@ import {
   Col,
   Row,
   InputNumber,
-  Tag
+  Tag,
+  Slider
 } from 'element-ui';
 
 export default function elementui() {
@@ -57,4 +58,5 @@ export default function elementui() {
   Vue.use(Col);
   Vue.use(InputNumber);
   Vue.use(Tag);
+  Vue.use(Slider);
 }

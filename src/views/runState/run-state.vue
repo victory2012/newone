@@ -28,21 +28,21 @@
 </template>
 <script>
 import utils from "@/utils/utils";
-import real from "./real";
-import history from "./history";
-import alearm from "./alearm";
+// import real from "./real";
+// import history from "./history";
+// import alearm from "./alearm";
 
 export default {
-  components: {
-    "real-time": real,
-    "i-history": history,
-    "i-alarm": alearm
-  },
   // components: {
-  //   "real-time": () => import("./real.vue"),
-  //   "i-history": () => import("./history.vue"),
-  //   "i-alarm": () => import("./alearm.vue")
+  //   "real-time": real,
+  //   "i-history": history,
+  //   "i-alarm": alearm
   // },
+  components: {
+    "real-time": () => import("./real.vue"),
+    "i-history": () => import("./history.vue"),
+    "i-alarm": () => import("./alearm.vue")
+  },
   data() {
     return {
       companyInfo: "",

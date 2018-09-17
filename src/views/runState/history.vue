@@ -2,10 +2,10 @@
   <div class="history">
     <div class="timeBar">
       <span class="lables">从</span>
-      <el-date-picker class="queryTime" size="small" v-model="start" type="date" placeholder="选择日期"></el-date-picker>
+      <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="start" type="date" placeholder="选择日期"></el-date-picker>
       <span class="lable">至</span>
-      <el-date-picker class="queryTime" size="small" v-model="end" type="date" placeholder="选择日期"></el-date-picker>
-      <el-select class="timeSelect queryTime" size="small" @change="changeTime" v-model="timevalue" placeholder="请选择">
+      <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="end" type="date" placeholder="选择日期"></el-date-picker>
+      <el-select class="queryTime" :class="{'timeSelect': defaultGray}" size="small" @change="changeTime" @focus="selectTimeChanges" v-model="timevalue" placeholder="请选择">
         <el-option v-for="item in weekOption" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select>
@@ -72,7 +72,27 @@
       </div>
     </div>
     <div class="maps">
-      <i-map :travelData="positions"></i-map>
+      <!-- <i-map :travelData="positions"></i-map> -->
+      <div class="date">
+        <el-button size="mini" plain @click="startOnclick" title="开始">
+          <i class="iconfont icon-ic_song_next"></i>
+        </el-button>
+        <el-button size="mini" plain @click="pauseOnclick" title="暂停">
+          <i class="iconfont icon-artboard25copy"></i>
+        </el-button>
+        <el-button size="mini" plain @click="resumeOnclick" title="继续">
+          <i class="iconfont icon-icons-resume_button"></i>
+        </el-button>
+        <el-button size="mini" plain @click="stopOnclick" title="停止">
+          <i class="iconfont icon-stop"></i>
+        </el-button>
+      </div>
+      <div class="timeRange">
+        <span>时间(s)</span>
+        <el-slider v-model="timeSeconds" @change="speedChange" vertical height="200px">
+        </el-slider>
+      </div>
+      <div id="historyContent" class="historyContent"></div>
     </div>
   </div>
 </template>
@@ -83,10 +103,13 @@ import utils from "@/utils/utils";
 import echartMap from "../../components/historyChart";
 import iEchart from "../../components/echart";
 import iAlarm from "../../components/alarm-data";
-import iMap from "../../components/travel";
+// import iMap from "../../components/travel";
 import chartPie from "../../components/echartPie";
 import liquid from "../../components/alarm-liquid";
 
+let map;
+let pathSimplifierIns;
+let navg;
 export default {
   props: ["hostId", "propData"],
   components: {
@@ -94,11 +117,15 @@ export default {
     echartMap,
     iEchart,
     iAlarm,
-    iMap,
+    // iMap,
     liquid
   },
   data() {
     return {
+      alldistance: 0,
+      timeSeconds: 50,
+      markerArr: [],
+      defaultGray: true,
       active: "alarm",
       hasgetData: false,
       loading: false,
@@ -145,6 +172,7 @@ export default {
           label: "全生命周期"
         }
       ],
+      defaultGet: true,
       pageSize: 10,
       currentPage: 1,
       total: 0,
@@ -155,13 +183,34 @@ export default {
   },
   mounted() {
     this.getChartData();
+    this.mapInit();
+  },
+  destroyed() {
+    map.destroy();
+    pathSimplifierIns.setData([]);
   },
   methods: {
+    mapInit() {
+      map = new AMap.Map("historyContent", {
+        resizeEnable: true,
+        zoom: 10
+      });
+    },
+    timeChanges() {
+      this.defaultGray = true;
+    },
+    selectTimeChanges() {
+      this.defaultGray = false;
+    },
     getChartData() {
       let startTime = utils.sortTime(this.start);
       let endTime = utils.sortTime(this.end);
+      if (this.markerArr.length > 0) {
+        map.remove(this.markerArr);
+      }
       this.getChartDatafun(startTime, endTime);
     },
+    /* 获取Echart相关数据 以及 地图坐标 */
     getChartDatafun(startTime, endTime) {
       this.loading = true;
       let endTimes = `${endTime}`.length > 8 ? endTime : `${endTime}235959`;
@@ -169,7 +218,7 @@ export default {
         .get(
           `/battery_group/${
             this.hostId
-          }/data2?startTime=${startTime}&endTime=${endTimes}`
+          }/data2?startTime=${startTime}000000&endTime=${endTimes}`
         )
         .then(res => {
           this.dataObj = {
@@ -182,8 +231,9 @@ export default {
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
             this.exportData = result.list;
-            this.positions = [];
-            result.list.forEach(key => {
+            // this.positions = [];
+            let positions = [];
+            result.list.forEach((key, index) => {
               let timeArr = utils.TimeSconds(key.time); // 时间
               this.dataObj.singleVoltage.push({
                 name: timeArr,
@@ -201,8 +251,17 @@ export default {
                 name: timeArr,
                 value: [timeArr, -key.current]
               });
-              if (key.gcjLongitude > 1 || key.gcjLatitude > 1) {
-                this.positions.push([key.gcjLongitude, key.gcjLatitude]); // 坐标
+              let gcjLongitude = Number(key.gcjLongitude);
+              let gcjLatitude = Number(key.gcjLatitude);
+              if (
+                gcjLongitude > -180 &&
+                gcjLatitude > -90 &&
+                gcjLatitude <= 90 &&
+                gcjLongitude <= 180 &&
+                Math.abs(gcjLongitude) > 1 &&
+                Math.abs(gcjLatitude) > 1
+              ) {
+                positions.push([key.gcjLongitude, key.gcjLatitude]); // 坐标
               }
             });
             this.peiObj.eventSummary = result.eventSummary || {};
@@ -219,12 +278,128 @@ export default {
               fluidSupplementTimes: sums.fluidSupplementTimes,
               avgFluidSupplementDuration: sums.avgFluidSupplementDuration
             };
+            this.positionChange(positions);
           }
         });
-      this.getAlarmData();
+      // this.getAlarmData();
+    },
+    /* 轨迹相关方法 */
+    positionChange(travalData) {
+      if (!travalData || travalData.length < 1) {
+        return;
+      }
+      this.alldistance = 0;
+      for (let i = 0; i < travalData.length; i++) {
+        var distance, p1, p2;
+        let key = travalData[i];
+        if (i < travalData.length - 1) {
+          p1 = new AMap.LngLat(key[0], key[1]);
+          p2 = new AMap.LngLat(travalData[i + 1][0], travalData[i + 1][1]);
+          distance = Math.round(p1.distance(p2));
+        }
+        this.alldistance += distance;
+      }
+      pathSimplifierIns && pathSimplifierIns.setData([]);
+      AMapUI.load(["ui/misc/PathSimplifier"], PathSimplifier => {
+        if (!PathSimplifier.supportCanvas) {
+          alert("当前环境不支持 Canvas！");
+          return;
+        }
+        pathSimplifierIns = new PathSimplifier({
+          zIndex: 100,
+          map: map,
+          getHoverTitle: function(pathData, pathIndex, pointIndex) {
+            if (pointIndex >= 0) {
+              return "第" + pointIndex + "个点";
+            }
+          },
+          getPath: function(pathData, pathIndex) {
+            return pathData.path;
+          },
+          renderOptions: {
+            pathLineStyle: {
+              strokeStyle: "rgb(193,21,52)",
+              lineWidth: 6,
+              dirArrowStyle: true
+            },
+            keyPointTolerance: 10,
+            keyPointStyle: {
+              radius: 3,
+              fillStyle: "#20acff"
+            }
+          }
+        });
+        window.pathSimplifierIns = pathSimplifierIns;
+        pathSimplifierIns.setData([
+          {
+            name: "轨迹",
+            path: travalData
+          }
+        ]);
+        // pathSimplifierIns.render();
+        let distance = Number(this.alldistance) / 1000; // 米转成千米
+        let times = Number(this.timeSeconds) / 3600; // 秒转成小时
+        let speeds = Math.ceil(distance / times); // 最终得到的速度是 km/h
+        navg = pathSimplifierIns.createPathNavigator(0, {
+          loop: true,
+          speed: speeds,
+          pathNavigatorStyle: {
+            width: 12,
+            height: 18,
+            strokeStyle: null,
+            fillStyle: null,
+            // 使用图片
+            content: PathSimplifier.Render.Canvas.getImageContent(
+              "../../../../static/img/car.png"
+            )
+          }
+        });
+        let startPot = travalData[0];
+        let endPot = travalData[travalData.length - 1];
+        let start = new AMap.Marker({
+          map: map,
+          position: [startPot[0], startPot[1]], // 基点位置  开始位置
+          icon: "https://webapi.amap.com/theme/v1.3/markers/n/start.png",
+          zIndex: 50
+        });
+        let end = new AMap.Marker({
+          map: map,
+          position: [endPot[0], endPot[1]], // 基点位置  结束位置
+          icon: "https://webapi.amap.com/theme/v1.3/markers/n/end.png",
+          zIndex: 10
+        });
+        this.markerArr.push(start);
+        this.markerArr.push(end);
+      });
+    },
+    // 开始运动
+    startOnclick() {
+      navg && navg.start();
+    },
+    // 暂停运动
+    pauseOnclick() {
+      navg && navg.pause();
+    },
+    // 继续运动
+    resumeOnclick() {
+      navg && navg.resume();
+    },
+    // 停止运动
+    stopOnclick() {
+      navg && navg.stop();
+      // map.clearMap();
+    },
+    /* 设置速度 */
+    speedChange() {
+      if (this.timeSeconds < 1) {
+        this.timeSeconds = 1;
+      }
+      let distance = Number(this.alldistance) / 1000;
+      let times = Number(this.timeSeconds) / 3600;
+      let speeds = Math.ceil(distance / times);
+      navg.setSpeed(speeds);
     },
     changeTime() {
-      console.log(this.timevalue);
       if (this.timevalue === "week") {
         this.start = utils.getWeek();
       }
@@ -244,40 +419,19 @@ export default {
         this.start = "2000-01-01";
       }
     },
-    getAlarmData() {
-      let startTime = utils.sortTime(this.start);
-      let endTime = utils.sortTime(this.end);
-      let endTimes = `${endTime}235959`;
-      let pageObj = {
-        pageSize: this.pageSize,
-        pageNum: this.currentPage
-      };
-      this.$axios
-        .get(
-          `/battery_group_event?hostId=${
-            this.hostId
-          }&startTime=${startTime}&endTime=${endTimes}`,
-          pageObj
-        )
-        .then(res => {
-          // console.log(res);
-          if (res.data && res.data.code === 0) {
-            let result = res.data.data;
-            if (result) {
-              this.total = result.total;
-              this.liquidData = [];
-              if (result.pageData.length > 0) {
-                this.liquidData = result.pageData;
-              }
-            }
-          }
-        });
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      if (this.active === "alarm") {
+        this.getAlarmData();
+      } else {
+        this.getliquidData();
+      }
     },
     getliquidData() {
       let startTime = utils.sortTime(this.start);
       let endTime = utils.sortTime(this.end);
       let pageObj = {
-        pageSize: this.pageSize,
+        pageSize: 10,
         pageNum: this.currentPage,
         startTime,
         endTime
@@ -290,23 +444,65 @@ export default {
             let result = res.data.data;
             if (result) {
               this.total = result.total;
-              this.alarmData = [];
+              this.liquidData = [];
               if (result.pageData.length > 0) {
-                this.liquidData = result.pageData;
+                // this.liquidData = result.pageData;
+                result.pageData.forEach((key, index) => {
+                  if (index === 0) {
+                    key.updateWater = 0;
+                  } else {
+                    key.updateWater = `${utils.Days(
+                      utils.TimeSconds(key.time) -
+                        utils.TimeSconds(result.pageData[index - 1].time)
+                    )}`;
+                    // key.updateWater =
+                    //   utils.TimeSconds(key.time) -
+                    //   utils.TimeSconds(result.pageData[index-1].time);
+                  }
+                  key.Replenishing = utils.UTCTime(key.time);
+                  this.liquidData.push(key);
+                });
               }
             }
           }
         });
     },
-    handleCurrentChange(val) {
-      this.currentPage = val;
-      this.getAlarmData();
+    getAlarmData() {
+      let startTime = utils.sortTime(this.start);
+      let endTime = utils.sortTime(this.end);
+      let pageObj = {
+        pageSize: 10,
+        pageNum: this.currentPage
+      };
+      this.$axios
+        .get(
+          `/battery_group_event?hostId=${
+            this.hostId
+          }&startTime=${startTime}000000&endTime=${endTime}235959`,
+          pageObj
+        )
+        .then(res => {
+          // console.log(res);
+          if (res.data && res.data.code === 0) {
+            let result = res.data.data;
+            if (result) {
+              this.total = result.total;
+              this.alarmData = [];
+              if (result.pageData.length > 0) {
+                this.alarmData = result.pageData;
+              }
+            }
+          }
+        });
     },
     historAlarm() {
+      this.currentPage = 1;
+      this.total = 0;
       this.active = "alarm";
     },
     historyLiquid() {
       this.active = "liquid";
+      this.total = 0;
       this.currentPage = 1;
       this.getliquidData();
     },
@@ -394,7 +590,7 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .history {
   box-sizing: border-box;
   border-radius: 5px;
@@ -417,6 +613,11 @@ export default {
     }
     .queryTime {
       width: 21%;
+    }
+    .timeSelect {
+      .el-input__inner {
+        color: #e5e5e5;
+      }
     }
     .queryBtn {
       margin-left: 20px;
@@ -521,36 +722,52 @@ export default {
     margin-bottom: 20px;
   }
   .maps {
+    position: relative;
     background: #ffffff;
     padding: 24px;
     height: 450px;
-    .mapContent {
+    .date {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: #ffffff;
+      z-index: 10;
+      padding: 5px;
+    }
+    .timeRange {
+      position: absolute;
+      top: 50px;
+      right: 5px;
+      background: #ffffff;
+      z-index: 10;
+    }
+    .historyContent {
       width: 100%;
-      height: 100%;
+      height: 450px;
     }
   }
-}
-.pb {
-  padding-bottom: 50px;
-  border-bottom: 1px solid #d7d7d7;
-  margin-bottom: 50px;
-}
-.pt {
-  padding-top: 60px;
-}
-.page {
-  padding-top: 20px;
-  text-align: right;
-}
-.btns {
-  display: flex;
-  justify-content: space-between;
-  .btns-item {
-    flex: 1;
-    padding-left: 50px;
-    &:nth-last-child(1) {
-      text-align: right;
-      padding-right: 50px;
+  .pb {
+    padding-bottom: 50px;
+    border-bottom: 1px solid #d7d7d7;
+    margin-bottom: 50px;
+  }
+  .pt {
+    padding-top: 60px;
+  }
+  .page {
+    padding-top: 20px;
+    text-align: right;
+  }
+  .btns {
+    display: flex;
+    justify-content: space-between;
+    .btns-item {
+      flex: 1;
+      padding-left: 50px;
+      &:nth-last-child(1) {
+        text-align: right;
+        padding-right: 50px;
+      }
     }
   }
 }

@@ -61,6 +61,14 @@ export default {
     let utc = `${yy}-${mm}-${day} ${hour}:${minute}:${seconds} UTC`;
     return this.a.dateFomat(utc);
   },
+  Days: (str) => {
+    let days = parseInt((str / 86400000));
+    let hours = parseInt((str % 86400000) / 3600000);
+    let minutes = parseInt((str % 3600000) / 60000);
+    let seconds = (str % 60000) / 1000;
+    return `${days}天${hours}小时${minutes}分钟${seconds}秒`;
+    // return result;
+  },
   setStorage: (key, data) => {
     sessionStorage.setItem(key, data);
   },
@@ -282,13 +290,20 @@ export default {
     };
   },
   m2m: (start, end) => {
-    let startdate = new Date(start).getTime();
+    let startdate = new Date(start);
     let enddate = new Date(end).getTime();
-    let different = enddate - startdate;
-    let prev = startdate - different;
+    let startTime = startdate.getTime();
+    let different = enddate - startTime;
+    let prev = startTime - different;
+    let period = startdate.getTime() - 86400000;
+    // let minute = startdate.getMinutes();
+    // let second = startdate.getSeconds();
+    // hours = hours < 10 ? `0${hours}` : hours;
+    // minute = minute < 10 ? `0${minute}` : minute;
+    // second = second < 10 ? `0${second}` : second;
     return {
       startTime: `${this.a.sortTime(prev)}000000`,
-      endTime: `${this.a.sortTime(startdate)}235959`
+      endTime: `${this.a.sortTime(period)}235959`
     };
   },
   sortTime: (str) => {
@@ -328,5 +343,10 @@ export default {
     let seconds = str.substring(12, 14);
     let utc = `${yy}-${mm}-${day} ${hour}:${minute}:${seconds} UTC`;
     return new Date(utc).getTime();
+  },
+  DifferTime: (time1, time2) => {
+    let startTime = new Date(time1).getTime();
+    let endTime = new Date(time2).getTime();
+    return endTime - startTime;
   }
 };

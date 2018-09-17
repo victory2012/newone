@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="same">
     <div class="top">
       <h2 class="textAlain title">比较数据</h2>
       <div class="textAlain">
@@ -18,14 +18,14 @@
     <div class="timeCenter">
       <div class="timeBar">
         <span class="lables">从</span>
-        <el-date-picker class="queryTime" size="small" v-model="start" type="date" placeholder="选择日期"></el-date-picker>
+        <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="start" type="date" placeholder="选择日期"></el-date-picker>
         <span class="lable">至</span>
-        <el-date-picker class="queryTime" size="small" v-model="end" type="date" placeholder="选择日期"></el-date-picker>
-        <el-select class="timeSelect queryTime" @change="changeTime" size="small" v-model="timevalue" placeholder="请选择时间范围">
+        <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="end" type="date" placeholder="选择日期"></el-date-picker>
+        <el-select class="queryTime" :class="{'timeSelect': defaultGray}" @change="changeTime" size="small" @focus="selectTimeChanges" v-model="timevalue" placeholder="请选择时间范围">
           <el-option v-for="item in weekOption" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
-        <el-select v-show="actived == 'same'" class="timeSelect queryTime" size="small" clearable v-model="contrastWay" placeholder="请选择对比方式">
+        <el-select v-show="actived == 'same'" class="queryTime" size="small" clearable v-model="contrastWay" placeholder="请选择对比方式">
           <el-option v-for="item in compare" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
@@ -88,6 +88,7 @@ export default {
   },
   data() {
     return {
+      defaultGray: true,
       contrastDatas: false,
       contrastWay: "",
       loading: false,
@@ -183,6 +184,12 @@ export default {
     };
   },
   methods: {
+    timeChanges() {
+      this.defaultGray = true;
+    },
+    selectTimeChanges() {
+      this.defaultGray = false;
+    },
     sureBtnSearch() {
       if (JSON.stringify(this.chooseObj) === "{}") {
         this.$message.error("请选择电池组");
@@ -205,7 +212,8 @@ export default {
         this.$message.error("请选择对比方式");
         return;
       }
-
+      this.differTime = utils.DifferTime(this.start, this.end);
+      console.log(this.differTime);
       let nowStart = `${utils.sortTime(this.start)}000000`;
       let nowEnd = `${utils.sortTime(this.end)}235959`;
 
@@ -303,7 +311,7 @@ export default {
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
             result.list.forEach(key => {
-              let timeArr = utils.TimeSconds(key.time); // 时间
+              let timeArr = utils.TimeSconds(key.time) + this.differTime; // 时间
               this.dataObjSecond.singleVoltage.push({
                 name: timeArr,
                 value: [timeArr, key.singleVoltage]
@@ -408,114 +416,93 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.textAlain {
-  text-align: center;
-}
-.tabInfo {
-  width: 330px;
-  // height: 50px;
-  background: #ffffff;
-  font-size: 0;
-  // line-height: 50px;
-  padding: 15px 0;
-  border-radius: 5px;
-  margin: 0 auto;
-  a {
-    width: 158px;
-    font-size: 14px;
+<style lang="scss">
+.same {
+  .textAlain {
     text-align: center;
-    display: inline-block;
-    cursor: pointer;
-    color: #bfbfbf;
-    &.active {
-      color: #484848;
+  }
+  .titleTab {
+    margin-bottom: 20px;
+  }
+  .top {
+    margin-bottom: 15px;
+    .title {
+      font-weight: 500;
+      font-size: 18px;
+      margin-bottom: 16px;
     }
-  }
-  .divider {
-    margin: 0 6px;
-    display: inline-block;
-    height: 8px;
-    width: 1px;
-    background: #ccc;
-  }
-}
-.titleTab {
-  margin-bottom: 20px;
-}
-.top {
-  margin-bottom: 15px;
-  .title {
-    font-weight: 500;
-    font-size: 18px;
-    margin-bottom: 16px;
-  }
-  .compare-add {
-    border: 1px dashed #898989;
-    width: 232px;
-    height: 120px;
-    border-radius: 10px;
-    font-weight: 550;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    vertical-align: middle;
-    cursor: pointer;
-    margin: 0 24px;
-    font-size: 12px;
-    &.addone {
-      border: none;
-      flex-direction: column;
-      -webkit-box-pack: center;
-      -ms-flex-pack: center;
+    .compare-add {
+      border: 1px dashed #898989;
+      width: 232px;
+      height: 120px;
+      border-radius: 10px;
+      font-weight: 550;
+      display: inline-flex;
       justify-content: center;
+      align-items: center;
       vertical-align: middle;
-      background: #ffffff;
+      cursor: pointer;
+      margin: 0 24px;
+      font-size: 12px;
+      &.addone {
+        border: none;
+        flex-direction: column;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        vertical-align: middle;
+        background: #ffffff;
+      }
     }
   }
-}
-.timeCenter {
-  margin-bottom: 20px;
-}
-.timeBar {
-  padding: 24px;
-  background: #ffffff;
-  // margin-bottom: 60px;
-  .lables {
-    display: inline-block;
+  .timeCenter {
+    margin-bottom: 20px;
+  }
+  .timeBar {
+    padding: 24px;
+    background: #ffffff;
+    // margin-bottom: 60px;
+    .lables {
+      display: inline-block;
+      text-align: right;
+      color: #484848;
+      font-size: 13px;
+      margin-right: 15px;
+      width: 8.5%;
+    }
+    .lable {
+      color: #484848;
+      font-size: 13px;
+      margin: 0 5px;
+    }
+    .queryTime {
+      width: 16%;
+    }
+    .queryBtn {
+      margin-left: 20px;
+    }
+    .timeSelect {
+      .el-input__inner {
+        color: #e5e5e5;
+      }
+    }
+  }
+  .page {
+    padding-top: 20px;
     text-align: right;
-    color: #484848;
-    font-size: 13px;
-    margin-right: 15px;
-    width: 8.5%;
   }
-  .lable {
-    color: #484848;
-    font-size: 13px;
-    margin: 0 5px;
-  }
-  .queryTime {
-    width: 16%;
-  }
-  .queryBtn {
-    margin-left: 20px;
-  }
-}
-.page {
-  padding-top: 20px;
-  text-align: right;
-}
-.TopWrapper {
-  display: flex;
-  justify-content: space-between;
-  height: 32px;
-  line-height: 32px;
-  margin-bottom: 20px;
-  .item {
-    flex: 1;
-  }
-  .item2 {
-    flex: 0 0 200px;
+  .TopWrapper {
+    display: flex;
+    justify-content: space-between;
+    height: 32px;
+    line-height: 32px;
+    margin-bottom: 20px;
+    .item {
+      flex: 1;
+    }
+    .item2 {
+      flex: 0 0 200px;
+    }
   }
 }
 </style>

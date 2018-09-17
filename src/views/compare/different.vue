@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="different">
     <div class="top">
       <h2 class="textAlain title">比较数据</h2>
       <div class="textAlain">
@@ -15,10 +15,10 @@
     <div class="timeCenter">
       <div class="timeBar">
         <span class="lables">从</span>
-        <el-date-picker class="queryTime" size="small" v-model="start" type="date" placeholder="选择日期"></el-date-picker>
+        <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="start" type="date" placeholder="选择日期"></el-date-picker>
         <span class="lable">至</span>
-        <el-date-picker class="queryTime" size="small" v-model="end" type="date" placeholder="选择日期"></el-date-picker>
-        <el-select class="timeSelect queryTime" @change="changeTime" size="small" v-model="timevalue" placeholder="请选择时间范围">
+        <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="end" type="date" placeholder="选择日期"></el-date-picker>
+        <el-select class="queryTime" :class="{'timeSelect': defaultGray}" @focus="selectTimeChanges" @change="changeTime" size="small" v-model="timevalue" placeholder="请选择时间范围">
           <el-option v-for="item in weekOption" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
@@ -77,6 +77,7 @@ export default {
   },
   data() {
     return {
+      defaultGray: true,
       contrastDatas: false,
       contrastWay: "",
       loading: false,
@@ -162,6 +163,12 @@ export default {
     };
   },
   methods: {
+    timeChanges() {
+      this.defaultGray = true;
+    },
+    selectTimeChanges() {
+      this.defaultGray = false;
+    },
     sureBtnSearch() {
       if (this.stacks1.length < 2) {
         this.$message.error("请选择电池组");
@@ -183,11 +190,6 @@ export default {
       let nowStart = `${utils.sortTime(this.start)}000000`;
       let nowEnd = `${utils.sortTime(this.end)}235959`;
 
-      if (this.contrastWay === "year") {
-        this.compareTime = utils.year2year(this.start, this.end);
-      } else {
-        this.compareTime = utils.m2m(this.start, this.end);
-      }
       this.getDataNow(nowStart, nowEnd);
     },
     changeTime() {
@@ -211,7 +213,7 @@ export default {
       }
     },
     getDataNow(startTime, endTime) {
-      console.log(this.stacks1);
+      // console.log(this.stacks1);
       this.chartloading = true;
       this.$axios
         .get(
@@ -253,12 +255,7 @@ export default {
             this.now = result.summary || {};
             this.now_eventSummary =
               result.eventSummary === null ? {} : result.eventSummary;
-            if (this.compareTime.startTime && this.compareTime.endTime) {
-              this.getDataPrev(
-                this.compareTime.startTime,
-                this.compareTime.endTime
-              );
-            }
+            this.getDataPrev(startTime, endTime);
           }
         });
     },
@@ -378,114 +375,90 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.textAlain {
-  text-align: center;
-}
-.tabInfo {
-  width: 330px;
-  // height: 50px;
-  background: #ffffff;
-  font-size: 0;
-  // line-height: 50px;
-  padding: 15px 0;
-  border-radius: 5px;
-  margin: 0 auto;
-  a {
-    width: 158px;
-    font-size: 14px;
+<style lang="scss">
+.different {
+  .textAlain {
     text-align: center;
-    display: inline-block;
-    cursor: pointer;
-    color: #bfbfbf;
-    &.active {
-      color: #484848;
+  }
+  .top {
+    margin-bottom: 15px;
+    .title {
+      font-weight: 500;
+      font-size: 18px;
+      margin-bottom: 16px;
     }
-  }
-  .divider {
-    margin: 0 6px;
-    display: inline-block;
-    height: 8px;
-    width: 1px;
-    background: #ccc;
-  }
-}
-.titleTab {
-  margin-bottom: 20px;
-}
-.top {
-  margin-bottom: 15px;
-  .title {
-    font-weight: 500;
-    font-size: 18px;
-    margin-bottom: 16px;
-  }
-  .compare-add {
-    border: 1px dashed #898989;
-    width: 232px;
-    height: 120px;
-    border-radius: 10px;
-    font-weight: 550;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    vertical-align: middle;
-    cursor: pointer;
-    margin: 0 24px;
-    font-size: 12px;
-    &.addone {
-      border: none;
-      flex-direction: column;
-      -webkit-box-pack: center;
-      -ms-flex-pack: center;
+    .compare-add {
+      border: 1px dashed #898989;
+      width: 232px;
+      height: 120px;
+      border-radius: 10px;
+      font-weight: 550;
+      display: inline-flex;
       justify-content: center;
+      align-items: center;
       vertical-align: middle;
-      background: #ffffff;
+      cursor: pointer;
+      margin: 0 24px;
+      font-size: 12px;
+      &.addone {
+        border: none;
+        flex-direction: column;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        vertical-align: middle;
+        background: #ffffff;
+      }
     }
   }
-}
-.timeCenter {
-  margin-bottom: 20px;
-}
-.timeBar {
-  padding: 24px;
-  background: #ffffff;
-  // margin-bottom: 60px;
-  .lables {
-    display: inline-block;
+  .timeCenter {
+    margin-bottom: 20px;
+  }
+  .timeBar {
+    padding: 24px;
+    background: #ffffff;
+    // margin-bottom: 60px;
+    .lables {
+      display: inline-block;
+      text-align: right;
+      color: #484848;
+      font-size: 13px;
+      margin-right: 15px;
+      width: 8.5%;
+    }
+    .lable {
+      color: #484848;
+      font-size: 13px;
+      margin: 0 5px;
+    }
+    .queryTime {
+      width: 16%;
+    }
+    .queryBtn {
+      margin-left: 20px;
+    }
+    .timeSelect {
+      .el-input__inner {
+        color: #e5e5e5;
+      }
+    }
+  }
+  .page {
+    padding-top: 20px;
     text-align: right;
-    color: #484848;
-    font-size: 13px;
-    margin-right: 15px;
-    width: 8.5%;
   }
-  .lable {
-    color: #484848;
-    font-size: 13px;
-    margin: 0 5px;
-  }
-  .queryTime {
-    width: 16%;
-  }
-  .queryBtn {
-    margin-left: 20px;
-  }
-}
-.page {
-  padding-top: 20px;
-  text-align: right;
-}
-.TopWrapper {
-  display: flex;
-  justify-content: space-between;
-  height: 32px;
-  line-height: 32px;
-  margin-bottom: 20px;
-  .item {
-    flex: 1;
-  }
-  .item2 {
-    flex: 0 0 200px;
+  .TopWrapper {
+    display: flex;
+    justify-content: space-between;
+    height: 32px;
+    line-height: 32px;
+    margin-bottom: 20px;
+    .item {
+      flex: 1;
+    }
+    .item2 {
+      flex: 0 0 200px;
+    }
   }
 }
 </style>

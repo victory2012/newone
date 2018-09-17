@@ -24,6 +24,8 @@
 </template>
 
 <script>
+// import utils from "@/utils/utils";
+
 export default {
   props: {
     alarmData: {
@@ -33,7 +35,8 @@ export default {
   },
   data() {
     return {
-      currentPage: 2,
+      currentPage: 1,
+      total: 0,
       tableData: this.alarmData
     };
   },
@@ -45,17 +48,8 @@ export default {
       deep: true
     }
   },
-  methods: {
-    // handleClick(data) {
-    //   data.forEach(key => {
-    //     // key.alarmtime = utils.fomats(key.time);
-    //     key.levels = utils.level(key.level);
-    //     key.hierarchy = key.hierarchy === "Group" ? "整组" : "单体";
-    //     key.items = utils.item(key.item);
-    //     this.alarmData.push(key);
-    //   });
-    // }
-  }
+  mounted() {},
+  methods: {}
 };
 </script>
 <style lang="scss" scoped>
