@@ -80,12 +80,24 @@ export default {
         let dz = opt.dataZoom[0];
         let tstart = opt.xAxis[0].rangeStart;
         let tend = opt.xAxis[0].rangeEnd;
-        // console.log("tstart", dz);
-        // console.log("tend", opt);
+        let barStart;
+        let barEnd;
+        if (param.batch) {
+          barStart = param.batch[0].start;
+          barEnd = param.batch[0].end;
+        } else {
+          barStart = param.start;
+          barEnd = param.end;
+        }
         clearTimeout(this.timeoutId);
         this.timeoutId = setTimeout(() => {
-          this.$emit("timeZoom", { tstart, tend });
-        }, 800);
+          this.$emit("timeZoom", {
+            tstart: tstart,
+            tend: tend,
+            batchStart: barStart,
+            batchEnd: barEnd
+          });
+        }, 500);
       });
       window.onresize = () => {
         this.myEcharts1.resize();

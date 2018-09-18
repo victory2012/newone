@@ -13,8 +13,8 @@
     </div>
     <div class="btns">
       <div class="btns-item">
-        <el-button type="primary" plain @click="narrow" icon="el-icon-remove-outline"></el-button>
-        <el-button type="primary" plain @click="enlarge" icon="el-icon-circle-plus-outline"></el-button>
+        <el-button :type="btnTypeDown" :disabled="narrowBtn" plain @click="narrow" icon="el-icon-remove-outline"></el-button>
+        <el-button :type="btnTypeUp" :disabled="enlargeBtn" plain @click="enlarge" icon="el-icon-circle-plus-outline"></el-button>
       </div>
       <div class="btns-item">
         <el-button type="primary" plain @click="exportExcel">导出Excel</el-button>
@@ -29,28 +29,28 @@
             <p>电池循环次数</p>
           </li>
           <li>
-            <p class="history_count_val">{{summary.chargeTimes || 0}}h</p>
-            <p>充电时间</p>
+            <p class="history_count_val">{{summary.chargeDuration || 0}}</p>
+            <p>充电时间(h)</p>
           </li>
           <li>
-            <p class="history_count_val">{{summary.dischargeTimes || 0}}h</p>
-            <p>放电时间</p>
+            <p class="history_count_val">{{summary.dischargeDuration || 0}}</p>
+            <p>放电时间(h)</p>
           </li>
           <li>
-            <p class="history_count_val">{{summary.avgChargeDuration || 0}}h</p>
-            <p>平均充电时间</p>
+            <p class="history_count_val">{{summary.avgChargeDuration || 0}}</p>
+            <p>平均充电时间(h)</p>
           </li>
           <li>
-            <p class="history_count_val">{{summary.avgDischargeDuration || 0}}h</p>
-            <p>平均放电时间</p>
+            <p class="history_count_val">{{summary.avgDischargeDuration || 0}}</p>
+            <p>平均放电时间(h)</p>
           </li>
           <li>
             <p class="history_count_val">{{summary.fluidSupplementTimes || 0}}</p>
             <p>补水次数</p>
           </li>
           <li>
-            <p class="history_count_val">{{summary.avgFluidSupplementDuration || 0}}h</p>
-            <p>平均补水时长</p>
+            <p class="history_count_val">{{summary.avgFluidSupplementDuration || 0}}</p>
+            <p>平均补水时长(h)</p>
           </li>
         </ul>
       </div>
@@ -106,12 +106,14 @@ import iAlarm from "../../components/alarm-data";
 // import iMap from "../../components/travel";
 import chartPie from "../../components/echartPie";
 import liquid from "../../components/alarm-liquid";
+import lnglatTrabsofor from "@/utils/longlatTransfor";
 
 let map;
 let pathSimplifierIns;
 let navg;
+let infoWindow;
 export default {
-  props: ["hostId", "propData"],
+  props: ["hostObj", "propData"],
   components: {
     chartPie,
     echartMap,
@@ -122,6 +124,10 @@ export default {
   },
   data() {
     return {
+      btnTypeDown: "info",
+      btnTypeUp: "info",
+      narrowBtn: true,
+      enlargeBtn: true,
       alldistance: 0,
       timeSeconds: 50,
       markerArr: [],
@@ -178,7 +184,9 @@ export default {
       total: 0,
       alarmData: [],
       liquidData: [],
-      zoomArr: []
+      zoomArr: [],
+      waterLastOneTime: {},
+      resultList: []
     };
   },
   mounted() {
@@ -188,6 +196,7 @@ export default {
   destroyed() {
     map.destroy();
     pathSimplifierIns.setData([]);
+    this.waterLastOneTime = {};
   },
   methods: {
     mapInit() {
@@ -205,19 +214,20 @@ export default {
     getChartData() {
       let startTime = utils.sortTime(this.start);
       let endTime = utils.sortTime(this.end);
-      if (this.markerArr.length > 0) {
-        map.remove(this.markerArr);
-      }
+
       this.getChartDatafun(startTime, endTime);
     },
     /* 获取Echart相关数据 以及 地图坐标 */
     getChartDatafun(startTime, endTime) {
       this.loading = true;
       let endTimes = `${endTime}`.length > 8 ? endTime : `${endTime}235959`;
+      if (!this.hostObj.hostId || !this.hostObj.device) {
+        return;
+      }
       this.$axios
         .get(
-          `/battery_group/${
-            this.hostId
+          `/battery_group/${this.hostObj.hostId}/${
+            this.hostObj.device
           }/data2?startTime=${startTime}000000&endTime=${endTimes}`
         )
         .then(res => {
@@ -233,7 +243,12 @@ export default {
             this.exportData = result.list;
             // this.positions = [];
             let positions = [];
-            result.list.forEach((key, index) => {
+            this.resultList = result.list;
+            if (this.resultList.length < 300) {
+              this.btnTypeUp = "info";
+              this.enlargeBtn = true;
+            }
+            this.resultList.forEach((key, index) => {
               let timeArr = utils.TimeSconds(key.time); // 时间
               this.dataObj.singleVoltage.push({
                 name: timeArr,
@@ -261,32 +276,42 @@ export default {
                 Math.abs(gcjLongitude) > 1 &&
                 Math.abs(gcjLatitude) > 1
               ) {
-                positions.push([key.gcjLongitude, key.gcjLatitude]); // 坐标
+                positions.push([key.gcjLongitude, key.gcjLatitude, timeArr]); // 坐标
               }
             });
-            this.peiObj.eventSummary = result.eventSummary || {};
-            this.peiObj.summary = result.summary || {};
+            this.enlargeBtn = true; // 放大按钮禁止
+            this.btnTypeUp = "info"; // 修改el-button的type
             this.loading = false;
             let sums = result.summary;
             this.eventSummary = result.eventSummary || {};
             this.summary = {
-              chargeTimes: (sums.chargeTimes / 60).toFixed(2),
-              dischargeTimes: (sums.dischargeTimes / 60).toFixed(2),
+              chargeDuration: (sums.chargeDuration / 60).toFixed(2),
+              dischargeDuration: (sums.dischargeDuration / 60).toFixed(2),
               cycle: sums.cycle,
-              avgChargeDuration: sums.avgChargeDuration,
-              avgDischargeDuration: sums.avgDischargeDuration,
+              avgChargeDuration: (+sums.avgChargeDuration / 60).toFixed(2),
+              avgDischargeDuration: (+sums.avgDischargeDuration / 60).toFixed(
+                2
+              ),
               fluidSupplementTimes: sums.fluidSupplementTimes,
-              avgFluidSupplementDuration: sums.avgFluidSupplementDuration
+              avgFluidSupplementDuration: (
+                sums.avgFluidSupplementDuration / 60
+              ).toFixed(2),
+              idleDuration: (sums.idleDuration / 60).toFixed(2)
             };
+            this.peiObj.eventSummary = result.eventSummary || {};
+            this.peiObj.summary = this.summary || {};
             this.positionChange(positions);
           }
         });
-      // this.getAlarmData();
+      this.getAlarmData();
     },
     /* 轨迹相关方法 */
     positionChange(travalData) {
       if (!travalData || travalData.length < 1) {
         return;
+      }
+      if (this.markerArr.length > 0) {
+        map.remove(this.markerArr);
       }
       this.alldistance = 0;
       for (let i = 0; i < travalData.length; i++) {
@@ -305,54 +330,94 @@ export default {
           alert("当前环境不支持 Canvas！");
           return;
         }
-        pathSimplifierIns = new PathSimplifier({
-          zIndex: 100,
-          map: map,
-          getHoverTitle: function(pathData, pathIndex, pointIndex) {
-            if (pointIndex >= 0) {
-              return "第" + pointIndex + "个点";
+        AMapUI.loadUI(["misc/PositionPicker"], PositionPicker => {
+          let positionPicker = new PositionPicker({
+            mode: "dragMarker",
+            map: map,
+            iconStyle: {
+              url: "../../static/img/iocna.png",
+              size: [1, 1],
+              ancher: [1, 1]
             }
-          },
-          getPath: function(pathData, pathIndex) {
-            return pathData.path;
-          },
-          renderOptions: {
-            pathLineStyle: {
-              strokeStyle: "rgb(193,21,52)",
-              lineWidth: 6,
-              dirArrowStyle: true
+          });
+          pathSimplifierIns = new PathSimplifier({
+            zIndex: 100,
+            map: map,
+            getHoverTitle: function(pathData, pathIndex, pointIndex) {
+              if (pointIndex >= 0) {
+                return "第" + pointIndex + "个点";
+              }
             },
-            keyPointTolerance: 10,
-            keyPointStyle: {
-              radius: 3,
-              fillStyle: "#20acff"
+            getPath: function(pathData, pathIndex) {
+              return pathData.path;
+            },
+            renderOptions: {
+              pathLineStyle: {
+                strokeStyle: "rgb(193,21,52)",
+                lineWidth: 6,
+                dirArrowStyle: true
+              },
+              keyPointTolerance: 10,
+              keyPointStyle: {
+                radius: 3,
+                fillStyle: "#20acff"
+              }
             }
-          }
-        });
-        window.pathSimplifierIns = pathSimplifierIns;
-        pathSimplifierIns.setData([
-          {
-            name: "轨迹",
-            path: travalData
-          }
-        ]);
-        // pathSimplifierIns.render();
-        let distance = Number(this.alldistance) / 1000; // 米转成千米
-        let times = Number(this.timeSeconds) / 3600; // 秒转成小时
-        let speeds = Math.ceil(distance / times); // 最终得到的速度是 km/h
-        navg = pathSimplifierIns.createPathNavigator(0, {
-          loop: true,
-          speed: speeds,
-          pathNavigatorStyle: {
-            width: 12,
-            height: 18,
-            strokeStyle: null,
-            fillStyle: null,
-            // 使用图片
-            content: PathSimplifier.Render.Canvas.getImageContent(
-              "../../../../static/img/car.png"
-            )
-          }
+          });
+          pathSimplifierIns.on("pointClick", function(e, info) {
+            let pointIndex = info.pointIndex;
+            let pathData = info.pathData;
+            let point = pathData.path[pointIndex];
+            // console.log("point=>>>>>>>>>>>>>>", point);
+            let position = new AMap.LngLat(point[0], point[1]);
+            positionPicker.start(position);
+            positionPicker.on("success", result => {
+              var info = [];
+              info.push(`<div><div>时间：${utils.dateFomat(point[2])}</div>`);
+              // info.push(
+              //   `<div style="font-size:14px;">路口 :${
+              //     result.nearestJunction
+              //   }</div>`
+              // );
+              info.push(
+                `<div style="font-size:14px;">地址 :${
+                  result.address
+                }</div></div>`
+              );
+              infoWindow = new AMap.InfoWindow({
+                content: info.join("<br/>") // 使用默认信息窗体框样式，显示信息内容
+              });
+              infoWindow.open(map, position);
+              map.on("click", () => {
+                infoWindow.close();
+              });
+            });
+          });
+          window.pathSimplifierIns = pathSimplifierIns;
+          pathSimplifierIns.setData([
+            {
+              name: "轨迹",
+              path: travalData
+            }
+          ]);
+          // console.log("this.lineArr", this.lineArr);
+          let distance = Number(this.alldistance) / 1000; // 米转成千米
+          let times = Number(this.timeSeconds) / 3600; // 秒转成小时
+          let speeds = Math.ceil(distance / times); // 最终得到的速度是 km/h
+          navg = pathSimplifierIns.createPathNavigator(0, {
+            loop: true,
+            speed: speeds,
+            pathNavigatorStyle: {
+              width: 12,
+              height: 18,
+              strokeStyle: null,
+              fillStyle: null,
+              // 使用图片
+              content: PathSimplifier.Render.Canvas.getImageContent(
+                "../../../../static/img/car.png"
+              )
+            }
+          });
         });
         let startPot = travalData[0];
         let endPot = travalData[travalData.length - 1];
@@ -399,6 +464,7 @@ export default {
       let speeds = Math.ceil(distance / times);
       navg.setSpeed(speeds);
     },
+    /* 快速选择日期 */
     changeTime() {
       if (this.timevalue === "week") {
         this.start = utils.getWeek();
@@ -427,6 +493,7 @@ export default {
         this.getliquidData();
       }
     },
+    /* 历史补水 */
     getliquidData() {
       let startTime = utils.sortTime(this.start);
       let endTime = utils.sortTime(this.end);
@@ -437,7 +504,10 @@ export default {
         endTime
       };
       this.$axios
-        .get(`/battery_group/${this.hostId}/fluid`, pageObj)
+        .get(
+          `/battery_group/${this.hostObj.hostId}/${this.hostObj.device}/fluid`,
+          pageObj
+        )
         .then(res => {
           console.log(res);
           if (res.data && res.data.code === 0) {
@@ -446,27 +516,50 @@ export default {
               this.total = result.total;
               this.liquidData = [];
               if (result.pageData.length > 0) {
-                // this.liquidData = result.pageData;
                 result.pageData.forEach((key, index) => {
-                  if (index === 0) {
-                    key.updateWater = 0;
+                  let itmeTime = utils.TimeSconds(key.time);
+                  let lastItme = Object.keys(this.waterLastOneTime);
+
+                  if (key.gcjLongitude && key.gcjLongitude) {
+                    let position = new AMap.LngLat(
+                      key.gcjLongitude,
+                      key.gcjLatitude
+                    );
+                    key.address = lnglatTrabsofor(position);
                   } else {
-                    key.updateWater = `${utils.Days(
-                      utils.TimeSconds(key.time) -
-                        utils.TimeSconds(result.pageData[index - 1].time)
-                    )}`;
-                    // key.updateWater =
-                    //   utils.TimeSconds(key.time) -
-                    //   utils.TimeSconds(result.pageData[index-1].time);
+                    key.address = "暂无";
                   }
+                  if (
+                    index === 0 &&
+                    lastItme.length > 0 &&
+                    this.currentPage - 1 > 0
+                  ) {
+                    key.updateWater = `${utils.Days(
+                      utils.TimeSconds(
+                        this.waterLastOneTime[this.currentPage - 1]
+                      ) - itmeTime
+                    )}`;
+                  } else if (index > 0) {
+                    key.updateWater = `${utils.Days(
+                      utils.TimeSconds(result.pageData[index - 1].time) -
+                        itmeTime
+                    )}`;
+                  }
+                  key.temperature = `${key.temperature}°C`;
                   key.Replenishing = utils.UTCTime(key.time);
+
                   this.liquidData.push(key);
                 });
+
+                this.waterLastOneTime[this.currentPage] =
+                  result.pageData[result.pageData.length - 1].time;
+                // console.log(this.waterLastOneTime);
               }
             }
           }
         });
     },
+    /* 历史告警 */
     getAlarmData() {
       let startTime = utils.sortTime(this.start);
       let endTime = utils.sortTime(this.end);
@@ -477,7 +570,7 @@ export default {
       this.$axios
         .get(
           `/battery_group_event?hostId=${
-            this.hostId
+            this.hostObj.hostId
           }&startTime=${startTime}000000&endTime=${endTime}235959`,
           pageObj
         )
@@ -507,35 +600,57 @@ export default {
       this.getliquidData();
     },
     timeZoom(data) {
-      // console.log(data);
+      console.log(data);
       this.zoomBar = data;
+      if (
+        this.resultList.length >= 300 &&
+        (data.batchStart !== 0 || data.batchEnd !== 100)
+      ) {
+        this.enlargeBtn = false;
+        this.btnTypeUp = "primary";
+      } else {
+        this.enlargeBtn = true;
+        this.btnTypeUp = "info";
+      }
     },
     /* 缩小 */
     narrow() {
+      console.log(this.zoomArr);
+      console.log(this.Timeindex);
       if (!this.zoomBar || this.Timeindex < -2) {
         return;
       }
       if (this.Timeindex === -1) {
-        this.getChartDatafun(this.zoomArr[0].start, this.zoomArr[0].end);
-        this.zoomArr = [];
-        this.Timeindex--;
-      } else if (this.Timeindex === -2) {
+        // this.getChartDatafun(this.zoomArr[0].start, this.zoomArr[0].end);
         this.getChartData();
         this.zoomArr = [];
-        this.Timeindex--;
+        this.btnTypeDown = "info";
+        this.narrowBtn = true;
+        this.btnTypeUp = "info";
+        this.enlargeBtn = true;
+        // this.Timeindex--;
       } else {
         let timeObj = this.zoomArr[this.Timeindex];
         this.getChartDatafun(timeObj.start, timeObj.end);
         this.zoomArr.pop();
         this.Timeindex--;
       }
-      console.log("this.zoomArr", this.zoomArr);
+      // console.log("this.zoomArr", this.zoomArr);
     },
     /* 放大 */
     enlarge() {
-      if (!this.zoomBar) {
+      if (
+        !this.zoomBar &&
+        (this.zoomBar.batchEnd === 100 && this.zoomBar.batchStart === 0)
+      ) {
         return;
       }
+      this.btnTypeDown = "primary";
+      this.narrowBtn = false;
+      // btnTypeDown: "info",
+      // btnTypeUp: "primary",
+      // narrowBtn: true,
+      // enlargeBtn: false,
       // _m.utc().format()new Date("2018-09-11 15:12:05").toISOString()
       let obj = {
         start: utils.toUTCTime(this.zoomBar.tstart),
@@ -728,18 +843,24 @@ export default {
     height: 450px;
     .date {
       position: absolute;
-      top: 5px;
-      right: 5px;
+      top: 25px;
+      right: 25px;
       background: #ffffff;
       z-index: 10;
       padding: 5px;
+      border-radius: 3px;
+      border: 1px solid #e5e5e5;
     }
     .timeRange {
       position: absolute;
-      top: 50px;
-      right: 5px;
+      top: 70px;
+      right: 25px;
       background: #ffffff;
       z-index: 10;
+      padding: 5px;
+      font-size: 12px;
+      border-radius: 3px;
+      border: 1px solid #e5e5e5;
     }
     .historyContent {
       width: 100%;

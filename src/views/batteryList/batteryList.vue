@@ -360,6 +360,7 @@ export default {
       this.getBatteryList();
     },
     lookFor(row) {
+      // console.log(row);
       this.$router.push({
         path: "battery/run",
         query: {

@@ -6,5 +6,6 @@ export default {
   custom: false,
   addBattery: false,
   batteryModel: null,
-  userRoles: null
+  userRoles: null,
+  addUserText: ""
 };

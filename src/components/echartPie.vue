@@ -55,7 +55,6 @@ export default {
         },
         series: [
           {
-            // name: "访问来源",
             type: "pie",
             radius: ["30%", "50%"],
             center: ["50%", "60%"],
@@ -129,12 +128,18 @@ export default {
       // }
       let voltageOptions = _.cloneDeep(this.pieOption);
       voltageOptions.legend.data = ["充电时间", "放电时间", "空载时间"];
+      voltageOptions.tooltip.formatter = p => {
+        let item = `${p.percent}%<br />${p.data.name}: ${p.data.value}h`;
+        return item;
+      };
       voltageOptions.series[0].data = [
-        { value: peiData.summary.chargeTimes, name: "充电时间" },
-        { value: peiData.summary.dischargeTimes, name: "放电时间" },
+        { value: peiData.summary.chargeDuration, name: "充电时间" },
+        { value: peiData.summary.dischargeDuration, name: "放电时间" },
         { value: peiData.summary.idleDuration, name: "空载时间" }
       ];
+      voltageOptions.series[0].label.normal.formatter = "{c}h";
       this.peiEcharts1.setOption(voltageOptions);
+
       this.alarmTime =
         Number(peiData.eventSummary.temperature) +
         Number(peiData.eventSummary.fluidLevel) +

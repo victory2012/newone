@@ -43,6 +43,9 @@
 </template>
 
 <script>
+/* eslint-disable */
+import { mapGetters } from "vuex";
+
 export default {
   props: {
     type: {
@@ -51,7 +54,7 @@ export default {
   },
   data() {
     return {
-      userText: "",
+      // userText: "",
       creatAdmin: true,
       adminForm: {},
       // manfictor: true,
@@ -92,7 +95,7 @@ export default {
     };
   },
   computed: {
-    // ...mapGetters(['manfictor'])
+    ...mapGetters(["userText"]),
     manfictor: {
       get: function() {
         return this.$store.state.manfictor;
@@ -107,7 +110,7 @@ export default {
     }
   },
   mounted() {
-    this.userText = sessionStorage.getItem("useItem");
+    // this.userText = sessionStorage.getItem("useItem");
   },
   methods: {
     resetAdmin(formName) {

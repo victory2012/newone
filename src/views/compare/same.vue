@@ -245,11 +245,12 @@ export default {
       }
     },
     getDataNow(startTime, endTime) {
-      let deviceId = this.chooseObj.hostId;
+      let hostId = this.chooseObj.hostId;
+      let deviceId = this.chooseObj.deviceId;
       this.chartloading = true;
       this.$axios
         .get(
-          `/battery_group/${deviceId}/data2?startTime=${startTime}&endTime=${endTime}`
+          `/battery_group/${hostId}/${deviceId}/data2?startTime=${startTime}&endTime=${endTime}`
         )
         .then(res => {
           console.log(res);
@@ -288,16 +289,17 @@ export default {
               this.getDataPrev(
                 this.compareTime.startTime,
                 this.compareTime.endTime,
+                hostId,
                 deviceId
               );
             }
           }
         });
     },
-    getDataPrev(startTime, endTime, id) {
+    getDataPrev(startTime, endTime, id, deviceId) {
       this.$axios
         .get(
-          `/battery_group/${id}/data2?startTime=${startTime}&endTime=${endTime}`
+          `/battery_group/${id}/${deviceId}/data2?startTime=${startTime}&endTime=${endTime}`
         )
         .then(res => {
           console.log(res);

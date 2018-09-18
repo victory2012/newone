@@ -81,6 +81,7 @@ import Paho from "Paho";
 import utils from "@/utils/utils";
 import echartMap from "../../components/realTime";
 import mqttConfig from "@/api/mqtt.config";
+import lnglatTrabsofor from "@/utils/longlatTransfor";
 
 let mqttClient = {};
 let map;
@@ -88,7 +89,7 @@ let marker;
 const PI = 3.14159265358979324;
 const x_pi = 3.14159265358979324 * 3000.0 / 180.0;
 export default {
-  props: ["hostId", "propData"],
+  props: ["hostObj", "propData"],
   components: {
     echartMap
   },
@@ -132,7 +133,7 @@ export default {
     this.ReceiveObj = {};
   },
   watch: {
-    hostId: {
+    hostObj: {
       handler: function() {
         this.getData();
       }
@@ -140,6 +141,7 @@ export default {
     propData: {
       handler: function(val) {
         this.infoData = val;
+        this.positionData(val);
         this.onConnect();
       },
       deep: true
@@ -231,14 +233,12 @@ export default {
         mqttClient.subscribe(`dev/${this.infoData.deviceCode}`);
       }
     },
-    positionData() {
+    positionData(data) {
+      console.log(data);
       setTimeout(() => {
-        if (this.infoData.gcjLongitude) {
+        if (data && data.gcjLongitude) {
           // marker.remove()
-          let position = new AMap.LngLat(
-            this.infoData.gcjLongitude,
-            this.infoData.gcjLatitude
-          );
+          let position = new AMap.LngLat(data.gcjLongitude, data.gcjLatitude);
           if (this.markerArr.length > 0) {
             this.markerArr.forEach(key => {
               key.setMap(null);
@@ -251,18 +251,21 @@ export default {
           marker.setMap(map);
           this.markerArr.push(marker);
           map.setCenter(position);
-          this.getCity(this.infoData.gcjLongitude, this.infoData.gcjLatitude);
+          this.address = lnglatTrabsofor(position);
+          // this.getCity(this.infoData.gcjLongitude, this.infoData.gcjLatitude);
         }
-      }, 100);
+      }, 400);
     },
     getData() {
-      this.positionData();
       let startTime = utils.getFourHours();
       let endTime = utils.getNowTime();
+      if (!this.hostObj.hostId || !this.hostObj.device) {
+        return;
+      }
       this.$axios
         .get(
-          `/battery_group/${
-            this.hostId
+          `/battery_group/${this.hostObj.hostId}/${
+            this.hostObj.device
           }/data?startTime=${startTime}&endTime=${endTime}`
         )
         .then(res => {

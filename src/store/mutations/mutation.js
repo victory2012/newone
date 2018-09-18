@@ -39,5 +39,8 @@ export default {
   },
   SETBATTERYMODEL(state, data) {
     state.batteryModel = data;
+  },
+  SETAddUserText(state, data) {
+    state.addUserText = data;
   }
 };

@@ -120,7 +120,7 @@
 import utils from "@/utils/utils";
 
 export default {
-  props: ["hostId"],
+  props: ["hostObj"],
   data() {
     return {
       total: 0,
@@ -167,7 +167,7 @@ export default {
         pageNum: this.currentPage
       };
       this.$axios
-        .get(`/battery_group_event?hostId=${this.hostId}`, pageObj)
+        .get(`/battery_group_event?hostId=${this.hostObj.hostId}`, pageObj)
         .then(res => {
           console.log(res);
           if (res.data && res.data.code === 0) {

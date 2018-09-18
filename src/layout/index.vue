@@ -86,13 +86,12 @@ export default {
       } else if (this.getUserType === 2) {
         this.menus = menu.getManifactor();
       }
-      console.log(this.menus);
+      console.log(menu.test());
     }
   },
   beforeDestroy() {
     this.menus = "";
     this.$store.state.loginData = "";
-    console.log("sideBar is destroyed");
   }
 };
 </script>

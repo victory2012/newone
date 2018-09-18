@@ -21,5 +21,8 @@ export default {
       return `${JSON.parse(state.loginData).layerName}`;
     }
     return "";
+  },
+  userText(state) {
+    return state.addUserText;
   }
 };

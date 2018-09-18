@@ -1,5 +1,5 @@
 <template>
-  <el-dialog width="600px" title="创建客户企业" @close="closedIt" :visible.sync="custom">
+  <el-dialog width="600px" :title="userText" @close="closedIt" :visible.sync="custom">
     <el-form :model="adminForm" :rules="customerRules" ref="adminForm">
       <el-row :gutter="40">
         <el-col :span="12">
@@ -36,6 +36,9 @@
 </template>
 
 <script>
+/* eslint-disable */
+import { mapGetters } from "vuex";
+
 export default {
   props: {
     type: {
@@ -67,7 +70,7 @@ export default {
     };
   },
   computed: {
-    // ...mapGetters(['manfictor'])
+    ...mapGetters(["userText"]),
     custom: {
       get: function() {
         return this.$store.state.custom;
@@ -137,7 +140,6 @@ export default {
       });
     },
     closedIt() {
-      console.log("it closed");
       this.resetAdmin("adminForm");
       this.$store.state.custom = false;
     }

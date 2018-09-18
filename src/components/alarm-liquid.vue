@@ -9,7 +9,7 @@
       </el-table-column>
       <el-table-column prop="updateWater" align="center" label="距上次补水时长">
       </el-table-column>
-      <el-table-column prop="hostCode" align="center" label="位置">
+      <el-table-column prop="address" align="center" label="位置">
       </el-table-column>
     </el-table>
   </div>

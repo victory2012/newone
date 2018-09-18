@@ -11,7 +11,7 @@
       <div class="search">
         <!-- <el-autocomplete v-show="actived === 'real'" size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入电池编号" @select="handleSelect"></el-autocomplete> -->
         <el-select v-show="actived === 'real'" v-model="state" filterable placeholder="请输入电池编号" clearable @change="changeBatteryCode">
-          <el-option v-for="item in tableData" :key="item.value" :label="item.value" :value="item.hostId">
+          <el-option v-for="item in tableData" :key="item.value" :label="item.value" :value="item">
           </el-option>
         </el-select>
         <div v-show="actived !== 'real'" class="devicecode">
@@ -23,7 +23,7 @@
     <div v-show="hasHostId" class="tips">
       请先选择一个电池组！
     </div>
-    <component :is="showCompontent" :hostId="hostId" :propData="companyInfo"></component>
+    <component :is="showCompontent" :hostObj="IdObj" :deviceId="deviceId" :propData="companyInfo"></component>
   </div>
 </template>
 <script>
@@ -53,13 +53,20 @@ export default {
       hostId: "",
       showCompontent: "",
       hasHostId: false,
-      tableData: []
+      tableData: [],
+      deviceId: "",
+      IdObj: {}
     };
   },
   mounted() {
     this.hostId = this.$route.query.hostId;
+    this.deviceId = this.$route.query.deviceId;
     this.init();
-    if (this.hostId) {
+    if (this.hostId && this.deviceId) {
+      this.IdObj = {
+        hostId: this.hostId,
+        device: this.deviceId
+      };
       this.getCompanyInfo();
     }
   },
@@ -94,27 +101,27 @@ export default {
     },
     changeBatteryCode() {
       if (this.state) {
-        this.hostId = this.state;
+        this.IdObj = this.state;
         this.getCompanyInfo();
       }
     },
     showRealData() {
       this.actived = "real";
-      if (this.hostId) {
+      if (this.IdObj.hostId) {
         this.hasHostId = false;
         this.showCompontent = "real-time";
       }
     },
     showHistoryData() {
       this.actived = "history";
-      if (this.hostId) {
+      if (this.IdObj.hostId) {
         this.hasHostId = false;
         this.showCompontent = "i-history";
       }
     },
     showAlarmData() {
       this.actived = "alarm";
-      if (this.hostId) {
+      if (this.IdObj.hostId) {
         this.hasHostId = false;
         this.showCompontent = "i-alarm";
       }
@@ -133,7 +140,7 @@ export default {
         this.tableData = [];
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
-          this.total = result.total;
+          // this.total = result.total;
           this.tableData = result.pageData;
         }
       });
@@ -155,7 +162,7 @@ export default {
               id: key.id,
               value: key.code,
               hostId: key.hostId,
-              device: key.deviceCode
+              device: key.deviceId
             };
             this.tableData.push(obj);
           });
@@ -163,7 +170,7 @@ export default {
       });
     },
     getCompanyInfo() {
-      this.$axios.get(`/battery_group/${this.hostId}/info`).then(res => {
+      this.$axios.get(`/battery_group/${this.IdObj.hostId}/info`).then(res => {
         console.log(res);
         this.companyInfo = "";
         if (res.data && res.data.code === 0 && res.data.data) {

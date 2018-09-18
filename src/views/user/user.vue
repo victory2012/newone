@@ -21,10 +21,10 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="150">
         <template slot-scope="scope">
-          <el-button :disabled="!scope.row.userType" size="small" class="limite" @click.native.prevent="changeQuanxian(scope.row)" type="text">
+          <el-button :disabled="!scope.row.userType || this.getUserType === 1" size="small" class="limite" @click.native.prevent="changeQuanxian(scope.row)" type="text">
             修改权限
           </el-button>
-          <el-button size="small" type="text" @click="secondary(scope.row)" :disabled="scope.row.canNotDelete">删除</el-button>
+          <el-button size="small" type="text" @click="secondary(scope.row)" :disabled="scope.row.canNotDelete || this.getUserType === 1">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -134,7 +134,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getLayerName"])
+    ...mapGetters(["getLayerName", "getUserType"])
   },
   mounted() {
     this.$store.state.manfictor = false;
@@ -232,8 +232,9 @@ export default {
     },
     adduser(index, key) {
       console.log(key);
-      sessionStorage.setItem("useItem", key.text);
+      // sessionStorage.setItem("useItem", key.text);
       // this.userData = addData();
+      this.$store.commit("SETAddUserText", key.text);
       this.clicked = this.userData[index].role;
       this.addType = this.userData[index].role;
       // this.userData[index].default = this.userData[index].icon;

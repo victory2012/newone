@@ -217,8 +217,8 @@ export default {
       this.chartloading = true;
       this.$axios
         .get(
-          `/battery_group/${
-            this.stacks1[0].hostId
+          `/battery_group/${this.stacks1[0].hostId}/${
+            this.stacks1[0].deviceId
           }/data2?startTime=${startTime}&endTime=${endTime}`
         )
         .then(res => {
@@ -262,8 +262,8 @@ export default {
     getDataPrev(startTime, endTime) {
       this.$axios
         .get(
-          `/battery_group/${
-            this.stacks1[1].hostId
+          `/battery_group/${this.stacks1[1].hostId}/${
+            this.stacks1[1].deviceId
           }/data2?startTime=${startTime}&endTime=${endTime}`
         )
         .then(res => {
