@@ -9,7 +9,7 @@
     <el-table :data="tableData" style="width: 100%">
       <el-table-column type="index" align="center" label="序号" width="50">
       </el-table-column>
-      <el-table-column prop="createTime" align="center" label="告警发生时间" width="150">
+      <el-table-column prop="createTime" align="center" label="告警发生时间" width="180">
       </el-table-column>
       <el-table-column prop="items" align="center" label="告警项目">
       </el-table-column>
@@ -83,7 +83,7 @@
             </td>
             <td class="titles">位置</td>
             <td>
-              <p>{{rowObj.voltage}}</p>
+              <p>{{rowObj.address}}</p>
             </td>
           </tr>
           <tr>
@@ -118,6 +118,7 @@
 </template>
 <script>
 import utils from "@/utils/utils";
+import lnglatTrabsofor from "@/utils/longlatTransfor";
 
 export default {
   props: ["hostObj"],
@@ -141,17 +142,26 @@ export default {
   },
   methods: {
     handleClick(row) {
-      this.details = true;
       this.rowObj = row;
       this.$axios.get(`/battery_group_event/${row.dataId}`).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
           if (result) {
-            this.rowObj.fluidLevel = result.fluidLevel;
-            this.rowObj.temperature = result.temperature;
-            this.rowObj.voltage = result.voltage;
-            this.rowObj.current = result.current;
+            // let position = new AMap.LngLat(
+            //   result.gcjLongitude,
+            //   result.gcjLatitude
+            // );
+            let position = [result.gcjLongitude, result.gcjLatitude];
+            lnglatTrabsofor(position, callRes => {
+              this.rowObj.fluidLevel =
+                result.fluidLevel === 0 ? "正常" : "异常";
+              this.rowObj.temperature = result.temperature;
+              this.rowObj.voltage = result.voltage;
+              this.rowObj.current = result.current;
+              this.rowObj.address = callRes || "--";
+              this.details = true;
+            });
           }
         }
       });
@@ -181,6 +191,10 @@ export default {
                   key.levels = utils.level(key.level);
                   key.hierarchy = key.hierarchy === "Group" ? "整组" : "单体";
                   key.items = utils.item(key.item);
+                  if (key.item === "Fluid") {
+                    key.thresholdValue = "-";
+                    key.actualValue = "异常";
+                  }
                   this.tableData.push(key);
                 });
               }
@@ -216,7 +230,7 @@ export default {
       }
       &.titles {
         padding-right: 15px;
-        width: 120px;
+        width: 86px;
         background: #ffffff;
         text-align: right;
       }

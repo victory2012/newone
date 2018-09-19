@@ -2,27 +2,28 @@
   <div>
     <div class="titleTab">
       <div class="tabInfo">
-        <a @click="showSameData" :class="{'active': actived == 'same'}">同一电池单元</a>
-        <span class="divider"></span>
-        <a @click="showDiffData" :class="{'active': actived == 'diff'}">不同电池单元</a>
+        <a @click="showSameData" v-if="AdminRoles.sameAnalysis" :class="{'active': actived == 'same'}">同一电池单元</a>
+        <span class="divider" v-if="AdminRoles.sameAnalysis || AdminRoles.sameBatch"></span>
+        <a @click="showDiffData" v-if="AdminRoles.sameBatch" :class="{'active': actived == 'diff'}">不同电池单元</a>
       </div>
     </div>
     <component :is="activeComponent"></component>
-
   </div>
 </template>
 <script>
-import sameCompent from "./same";
-import diffCompent from "./different";
+import valid from "@/utils/valated";
+// import sameCompent from "./same";
+// import diffCompent from "./different";
 // import comChart from "../../components/compare/compare-chart";
 
 export default {
   components: {
-    sameCompent,
-    diffCompent
+    sameCompent: () => import("./same"),
+    diffCompent: () => import("./different")
   },
   data() {
     return {
+      AdminRoles: {},
       actived: "same",
       activeComponent: "sameCompent"
     };
@@ -36,6 +37,9 @@ export default {
       this.activeComponent = "diffCompent";
       this.actived = "diff";
     }
+  },
+  mounted() {
+    this.AdminRoles = valid();
   }
 };
 </script>

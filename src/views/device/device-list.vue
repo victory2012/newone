@@ -58,7 +58,7 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" width="160px">
+        <el-table-column label="操作" align="center" width="200px">
           <template slot-scope="scope">
             <el-button @click.native.prevent="addBlack(scope.row)" type="text" :disabled="scope.row.blackStatus" size="small">
               拉黑

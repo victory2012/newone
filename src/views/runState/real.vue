@@ -119,12 +119,10 @@ export default {
   mounted() {
     this.init();
     this.getData();
+    this.connectMqtt();
   },
   beforeDestroy() {
-    if (
-      typeof mqttClient === "object" &&
-      typeof mqttClient.disconnect === "function"
-    ) {
+    if (typeof mqttClient === "object" && mqttClient.isConnected()) {
       mqttClient.disconnect();
       mqttClient = {};
       map = null;
@@ -167,7 +165,7 @@ export default {
         console.log("mqtt-closed:", responseObject);
       };
       mqttClient.onMessageArrived = message => {
-        // console.log("message:", message);
+        console.log("message:", message);
         let payload = message.payloadString;
         if (payload) {
           let payloadType = payload.toString().split("]");
@@ -210,7 +208,7 @@ export default {
       this.version = dataObj.version;
       let posData = this.gcj_encrypt(dataObj.latitude, dataObj.longitude);
       this.infoData.temperature = dataObj.temperature;
-      this.infoData.fluid = dataObj.liquid === 1 ? "正常" : "异常";
+      this.infoData.fluid = dataObj.liquid === 0 ? "正常" : "异常";
       this.infoData.voltage = dataObj.voltage;
       this.infoData.singleVoltage = dataObj.singleVoltage;
       this.infoData.current = dataObj.current;
@@ -218,7 +216,11 @@ export default {
       this.infoData.yyddmm = utils.yyyymmdd(new Date());
       this.infoData.gcjLongitude = posData.lon;
       this.infoData.gcjLatitude = posData.lat;
-      this.positionData();
+      let resultPos = {
+        gcjLongitude: posData.lon,
+        gcjLatitude: posData.lat
+      };
+      this.positionData(resultPos);
 
       if (this.checked) {
         this.ReceiveObj = dataObj;
@@ -234,27 +236,25 @@ export default {
       }
     },
     positionData(data) {
-      console.log(data);
-      setTimeout(() => {
-        if (data && data.gcjLongitude) {
-          // marker.remove()
-          let position = new AMap.LngLat(data.gcjLongitude, data.gcjLatitude);
-          if (this.markerArr.length > 0) {
-            this.markerArr.forEach(key => {
-              key.setMap(null);
-            });
-          }
-          marker = new AMap.Marker({
-            icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
-            position: position
+      if (data && data.gcjLongitude) {
+        // marker.remove()
+        let position = new AMap.LngLat(data.gcjLongitude, data.gcjLatitude);
+        if (this.markerArr.length > 0) {
+          this.markerArr.forEach(key => {
+            key.setMap(null);
           });
-          marker.setMap(map);
-          this.markerArr.push(marker);
-          map.setCenter(position);
-          this.address = lnglatTrabsofor(position);
-          // this.getCity(this.infoData.gcjLongitude, this.infoData.gcjLatitude);
         }
-      }, 400);
+        marker = new AMap.Marker({
+          icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+          position: position
+        });
+        marker.setMap(map);
+        this.markerArr.push(marker);
+        map.setCenter(position);
+        lnglatTrabsofor(position, res => {
+          this.address = res;
+        });
+      }
     },
     getData() {
       let startTime = utils.getFourHours();
@@ -299,7 +299,6 @@ export default {
               });
             });
             this.hasgetData = true;
-            this.connectMqtt();
           }
         });
     },

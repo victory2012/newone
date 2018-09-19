@@ -176,7 +176,7 @@ export default {
         if (res.data && res.data.code === 0 && res.data.data) {
           let result = res.data.data;
           this.companyInfo = result;
-          this.companyInfo.fluid = result.fluidLevel === 1 ? "正常" : "异常";
+          this.companyInfo.fluid = result.fluidLevel === 0 ? "正常" : "异常";
           this.companyInfo.yyddmm = utils.yyyymmdd(new Date());
           this.companyInfo.hhmmss = utils.hhmmss(new Date());
           this.showRealData();

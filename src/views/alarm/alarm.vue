@@ -77,7 +77,7 @@
             </td>
             <td class="titles">位置</td>
             <td>
-              <p>{{rowObj.voltage}}</p>
+              <p>{{rowObj.address}}</p>
             </td>
           </tr>
           <tr>
@@ -111,6 +111,7 @@
 </template>
 <script>
 import utils from "@/utils/utils";
+import lnglatTrabsofor from "@/utils/longlatTransfor";
 
 export default {
   data() {
@@ -120,17 +121,7 @@ export default {
       total: 0,
       rowObj: {},
       details: false,
-      tableData: [
-        {
-          alarmtime: "2018-08-02 17:00:50",
-          alarmProject: "液位",
-          batteryId: "5F",
-          batteryGroup: "200",
-          content: "电解液位低",
-          hierarchy: "整组",
-          level: "高"
-        }
-      ]
+      tableData: []
     };
   },
   mounted() {
@@ -138,17 +129,28 @@ export default {
   },
   methods: {
     handleClick(row) {
-      this.details = true;
       this.rowObj = row;
       this.$axios.get(`/battery_group_event/${row.dataId}`).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
           if (result) {
-            this.rowObj.fluidLevel = result.fluidLevel;
-            this.rowObj.temperature = result.temperature;
-            this.rowObj.voltage = result.voltage;
-            this.rowObj.current = result.current;
+            let position = [result.gcjLongitude, result.gcjLatitude];
+            lnglatTrabsofor(position, callRes => {
+              this.rowObj.fluidLevel =
+                result.fluidLevel === 0 ? "正常" : "异常";
+              this.rowObj.temperature = result.temperature;
+              this.rowObj.voltage = result.voltage;
+              this.rowObj.current = result.current;
+              this.rowObj.address = callRes || "--";
+              this.details = true;
+            });
+            // this.rowObj.fluidLevel = result.fluidLevel === 0 ? "正常" : "异常";
+            // this.rowObj.temperature = result.temperature;
+            // this.rowObj.voltage = result.voltage;
+            // this.rowObj.current = result.current;
+            // this.rowObj.address = lnglatTrabsofor(position);
+            // this.details = true;
           }
         }
       });
@@ -178,6 +180,10 @@ export default {
               key.levels = utils.level(key.level);
               key.hierarchy = key.hierarchy === "Group" ? "整组" : "单体";
               key.items = utils.item(key.item);
+              if (key.item === "Fluid") {
+                key.thresholdValue = "-";
+                key.actualValue = "异常";
+              }
               this.tableData.push(key);
             });
           }
@@ -217,7 +223,7 @@ export default {
       }
       &.titles {
         padding-right: 15px;
-        width: 120px;
+        width: 86px;
         background: #ffffff;
         text-align: right;
       }

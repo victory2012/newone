@@ -109,7 +109,8 @@ export default {
           temperature: [],
           voltage: [],
           current: []
-        }
+        },
+        different: ""
       },
       chooseObj: {},
       dataObjFirst: {
@@ -212,16 +213,22 @@ export default {
         this.$message.error("请选择对比方式");
         return;
       }
-      this.differTime = utils.DifferTime(this.start, this.end);
-      console.log(this.differTime);
-      let nowStart = `${utils.sortTime(this.start)}000000`;
-      let nowEnd = `${utils.sortTime(this.end)}235959`;
+      this.differTime = utils.DifferTime(
+        utils.startTime(this.start),
+        utils.endTime(this.end)
+      );
+      // console.log("differTime", this.differTime);
+      let nowStart = utils.toUTCTime(utils.startTime(this.start));
+      let nowEnd = utils.toUTCTime(utils.endTime(this.end));
+      let startFormat = utils.startTime(this.start);
+      let endFormat = utils.startTime(this.end);
 
       if (this.contrastWay === "year") {
-        this.compareTime = utils.year2year(this.start, this.end);
+        this.compareTime = utils.year2year(startFormat, endFormat);
       } else {
-        this.compareTime = utils.m2m(this.start, this.end);
+        this.compareTime = utils.m2m(startFormat, endFormat);
       }
+      console.log(this.compareTime);
       this.getDataNow(nowStart, nowEnd);
     },
     changeTime() {
@@ -337,7 +344,8 @@ export default {
               result.eventSummary === null ? {} : result.eventSummary;
             this.dataArr = {
               dataObjFirst: this.dataObjFirst,
-              dataObjSecond: this.dataObjSecond
+              dataObjSecond: this.dataObjSecond,
+              different: this.differTime
             };
             this.summary = {
               now: this.now,

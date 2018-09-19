@@ -10,7 +10,7 @@
       <div class="tab">
         <el-button @click="modifyThreshold" size="small" type="primary">修改阈值</el-button>
         <!-- <el-button v-show="!hasTemp" @click="modifyThreshold" size="small" type="primary">添加阈值</el-button> -->
-        <el-button @click="getTemplate" size="small" plain>恢复模板</el-button>
+        <el-button @click="getTemplate" size="small" plain>恢复全局</el-button>
       </div>
     </div>
     <div class="warrp">
@@ -104,6 +104,8 @@
   </div>
 </template>
 <script>
+import { Message } from "element-ui";
+
 export default {
   data() {
     return {
@@ -304,12 +306,26 @@ export default {
         });
         return;
       }
-      this.$axios.get("/battery_group_event_policy/template").then(res => {
+      this.$axios.get(`/battery_group_event_policy?modelId=0`).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
-          this.batteryForm = res.data.data;
+          let result = res.data;
+          if (result.data === null) {
+            Message({
+              message: "暂未设置全局阈值",
+              type: "warning"
+            });
+          } else {
+            this.batteryForm = result.data;
+          }
         }
       });
+      // this.$axios.get("/battery_group_event_policy/template").then(res => {
+      //   console.log(res);
+      //   if (res.data && res.data.code === 0) {
+      //     this.batteryForm = res.data.data;
+      //   }
+      // });
     }
   },
   mounted() {

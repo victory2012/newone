@@ -90,7 +90,6 @@ export default {
                       "setUserRole",
                       JSON.stringify(opts.data.data)
                     );
-                    // utils.setStorage("userRoles", JSON.stringify(opts.data.data));
                     this.$router.push("/battery");
                   }
                 });
@@ -103,7 +102,6 @@ export default {
       });
     },
     getSmsCode() {
-      // this.$refs.smsPhone.validateField("phone");
       this.$refs.smsPhone.validateField("phone", opts => {
         console.log(opts);
         if (opts === "" || opts === undefined || opts === null) {
@@ -142,11 +140,19 @@ export default {
           this.$axios.post("/login/sms/verify", phoneObj).then(res => {
             console.log(res);
             if (res.data && res.data.code === 0) {
-              // this.$store.commit("setStorage", JSON.stringify(res.data));
-              // this.$store.commit("setTokenStorage", res.headers.token);
               this.$store.commit("setTokenStorage", res.headers.token);
               this.$store.commit("setStorage", JSON.stringify(res.data.data));
-              this.$router.push("/battery");
+              this.$axios
+                .get(`/user/permissions/${res.data.data.id}`)
+                .then(opts => {
+                  if (opts.data && opts.data.code === 0) {
+                    this.$store.commit(
+                      "setUserRole",
+                      JSON.stringify(opts.data.data)
+                    );
+                    this.$router.push("/battery");
+                  }
+                });
             }
           });
         }

@@ -56,7 +56,8 @@ export default {
             temperature: [],
             voltage: [],
             current: []
-          }
+          },
+          different: ""
         };
       }
     },
@@ -219,22 +220,32 @@ export default {
       voltageOptions.yAxis.axisLabel.formatter = "{value} v";
       voltageOptions.series[0].data = datas.dataObjFirst.voltage;
       voltageOptions.series[1].data = datas.dataObjSecond.voltage;
-      // if (!datas.battertCode) {
-      //   voltageOptions.tooltip.formatter = p => {
-      //     console.log(p);
-      //     let item = "";
-      //     // p.forEach(v => {
-      //     //   item +=
-      //     //     utils.dateFomat(v.value[0]) +
-      //     //     "<br/>" +
-      //     //     "温度" +
-      //     //     " : " +
-      //     //     v.value[1] +
-      //     //     "<br/>";
-      //     // });
-      //     return item;
-      //   };
-      // }
+      if (!datas.battertCode) {
+        voltageOptions.tooltip.formatter = p => {
+          let item;
+          let v = p[0];
+          if (p[0].seriesName === "上期") {
+            item = `${utils.dateFomat(p[0].value[0] - datas.different)}<br/>${
+              v.seriesName
+            }:${v.value[1]}<br/>`;
+          } else {
+            item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
+              v.value[1]
+            }<br/>`;
+          }
+          return item;
+        };
+      } else {
+        voltageOptions.tooltip.formatter = p => {
+          let item;
+          let v = p[0];
+          // console.log(v);
+          item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
+            v.value[1]
+          }<br/>`;
+          return item;
+        };
+      }
       this.lineEcharts1.setOption(voltageOptions);
 
       let singleVoltageOptions = _.cloneDeep(options);
@@ -242,6 +253,32 @@ export default {
       singleVoltageOptions.yAxis.axisLabel.formatter = "{value} v";
       singleVoltageOptions.series[0].data = datas.dataObjFirst.singleVoltage;
       singleVoltageOptions.series[1].data = datas.dataObjSecond.singleVoltage;
+      if (!datas.battertCode) {
+        singleVoltageOptions.tooltip.formatter = p => {
+          let item;
+          let v = p[0];
+          if (p[0].seriesName === "上期") {
+            item = `${utils.dateFomat(p[0].value[0] - datas.different)}<br/>${
+              v.seriesName
+            }:${v.value[1]}<br/>`;
+          } else {
+            item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
+              v.value[1]
+            }<br/>`;
+          }
+          return item;
+        };
+      } else {
+        voltageOptions.tooltip.formatter = p => {
+          let item;
+          let v = p[0];
+          // console.log(v);
+          item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
+            v.value[1]
+          }<br/>`;
+          return item;
+        };
+      }
       this.lineEcharts2.setOption(singleVoltageOptions);
 
       let currentOptions = _.cloneDeep(options);
@@ -249,6 +286,32 @@ export default {
       currentOptions.yAxis.axisLabel.formatter = "{value} A";
       currentOptions.series[0].data = datas.dataObjFirst.current;
       currentOptions.series[1].data = datas.dataObjSecond.current;
+      if (!datas.battertCode) {
+        currentOptions.tooltip.formatter = p => {
+          let item;
+          let v = p[0];
+          if (p[0].seriesName === "上期") {
+            item = `${utils.dateFomat(p[0].value[0] - datas.different)}<br/>${
+              v.seriesName
+            }:${v.value[1]}<br/>`;
+          } else {
+            item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
+              v.value[1]
+            }<br/>`;
+          }
+          return item;
+        };
+      } else {
+        voltageOptions.tooltip.formatter = p => {
+          let item;
+          let v = p[0];
+          // console.log(v);
+          item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
+            v.value[1]
+          }<br/>`;
+          return item;
+        };
+      }
       this.lineEcharts3.setOption(currentOptions);
 
       let temperatureOptions = _.cloneDeep(options);
@@ -256,6 +319,32 @@ export default {
       temperatureOptions.yAxis.axisLabel.formatter = "{value} ℃";
       temperatureOptions.series[0].data = datas.dataObjFirst.temperature;
       temperatureOptions.series[1].data = datas.dataObjSecond.temperature;
+      if (!datas.battertCode) {
+        temperatureOptions.tooltip.formatter = p => {
+          let item;
+          let v = p[0];
+          if (v.seriesName === "上期") {
+            item = `${utils.dateFomat(p[0].value[0] - datas.different)}<br/>${
+              v.seriesName
+            }:${v.value[1]}<br/>`;
+          } else {
+            item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
+              v.value[1]
+            }<br/>`;
+          }
+          return item;
+        };
+      } else {
+        voltageOptions.tooltip.formatter = p => {
+          let item;
+          let v = p[0];
+          // console.log(v);
+          item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
+            v.value[1]
+          }<br/>`;
+          return item;
+        };
+      }
       this.lineEcharts4.setOption(temperatureOptions);
     },
     barDataChange(datas) {
@@ -361,10 +450,10 @@ export default {
     },
     barTime(datas) {
       let chargeTimesOption = _.cloneDeep(BarOptions);
-      chargeTimesOption.title.text = "放电情况";
-      chargeTimesOption.xAxis[0].data = ["工作次数"];
-      chargeTimesOption.series[0].data = [datas.now.dischargeTimes];
-      chargeTimesOption.series[1].data = [datas.last.dischargeTimes];
+      chargeTimesOption.title.text = "充电情况";
+      chargeTimesOption.xAxis[0].data = ["充电次数"];
+      chargeTimesOption.series[0].data = [datas.now.chargeTimes];
+      chargeTimesOption.series[1].data = [datas.last.chargeTimes];
       this.berCharts1.setOption(chargeTimesOption);
 
       let DsiChargeTimesOption = _.cloneDeep(BarOptions);

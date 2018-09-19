@@ -21,10 +21,10 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="150">
         <template slot-scope="scope">
-          <el-button :disabled="!scope.row.userType || this.getUserType === 1" size="small" class="limite" @click.native.prevent="changeQuanxian(scope.row)" type="text">
+          <el-button :disabled="!scope.row.userType" size="small" class="limite" @click.native.prevent="changeQuanxian(scope.row)" type="text">
             修改权限
           </el-button>
-          <el-button size="small" type="text" @click="secondary(scope.row)" :disabled="scope.row.canNotDelete || this.getUserType === 1">删除</el-button>
+          <el-button size="small" type="text" @click="secondary(scope.row)" :disabled="scope.row.canNotDelete">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -59,6 +59,7 @@
 /* eslint-disable */
 import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
+import valid from "@/utils/valated";
 import addData from "../../config/add-user-data";
 import Manfictors from "../../components/user/manfictor";
 import Custom from "../../components/user/custom";
@@ -70,6 +71,7 @@ export default {
   },
   data() {
     return {
+      AdminRoles: {},
       checked1: false,
       jurisdiction: false, // 权限
       componentId: "",
@@ -87,12 +89,12 @@ export default {
       userRole: [
         {
           label: "电池登记",
-          id: "batteryadd",
+          id: "addBattery",
           value: false
         },
         {
           label: "基础信息",
-          id: "infomation",
+          id: "info",
           value: false
         },
         {
@@ -137,6 +139,7 @@ export default {
     ...mapGetters(["getLayerName", "getUserType"])
   },
   mounted() {
+    this.AdminRoles = valid();
     this.$store.state.manfictor = false;
     this.$store.state.custom = false;
     this.getUserList();
@@ -264,13 +267,30 @@ export default {
           let storge = JSON.parse(utils.getStorage("loginData"));
           if (result.data.pageData.length > 0) {
             result.data.pageData.forEach(key => {
+              // console.log("uesrRole", key);
               key.role = utils.accountType(key.type);
               key.userType = key.type > 2;
-              if (key.type === 3 && storge.companyId !== key.companyId) {
+              if (
+                key.type === 2 &&
+                this.AdminRoles.deleteAdmin &&
+                storge.companyId !== key.companyId
+              ) {
+                key.canNotDelete = false;
+              } else if (key.type === 3 && this.AdminRoles.deleteCompany) {
                 key.canNotDelete = false;
               } else {
                 key.canNotDelete = true;
               }
+              console.log(this.AdminRoles.deleteAdmin);
+              console.log(key.canNotDelete);
+              // if (
+              //   this.AdminRoles.deleteAdmin &&
+              //   storge.companyId !== key.companyId
+              // ) {
+              //   key.canNotDelete = false;
+              // } else {
+              //   key.canNotDelete = true;
+              // }
               this.tableData.push(key);
             });
           }

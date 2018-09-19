@@ -4,7 +4,7 @@
 
 const path = require('path');
 
-// const apiPath = "http://192.168.1.163:8000";
+// const apiPath = "http://192.168.1.173:8000";
 const apiPath = "http://47.96.8.239:8000";
 
 module.exports = {
@@ -24,7 +24,7 @@ module.exports = {
     },
 
     // Various Dev Server settings
-    host: 'localhost', // can be overwritten by process.env.HOST
+    host: '0.0.0.0', // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,

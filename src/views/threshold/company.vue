@@ -37,8 +37,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="放电电流上限阈值系数" prop="minChargeCurrent">
-              <el-input-number controls-position="right" size="small" v-model.number="batteryForm.minChargeCurrent" style="width:200px;"></el-input-number>
+            <el-form-item label="放电电流上限阈值系数" prop="maxDischargeCurrent">
+              <el-input-number controls-position="right" size="small" v-model.number="batteryForm.maxDischargeCurrent" style="width:200px;"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -138,7 +138,7 @@ export default {
             trigger: "change"
           }
         ],
-        minChargeCurrent: [
+        maxDischargeCurrent: [
           {
             required: true,
             message: "请输入放电电流上限阈值系数",
@@ -194,10 +194,19 @@ export default {
     };
   },
   mounted() {
-    this.getTemplate();
+    this.getCampany();
   },
   methods: {
     getTemplate() {
+      this.$axios.get(`/battery_group_event_policy/template`).then(res => {
+        console.log(res);
+        if (res.data && res.data.code === 0) {
+          let result = res.data;
+          this.batteryForm = result.data;
+        }
+      });
+    },
+    getCampany() {
       this.$axios.get(`/battery_group_event_policy?modelId=0`).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
@@ -211,6 +220,7 @@ export default {
           } else {
             this.hasTemp = true;
             this.batteryForm = result.data;
+            this.dataId = result.data.id;
           }
         }
       });
@@ -226,7 +236,7 @@ export default {
             maxChargeVoltage: this.batteryForm.maxChargeVoltage,
             minDischargeVoltage: this.batteryForm.minDischargeVoltage,
             maxChargeCurrent: this.batteryForm.maxChargeCurrent,
-            minChargeCurrent: this.batteryForm.minChargeCurrent,
+            maxDischargeCurrent: this.batteryForm.maxDischargeCurrent,
             maxChargeTemperature: this.batteryForm.maxChargeTemperature,
             minChargeTemperature: this.batteryForm.minChargeTemperature,
             maxDischargeTemperature: this.batteryForm.maxDischargeTemperature,
@@ -236,7 +246,7 @@ export default {
             minChargeCapacity: this.batteryForm.minChargeCapacity
           };
           if (this.hasTemp) {
-            params.id = this.batteryForm.id;
+            params.id = this.dataId;
             this.modifyFunction(params);
           } else {
             this.addFunction(params);
@@ -253,6 +263,7 @@ export default {
             message: "添加成功",
             type: "success"
           });
+          this.getCampany();
         }
       });
     },
@@ -265,6 +276,7 @@ export default {
             message: "修改成功",
             type: "success"
           });
+          this.getCampany();
         }
       });
     }

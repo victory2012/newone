@@ -187,8 +187,10 @@ export default {
         return;
       }
 
-      let nowStart = `${utils.sortTime(this.start)}000000`;
-      let nowEnd = `${utils.sortTime(this.end)}235959`;
+      // let nowStart = `${utils.sortTime(this.start)}000000`;
+      // let nowEnd = `${utils.sortTime(this.end)}235959`;
+      let nowStart = utils.toUTCTime(utils.startTime(this.start));
+      let nowEnd = utils.toUTCTime(utils.endTime(this.end));
 
       this.getDataNow(nowStart, nowEnd);
     },

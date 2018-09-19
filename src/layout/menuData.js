@@ -1,5 +1,6 @@
 import _ from "lodash";
 import utils from "../utils/utils";
+import valid from "../utils/valated";
 
 /* eslint-disable */
 const menu = [{
@@ -97,7 +98,7 @@ const menu = [{
 if (!utils.getStorage('userRoles')) {
   window.location.href = "/login"
 }
-let userRoles = JSON.parse(JSON.parse(utils.getStorage('userRoles')));
+let userRoles = valid();
 
 let listData1 = _.cloneDeep(menu); // 生产企业管理员
 let listData2 = _.cloneDeep(menu); // 平台管理员

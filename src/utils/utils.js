@@ -62,12 +62,11 @@ export default {
     return this.a.dateFomat(utc);
   },
   Days: (str) => {
-    let days = parseInt((str / 86400000));
-    let hours = parseInt((str % 86400000) / 3600000);
-    let minutes = parseInt((str % 3600000) / 60000);
-    let seconds = (str % 60000) / 1000;
+    let days = parseInt((str / 86400));
+    let hours = parseInt((str % 86400) / 3600);
+    let minutes = parseInt((str % 3600) / 60);
+    let seconds = str % 60;
     return `${days}天${hours}小时${minutes}分钟${seconds}秒`;
-    // return result;
   },
   setStorage: (key, data) => {
     sessionStorage.setItem(key, data);
@@ -217,7 +216,6 @@ export default {
     return `${strYear}-${strMonth}-${strDay}`;
   },
   checkDate: (data) => {
-    console.log(data);
     let res = data.toString();
     if (res.indexOf('年') > 0 || res.indexOf('月') > 0 || res.indexOf('日') > 0 || res.length < 7 || res.length > 11) {
       return false;
@@ -264,6 +262,8 @@ export default {
         return "电流";
       case 'Temperature':
         return "温度";
+      case 'Fluid':
+        return "液位";
       default:
         break;
     }
@@ -275,35 +275,45 @@ export default {
     let startyear = startdate.getFullYear() - 1;
     let startMonth = startdate.getMonth() + 1;
     let startday = startdate.getDate();
+    let startHours = startdate.getHours();
+    let startMinute = startdate.getMinutes();
+    let startSecond = startdate.getSeconds();
+    startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
+    startday = startday < 10 ? `0${startday}` : startday;
+    startHours = startHours < 10 ? `0${startHours}` : startHours;
+    startMinute = startMinute < 10 ? `0${startMinute}` : startMinute;
+    startSecond = startSecond < 10 ? `0${startSecond}` : startSecond;
 
     let endyear = enddate.getFullYear() - 1;
     let endMonth = enddate.getMonth() + 1;
     let endday = enddate.getDate();
 
+    let endHours = startdate.getHours();
+    let endMinute = startdate.getMinutes();
+    let endSecond = startdate.getSeconds();
     endMonth = endMonth < 10 ? `0${endMonth}` : endMonth;
     endday = endday < 10 ? `0${endday}` : endday;
-    startMonth = startMonth < 10 ? `0${startMonth}` : startMonth;
-    startday = startday < 10 ? `0${startday}` : startday;
+    endHours = endHours < 10 ? `0${endHours}` : endHours;
+    endMinute = endMinute < 10 ? `0${endMinute}` : endMinute;
+    endSecond = endSecond < 10 ? `0${endSecond}` : endSecond;
+
+    let resultStart = `${startyear}-${startMonth}-${startday} ${startHours}:${startMinute}:${startSecond}`;
+    let resultEnd = `${endyear}-${endMonth}-${endday} ${endHours}:${endMinute}:${endSecond}`;
     return {
-      startTime: `${startyear}${startMonth}${startday}000000`,
-      endTime: `${endyear}${endMonth}${endday}235959`
+      startTime: this.a.toUTCTime(resultStart),
+      endTime: this.a.toUTCTime(resultEnd)
     };
   },
   m2m: (start, end) => {
-    let startdate = new Date(start);
-    let enddate = new Date(end).getTime();
-    let startTime = startdate.getTime();
-    let different = enddate - startTime;
-    let prev = startTime - different;
-    let period = startdate.getTime() - 86400000;
-    // let minute = startdate.getMinutes();
-    // let second = startdate.getSeconds();
-    // hours = hours < 10 ? `0${hours}` : hours;
-    // minute = minute < 10 ? `0${minute}` : minute;
-    // second = second < 10 ? `0${second}` : second;
+    // let startdate = new Date(start);
+    // let enddate = new Date(end).getTime();
+    // let startTime = startdate.getTime();
+    let different = end - start;
+    let prev = start - different - 86400000;
+    let period = start;
     return {
-      startTime: `${this.a.sortTime(prev)}000000`,
-      endTime: `${this.a.sortTime(period)}235959`
+      startTime: this.a.toUTCTime(prev),
+      endTime: this.a.toUTCTime(period)
     };
   },
   sortTime: (str) => {
@@ -334,6 +344,7 @@ export default {
     let res3 = res2.replace(/:/g, '');
     return res3.substr(0, 14);
   },
+  /* 格林威治时间转北京时间 毫秒数 */
   TimeSconds: (str) => {
     let yy = str.substring(0, 4);
     let mm = str.substring(4, 6);
@@ -348,5 +359,33 @@ export default {
     let startTime = new Date(time1).getTime();
     let endTime = new Date(time2).getTime();
     return endTime - startTime;
+  },
+  endTime: (date) => {
+    let endTime = new Date(date);
+    let hours = endTime.getHours();
+    let year = endTime.getFullYear();
+    let mounth = endTime.getMonth() + 1;
+    let day = endTime.getDate();
+    mounth = mounth < 10 ? `0${mounth}` : mounth;
+    day = day < 10 ? `0${day}` : day;
+    let result;
+    if (hours > 0) {
+      result = `${year}-${mounth}-${day} 23:59:59`;
+    } else {
+      let times = `${year}-${mounth}-${day} 00:00:00`;
+      result = new Date(times).getTime() + 86400000;
+    }
+    return result;
+  },
+  startTime: (date) => {
+    let endTime = new Date(date);
+    let year = endTime.getFullYear();
+    let mounth = endTime.getMonth() + 1;
+    let day = endTime.getDate();
+    mounth = mounth < 10 ? `0${mounth}` : mounth;
+    day = day < 10 ? `0${day}` : day;
+    let times = `${year}-${mounth}-${day} 00:00:00`;
+    let result = new Date(times).getTime();
+    return result;
   }
 };

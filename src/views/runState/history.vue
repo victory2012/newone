@@ -112,6 +112,8 @@ let map;
 let pathSimplifierIns;
 let navg;
 let infoWindow;
+let geocoder;
+let address;
 export default {
   props: ["hostObj", "propData"],
   components: {
@@ -204,6 +206,9 @@ export default {
         resizeEnable: true,
         zoom: 10
       });
+      geocoder = new AMap.Geocoder({
+        radius: 1000 // 范围，默认：500
+      });
     },
     timeChanges() {
       this.defaultGray = true;
@@ -211,10 +216,13 @@ export default {
     selectTimeChanges() {
       this.defaultGray = false;
     },
+    /* 确认按钮 */
     getChartData() {
-      let startTime = utils.sortTime(this.start);
-      let endTime = utils.sortTime(this.end);
-
+      // utils.endTime(new Date())
+      let startTime = utils.toUTCTime(utils.startTime(this.start));
+      let endTime = utils.toUTCTime(utils.endTime(this.end));
+      // console.log(startTime);
+      // console.log(endTime);
       this.getChartDatafun(startTime, endTime);
     },
     /* 获取Echart相关数据 以及 地图坐标 */
@@ -228,7 +236,7 @@ export default {
         .get(
           `/battery_group/${this.hostObj.hostId}/${
             this.hostObj.device
-          }/data2?startTime=${startTime}000000&endTime=${endTimes}`
+          }/data2?startTime=${startTime}&endTime=${endTimes}`
         )
         .then(res => {
           this.dataObj = {
@@ -485,6 +493,7 @@ export default {
         this.start = "2000-01-01";
       }
     },
+    /* 分页方法 */
     handleCurrentChange(val) {
       this.currentPage = val;
       if (this.active === "alarm") {
@@ -500,8 +509,8 @@ export default {
       let pageObj = {
         pageSize: 10,
         pageNum: this.currentPage,
-        startTime,
-        endTime
+        startTime: `${startTime}000000`,
+        endTime: `${endTime}235959`
       };
       this.$axios
         .get(
@@ -517,43 +526,22 @@ export default {
               this.liquidData = [];
               if (result.pageData.length > 0) {
                 result.pageData.forEach((key, index) => {
-                  let itmeTime = utils.TimeSconds(key.time);
-                  let lastItme = Object.keys(this.waterLastOneTime);
-
-                  if (key.gcjLongitude && key.gcjLongitude) {
-                    let position = new AMap.LngLat(
-                      key.gcjLongitude,
-                      key.gcjLatitude
+                  let position = new AMap.LngLat(
+                    key.gcjLongitude,
+                    key.gcjLatitude
+                  );
+                  lnglatTrabsofor(position, res => {
+                    // console.log(res);
+                    key.address = res || "-";
+                    key.updateWater = utils.Days(
+                      key.lastFluidSupplementDuration
                     );
-                    key.address = lnglatTrabsofor(position);
-                  } else {
-                    key.address = "暂无";
-                  }
-                  if (
-                    index === 0 &&
-                    lastItme.length > 0 &&
-                    this.currentPage - 1 > 0
-                  ) {
-                    key.updateWater = `${utils.Days(
-                      utils.TimeSconds(
-                        this.waterLastOneTime[this.currentPage - 1]
-                      ) - itmeTime
-                    )}`;
-                  } else if (index > 0) {
-                    key.updateWater = `${utils.Days(
-                      utils.TimeSconds(result.pageData[index - 1].time) -
-                        itmeTime
-                    )}`;
-                  }
-                  key.temperature = `${key.temperature}°C`;
-                  key.Replenishing = utils.UTCTime(key.time);
+                    key.temperature = `${key.temperature}°C`;
+                    key.Replenishing = utils.UTCTime(key.time);
 
-                  this.liquidData.push(key);
+                    this.liquidData.push(key);
+                  });
                 });
-
-                this.waterLastOneTime[this.currentPage] =
-                  result.pageData[result.pageData.length - 1].time;
-                // console.log(this.waterLastOneTime);
               }
             }
           }
@@ -582,7 +570,18 @@ export default {
               this.total = result.total;
               this.alarmData = [];
               if (result.pageData.length > 0) {
-                this.alarmData = result.pageData;
+                // this.alarmData = result.pageData;
+                result.pageData.forEach(key => {
+                  // key.alarmtime = utils.fomats(key.time);
+                  key.levels = utils.level(key.level);
+                  key.hierarchy = key.hierarchy === "Group" ? "整组" : "单体";
+                  key.items = utils.item(key.item);
+                  if (key.item === "Fluid") {
+                    key.thresholdValue = "-";
+                    key.actualValue = "异常";
+                  }
+                  this.alarmData.push(key);
+                });
               }
             }
           }
@@ -600,7 +599,7 @@ export default {
       this.getliquidData();
     },
     timeZoom(data) {
-      console.log(data);
+      // console.log(data);
       this.zoomBar = data;
       if (
         this.resultList.length >= 300 &&
@@ -615,8 +614,6 @@ export default {
     },
     /* 缩小 */
     narrow() {
-      console.log(this.zoomArr);
-      console.log(this.Timeindex);
       if (!this.zoomBar || this.Timeindex < -2) {
         return;
       }
@@ -647,10 +644,6 @@ export default {
       }
       this.btnTypeDown = "primary";
       this.narrowBtn = false;
-      // btnTypeDown: "info",
-      // btnTypeUp: "primary",
-      // narrowBtn: true,
-      // enlargeBtn: false,
       // _m.utc().format()new Date("2018-09-11 15:12:05").toISOString()
       let obj = {
         start: utils.toUTCTime(this.zoomBar.tstart),
@@ -662,6 +655,7 @@ export default {
       let len = this.zoomArr.length;
       this.Timeindex = len - 2;
     },
+    /* 导出 Excel */
     exportExcel() {
       // console.log(this.exportData);
       let storage = JSON.parse(utils.getStorage("loginData"));

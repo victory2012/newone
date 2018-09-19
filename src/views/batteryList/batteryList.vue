@@ -2,8 +2,8 @@
   <div class="batteryList">
     <div class="topTab">
       <div class="icons">
-        <div v-if="getUserType !== 1">
-          <div class="items">
+        <div>
+          <div class="items" v-if="AdminRoles.addBattery">
             <el-dropdown trigger="click" placement="bottom" @command="handleCommand">
               <span>
                 <img src="../../../static/img/device_reg.png" alt=""><br/>
@@ -17,12 +17,12 @@
               </el-dropdown-menu>
             </el-dropdown>
           </div>
-          <div class="items" style="position: relative">
+          <div class="items" v-if="AdminRoles.addBattery" style="position: relative">
             <input class="fileUpload" type="file" @change="fileUpload" />
             <img id="upers" src="../../../static/img/device_import.png" alt="">
             <p>批量导入</p>
           </div>
-          <div class="items" @click="recovery">
+          <div class="items" v-if="AdminRoles.recovery" @click="recovery">
             <img id="recover" src="../../../static/img/device_recover.png" alt="">
             <p>恢复拉黑电池</p>
           </div>
@@ -184,20 +184,24 @@
 }
 </style>
 <script>
-// import { loading } from "element-ui";
+import valid from "@/utils/valated";
 /* eslint-disable */
 import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
 import XLSX from "xlsx";
+import mqttConfig from "@/api/mqtt.config";
+import Paho from "Paho";
 
 let wb; // 读取完成的数据
 let rABS = false; // 是否将文件读取为二进制字符串
+let mqttClient = {};
 export default {
   components: {
     "add-battery": () => import("@/components/battery/addBattery")
   },
   data() {
     return {
+      AdminRoles: {},
       fullscreenLoading: false,
       showAdd: "",
       deviceModel: {},
@@ -242,6 +246,34 @@ export default {
     ...mapGetters(["getUserType"])
   },
   methods: {
+    connectMqtt() {
+      mqttClient = new Paho.MQTT.Client(
+        mqttConfig.hostname,
+        mqttConfig.port,
+        mqttConfig.clientId
+      );
+      mqttClient.connect({
+        onSuccess: this.onConnect
+      });
+      mqttClient.onConnectionLost = responseObject => {
+        console.log("mqtt-closed:", responseObject);
+      };
+      mqttClient.onMessageArrived = message => {
+        console.log("message", message);
+      };
+    },
+    onConnect() {
+      if (
+        typeof mqttClient === "object" &&
+        typeof mqttClient.subscribe === "function"
+      ) {
+        console.log("onConnect");
+        // mqttClient.subscribe(`dev/${this.infoData.deviceCode}`);
+        // let message = new Paho.MQTT.Message(`k:${this.bindRows.code}`);
+        // message.destinationName = `cmd/${this.bindRows.code}`;
+        // mqttClient.send(message);
+      }
+    },
     recovery() {
       this.$router.push("/battery/defriend");
     },
@@ -280,6 +312,9 @@ export default {
               this.resetBind();
               this.bindDevice = false;
               this.bindHostId = null;
+              let message = new Paho.MQTT.Message(`k:${this.bindRows.code}`);
+              message.destinationName = `cmd/${this.bindRows.code}`;
+              mqttClient.send(message);
               this.getBatteryList();
             }
           });
@@ -647,12 +682,14 @@ export default {
     }
   },
   mounted() {
+    this.AdminRoles = valid();
     this.$store.state.addBattery = false;
     this.getBatteryModelList();
     this.getCompanyId();
     this.getBatteryList();
     this.getDeviceList();
     this.userRole();
+    this.connectMqtt();
   }
 };
 </script>
