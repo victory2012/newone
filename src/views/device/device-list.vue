@@ -327,8 +327,14 @@ export default {
     },
     /* 查看 */
     MonitorDevice(data) {
-      this.$router.push("/device-real");
-      console.log(data);
+      this.$router.push({
+        path: "/device-real",
+        query: {
+          deviceCode: data.code,
+          hostId: data.hostId,
+          id: data.id
+        }
+      });
     },
     /* 添加黑名单 */
     addBlack(data) {

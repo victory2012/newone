@@ -1,101 +1,99 @@
 <template>
-  <div class="center">
+  <div>
     <div class="title">
       <div class="titleCenter">
-        <a @click="showRealData" :class="{'active': actived == 'real'}">实时数据</a>
-        <span class="divider"></span>
-        <a @click="showHistoryData" :class="{'active': actived == 'history'}">历史数据</a>
-        <span class="divider"></span>
-        <a @click="showAlarmData" :class="{'active': actived == 'alarm'}">告警数据</a>
+        <a class="active">实时数据</a>
       </div>
       <div class="search">
         <!-- <el-autocomplete v-show="actived === 'real'" size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入电池编号" @select="handleSelect"></el-autocomplete> -->
-        <el-select v-show="actived === 'real'" v-model="state" filterable placeholder="请输入电池编号" clearable @change="changeBatteryCode">
+        <!-- <el-select v-show="actived === 'real'" v-model="state" filterable placeholder="请输入电池编号" clearable @change="changeBatteryCode">
           <el-option v-for="item in tableData" :key="item.value" :label="item.value" :value="item">
           </el-option>
         </el-select>
         <div v-show="actived !== 'real'" class="devicecode">
           <p><img src="../../assets/img/battery.png" alt="" srcset="">{{companyInfo.code}}</p>
           <p><img src="../../assets/img/device.png" alt="" srcset="">{{companyInfo.deviceCode}}</p>
-        </div>
+        </div> -->
       </div>
     </div>
-    <div class="dashboad">
-      <div>
-        <img src="../../assets/img/temp.png" alt="">
-        <p class="info">{{infoData.temperature}}℃</p>
-        <p>温度</p>
+    <div class="center">
+      <div class="dashboad">
+        <div>
+          <img src="../../assets/img/temp.png" alt="">
+          <p class="info">{{infoData.temperature}}℃</p>
+          <p>温度</p>
+        </div>
+        <div>
+          <img src="../../assets/img/level.png" alt="">
+          <p class="info">{{infoData.fluid}}</p>
+          <p>液位</p>
+        </div>
+        <div>
+          <img src="../../assets/img/voltage_total.png" alt="">
+          <p class="info">{{infoData.voltage}}V</p>
+          <p>电压</p>
+        </div>
+        <div>
+          <img src="../../assets/img/voltage.png" alt="">
+          <p class="info">{{infoData.singleVoltage}}V</p>
+          <p>单体电压</p>
+        </div>
+        <div>
+          <img src="../../assets/img/current.png" alt="">
+          <p class="info">{{infoData.current}}A</p>
+          <p>电流</p>
+        </div>
+        <div>
+          <img src="../../assets/img/capacity.png" alt="">
+          <p class="info">{{quantity}}</p>
+          <p>电量</p>
+        </div>
       </div>
-      <div>
-        <img src="../../assets/img/level.png" alt="">
-        <p class="info">{{infoData.fluid}}</p>
-        <p>液位</p>
+      <div class="warrp">
+        <div class="map">
+          <div class="mapCenter">
+            <div class="mapContent" id="mapContent"></div>
+          </div>
+          <div class="timeCenter">
+            <p class="map-time">{{infoData.hhmmss}}</p>
+            <p class="map-date">{{infoData.yyddmm}}</p>
+            <p class="map-des">刷新时间</p>
+            <p @click="activeQuery" :class="{'active': queryData}" class="map-line">{{btnTip}}</p>
+          </div>
+        </div>
+        <div class="address">
+          <div>
+            <img width="21px" src="../../assets/img/me.png" alt="">
+            <span>{{infoData.companyName}}</span>
+          </div>
+          <div>
+            <img width="22px" src="../../assets/img/address.png" alt="">
+            <span>{{address}}</span>
+          </div>
+          <div>
+            <img width="25px" src="../../assets/img/battery.png" alt="">
+            <span>{{infoData.code}}</span>
+          </div>
+          <div>
+            <img width="26px" src="../../assets/img/device.png" alt="">
+            <span>{{infoData.deviceCode}}</span>
+          </div>
+          <div>
+            <img width="25px" src="../../assets/img/version.svg" alt="">
+            <span>{{version}}</span>
+          </div>
+          <div>
+            <img width="25px" src="../../assets/img/device-flesh.png" alt="">
+            <span>{{CCID}}</span>
+          </div>
+        </div>
       </div>
-      <div>
-        <img src="../../assets/img/voltage_total.png" alt="">
-        <p class="info">{{infoData.voltage}}V</p>
-        <p>电压</p>
+      <div class="my-map-divider">
+        <span>过去4小时监测数据</span>
+        <el-checkbox v-model="checked">是否自动更新数据</el-checkbox>
       </div>
-      <div>
-        <img src="../../assets/img/voltage.png" alt="">
-        <p class="info">{{infoData.singleVoltage}}V</p>
-        <p>单体电压</p>
-      </div>
-      <div>
-        <img src="../../assets/img/current.png" alt="">
-        <p class="info">{{infoData.current}}A</p>
-        <p>电流</p>
-      </div>
-      <div>
-        <img src="../../assets/img/capacity.png" alt="">
-        <p class="info">{{quantity}}</p>
-        <p>电量</p>
-      </div>
+      <echart-map :chartData="dataObj" :mqttData="ReceiveObj"></echart-map>
     </div>
-    <div class="warrp">
-      <div class="map">
-        <div class="mapCenter">
-          <div class="mapContent" id="mapContent"></div>
-        </div>
-        <div class="timeCenter">
-          <p class="map-time">{{infoData.hhmmss}}</p>
-          <p class="map-date">{{infoData.yyddmm}}</p>
-          <p class="map-des">刷新时间</p>
-          <p @click="activeQuery" :class="{'active': queryData}" class="map-line">{{btnTip}}</p>
-        </div>
-      </div>
-      <div class="address">
-        <div>
-          <img width="21px" src="../../assets/img/me.png" alt="">
-          <span>{{infoData.companyName}}</span>
-        </div>
-        <div>
-          <img width="22px" src="../../assets/img/address.png" alt="">
-          <span>{{address}}</span>
-        </div>
-        <div>
-          <img width="25px" src="../../assets/img/battery.png" alt="">
-          <span>{{infoData.code}}</span>
-        </div>
-        <div>
-          <img width="26px" src="../../assets/img/device.png" alt="">
-          <span>{{infoData.deviceCode}}</span>
-        </div>
-        <div>
-          <img width="25px" src="../../assets/img/version.svg" alt="">
-          <span>{{version}}</span>
-        </div>
-        <div>
-          <img width="25px" src="../../assets/img/device-flesh.png" alt="">
-          <span>{{CCID}}</span>
-        </div>
-      </div>
-    </div>
-    <div class="my-map-divider">
-      <span>过去4小时监测数据</span>
-      <el-checkbox v-model="checked">是否自动更新数据</el-checkbox>
-    </div>
-    <echart-map :chartData="dataObj" :mqttData="ReceiveObj"></echart-map>
   </div>
 </template>
 <script>
@@ -104,7 +102,7 @@ import AMap from "AMap";
 import AMapUI from "AMapUI";
 import Paho from "Paho";
 import utils from "@/utils/utils";
-import echartMap from "../../components/realTime";
+import echartMap from "@/components/realTime";
 import mqttConfig from "@/api/mqtt.config";
 import lnglatTrabsofor from "@/utils/longlatTransfor";
 
@@ -114,12 +112,14 @@ let marker;
 const PI = 3.14159265358979324;
 const x_pi = 3.14159265358979324 * 3000.0 / 180.0;
 export default {
-  props: ["hostObj", "propData"],
+  // props: ["hostObj", "propData"],
   components: {
     echartMap
   },
   data() {
     return {
+      hostObj: {},
+      infoData: {},
       timer: null,
       quantity: "",
       btnTip: "主动查询",
@@ -132,7 +132,6 @@ export default {
       hasgetData: false,
       checked: true,
       mapData: null,
-      infoData: this.propData,
       dataObj: {
         timeArr: [],
         singleVoltage: [],
@@ -145,10 +144,19 @@ export default {
     };
   },
   mounted() {
+    this.hostId = this.$route.query.hostId;
+    this.deviceCode = this.$route.query.deviceCode;
+    this.id = this.$route.query.id;
+    this.hostObj = {
+      hostId: this.hostId,
+      deviceCode: this.deviceCode,
+      id: this.id
+    };
     this.init();
     this.getData();
     this.connectMqtt();
     this.getQuantity();
+    this.getCompanyInfo();
     clearInterval(this.timer);
     this.timer = setInterval(() => {
       if (this.interval) {
@@ -165,22 +173,6 @@ export default {
     this.dataObj = {};
     this.ReceiveObj = {};
     clearInterval(this.timer);
-  },
-  watch: {
-    hostObj: {
-      handler: function() {
-        this.getData();
-        this.getQuantity();
-      }
-    },
-    propData: {
-      handler: function(val) {
-        this.infoData = val;
-        this.positionData(val);
-        this.onConnect();
-      },
-      deep: true
-    }
   },
   methods: {
     init() {
@@ -278,11 +270,12 @@ export default {
       }
     },
     onConnect() {
+      console.log("messgae onConnect");
       if (
         typeof mqttClient === "object" &&
         typeof mqttClient.subscribe === "function"
       ) {
-        mqttClient.subscribe(`dev/${this.infoData.deviceCode}`);
+        mqttClient.subscribe(`dev/${this.hostObj.deviceCode}`);
       }
     },
     positionData(data) {
@@ -302,20 +295,35 @@ export default {
         this.markerArr.push(marker);
         map.setCenter(position);
         lnglatTrabsofor(position, res => {
-          this.address = res;
+          this.address = res.formattedAddress;
         });
       }
+    },
+    getCompanyInfo() {
+      this.$axios
+        .get(`/battery_group/${this.hostObj.hostId}/info`)
+        .then(res => {
+          console.log(res);
+          this.companyInfo = "";
+          if (res.data && res.data.code === 0 && res.data.data) {
+            let result = res.data.data;
+            this.infoData = result;
+            this.infoData.fluid = result.fluidLevel === 0 ? "正常" : "异常";
+            this.infoData.yyddmm = utils.yyyymmdd(new Date());
+            this.infoData.hhmmss = utils.hhmmss(new Date());
+          }
+        });
     },
     getData() {
       let startTime = utils.getFourHours();
       let endTime = utils.getNowTime();
-      if (!this.hostObj.hostId || !this.hostObj.device) {
+      if (!this.hostObj.hostId || !this.hostObj.id) {
         return;
       }
       this.$axios
         .get(
           `/battery_group/${this.hostObj.hostId}/${
-            this.hostObj.device
+            this.hostObj.id
           }/data?startTime=${startTime}&endTime=${endTime}`
         )
         .then(res => {
@@ -487,7 +495,7 @@ $fontColor: rgba(0, 0, 0, 0.65);
   padding: 24px;
   position: relative;
   margin-bottom: 40px;
-  // text-align: center;
+  text-align: center;
   .titleCenter {
     width: 330px;
     // height: 50px;

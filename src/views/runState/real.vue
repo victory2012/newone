@@ -273,6 +273,7 @@ export default {
       }
     },
     onConnect() {
+      console.log("connect");
       if (
         typeof mqttClient === "object" &&
         typeof mqttClient.subscribe === "function"
