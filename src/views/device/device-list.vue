@@ -22,12 +22,12 @@
         <div class="item">
           <el-input size="small" style="width:100%" v-model="content" placeholder="设备编号"></el-input>
         </div>
-        <div class="item">
+        <!-- <div class="item">
           <el-select size="small" style="width:100%" v-model="regState" placeholder="设备状态">
             <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
-        </div>
+        </div> -->
         <div class="item">
           <el-select size="small" style="width:100%" v-model="bindState" placeholder="绑定状态">
             <el-option v-for="item in bindOptions" :key="item.value" :label="item.label" :value="item.value">
@@ -47,8 +47,8 @@
         </el-table-column>
         <el-table-column prop="companyName" align="center" label="企业名称">
         </el-table-column>
-        <el-table-column prop="registerCode" align="center" label="设备注册状态">
-        </el-table-column>
+        <!-- <el-table-column prop="registerCode" align="center" label="设备注册状态">
+        </el-table-column> -->
         <el-table-column prop="bindState" align="center" label="电池绑定状态">
         </el-table-column>
         <el-table-column align="center" label="监测设备">

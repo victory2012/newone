@@ -28,6 +28,7 @@
 </template>
 <script>
 import utils from "@/utils/utils";
+import permissionFun from "@/utils/valated";
 // import real from "./real";
 // import history from "./history";
 // import alearm from "./alearm";
@@ -45,6 +46,7 @@ export default {
   },
   data() {
     return {
+      permision: permissionFun(),
       companyInfo: "",
       loading: false,
       propData: {},
@@ -55,17 +57,20 @@ export default {
       hasHostId: false,
       tableData: [],
       deviceId: "",
-      IdObj: {}
+      IdObj: {},
+      code: ""
     };
   },
   mounted() {
     this.hostId = this.$route.query.hostId;
     this.deviceId = this.$route.query.deviceId;
+    this.deviceCode = this.$route.query.deviceCode;
     this.init();
     if (this.hostId && this.deviceId) {
       this.IdObj = {
         hostId: this.hostId,
-        device: this.deviceId
+        device: this.deviceId,
+        deviceCode: this.deviceCode
       };
       this.getCompanyInfo();
     }
@@ -100,6 +105,7 @@ export default {
       };
     },
     changeBatteryCode() {
+      console.log(this.state);
       if (this.state) {
         this.IdObj = this.state;
         this.getCompanyInfo();
@@ -126,25 +132,6 @@ export default {
         this.showCompontent = "i-alarm";
       }
     },
-    getBindBatteryList() {
-      let options = {
-        pageSize: 9999,
-        pageNum: 1,
-        companyName: "",
-        batteryGroupOrDeviceCode: "",
-        modelId: "",
-        bindingStatus: 1
-      };
-      this.$axios.get("/battery_group", options).then(res => {
-        console.log(res);
-        this.tableData = [];
-        if (res.data && res.data.code === 0) {
-          let result = res.data.data;
-          // this.total = result.total;
-          this.tableData = result.pageData;
-        }
-      });
-    },
     /* 获取电池列表 */
     getBatteryList() {
       let options = {
@@ -162,7 +149,8 @@ export default {
               id: key.id,
               value: key.code,
               hostId: key.hostId,
-              device: key.deviceId
+              device: key.deviceId,
+              deviceCode: key.deviceCode
             };
             this.tableData.push(obj);
           });
@@ -191,6 +179,7 @@ export default {
   padding: 24px;
   position: relative;
   margin-bottom: 40px;
+  text-align: center;
   .titleCenter {
     width: 330px;
     // height: 50px;

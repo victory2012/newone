@@ -9,7 +9,7 @@
             </span>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="userMsg">
+            <el-dropdown-item v-if="AdminRoles.personalInfo" command="userMsg">
               <i class="iconfont icon-user"></i>个人信息
             </el-dropdown-item>
             <el-dropdown-item divided command="userPwd">
@@ -22,7 +22,7 @@
         <p>{{getUserLoginData.companyName}}</p>
       </div>
       <el-menu class="sidebar-el-menu" :default-active="$route.path" background-color="#404040" text-color="rgba(255, 255, 255, 0.67)" :unique-opened='true' router>
-        <MenuTree :menuData="this.menus"></MenuTree>
+        <MenuTree :menuData="this.menus.data"></MenuTree>
       </el-menu>
     </div>
     <div class="content">
@@ -40,23 +40,25 @@ import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
 import MenuTree from "./sidebar";
 import menu from "./menuData";
+import permissionFun from "@/utils/valated";
 
 export default {
   data() {
     return {
+      AdminRoles: permissionFun(),
       isCollapse: false,
       menus: "",
-      roles: ""
+      roles: "",
+      getUserLoginData: ""
     };
   },
   components: {
     MenuTree: MenuTree
   },
-  computed: {
-    ...mapGetters(["getUserType", "getUserLoginData"])
-  },
   mounted() {
-    this.switchMenu();
+    let getUserType = JSON.parse(sessionStorage.getItem("loginData"));
+    this.getUserLoginData = getUserType;
+    this.switchMenu(getUserType);
   },
   methods: {
     handleCommand(command) {
@@ -79,14 +81,33 @@ export default {
         this.$router.push("/user-pwd");
       }
     },
-    switchMenu() {
-      console.log("getUserType", this.getUserType);
-      if (this.getUserType === 1) {
+    switchMenu(getUserType) {
+      if (getUserType.type === 1) {
         this.menus = menu.getPlat();
-      } else if (this.getUserType === 2) {
+      } else if (
+        getUserType.type === 2 &&
+        getUserType.layerName === "生产企业"
+      ) {
         this.menus = menu.getManifactor();
+      } else if (
+        getUserType.type === 2 &&
+        getUserType.layerName === "采购企业"
+      ) {
+        this.menus = menu.purchaseAdmin();
+      } else if (
+        getUserType.type === 3 &&
+        getUserType.layerName === "生产企业"
+      ) {
+        this.menus = menu.getManifactorCus();
+      } else if (
+        getUserType.type === 3 &&
+        getUserType.layerName === "采购企业"
+      ) {
+        this.menus = menu.purchaseCus();
       }
-      console.log(menu.test());
+      console.log(this.menus);
+      // this.$store.state.permissions = JSON.stringify(this.menus.permissions);
+      utils.setStorage("permissions", JSON.stringify(this.menus.permissions));
     }
   },
   beforeDestroy() {

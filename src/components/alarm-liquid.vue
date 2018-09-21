@@ -9,7 +9,14 @@
       </el-table-column>
       <el-table-column prop="updateWater" align="center" label="距上次补水时长">
       </el-table-column>
-      <el-table-column prop="address" align="center" label="位置">
+      <!-- <el-table-column v-if="hasAddress" prop="address" align="center" label="位置">
+      </el-table-column> -->
+      <el-table-column align="center" label="位置" width="380">
+        <template slot-scope="scope">
+          <el-button @click.native.prevent="getAdress(scope.row)" :disabled="scope.row.disabled" type="text">
+            {{scope.row.address}}
+          </el-button>
+        </template>
       </el-table-column>
     </el-table>
   </div>
@@ -17,6 +24,7 @@
 
 <script>
 // import utils from "@/utils/utils";
+import lnglatTrabsofor from "@/utils/longlatTransfor";
 
 export default {
   props: {
@@ -43,7 +51,16 @@ export default {
   mounted() {
     // this.getliquidData();
   },
-  methods: {}
+  methods: {
+    getAdress(row) {
+      console.log(row);
+      // let position =
+      lnglatTrabsofor(row.position, res => {
+        row.address = res || "--";
+        row.disabled = true;
+      });
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>

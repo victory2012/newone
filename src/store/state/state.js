@@ -7,5 +7,6 @@ export default {
   addBattery: false,
   batteryModel: null,
   userRoles: null,
-  addUserText: ""
+  addUserText: "",
+  permissions: "" // 用户权限
 };

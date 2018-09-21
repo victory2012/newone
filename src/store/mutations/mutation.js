@@ -42,5 +42,8 @@ export default {
   },
   SETAddUserText(state, data) {
     state.addUserText = data;
+  },
+  SETPERMISION(state, data) {
+    state.permissions = data;
   }
 };

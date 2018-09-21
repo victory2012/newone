@@ -26,6 +26,11 @@
         <p class="info">{{infoData.current}}A</p>
         <p>电流</p>
       </div>
+      <div>
+        <img src="../../assets/img/current.png" alt="">
+        <p class="info">{{quantity}}</p>
+        <p>电量</p>
+      </div>
     </div>
     <div class="warrp">
       <div class="map">
@@ -95,9 +100,12 @@ export default {
   },
   data() {
     return {
+      timer: null,
+      quantity: "",
       btnTip: "主动查询",
       CCID: "",
       address: "",
+      interval: false,
       version: "",
       queryData: false,
       ReceiveObj: {},
@@ -120,6 +128,13 @@ export default {
     this.init();
     this.getData();
     this.connectMqtt();
+    this.getQuantity();
+    clearInterval(this.timer);
+    this.timer = setInterval(() => {
+      if (this.interval) {
+        this.getQuantity();
+      }
+    }, 25000);
   },
   beforeDestroy() {
     if (typeof mqttClient === "object" && mqttClient.isConnected()) {
@@ -129,11 +144,13 @@ export default {
     }
     this.dataObj = {};
     this.ReceiveObj = {};
+    clearInterval(this.timer);
   },
   watch: {
     hostObj: {
       handler: function() {
         this.getData();
+        this.getQuantity();
       }
     },
     propData: {
@@ -151,6 +168,19 @@ export default {
         resizeEnable: true,
         zoom: 10
       });
+    },
+    getQuantity() {
+      if (this.hostObj.deviceCode) {
+        this.interval = false;
+        this.$axios
+          .get(`/battery_group/${this.hostObj.deviceCode}/capacity`)
+          .then(res => {
+            if (res.data && res.data.code === 0) {
+              this.interval = true;
+              this.quantity = `${Math.round(res.data.data * 100)}%`;
+            }
+          });
+      }
     },
     connectMqtt() {
       mqttClient = new Paho.MQTT.Client(

@@ -74,18 +74,20 @@
     <div class="maps">
       <!-- <i-map :travelData="positions"></i-map> -->
       <div class="date">
-        <el-button size="mini" plain @click="startOnclick" title="开始">
+        <el-button v-show="!trajectory" size="mini" plain @click="startOnclick" title="开始">
           <i class="iconfont icon-ic_song_next"></i>
         </el-button>
-        <el-button size="mini" plain @click="pauseOnclick" title="暂停">
+        <el-button v-show="!trajectory" size="mini" plain @click="pauseOnclick" title="暂停">
           <i class="iconfont icon-artboard25copy"></i>
         </el-button>
-        <el-button size="mini" plain @click="resumeOnclick" title="继续">
+        <el-button v-show="!trajectory" size="mini" plain @click="resumeOnclick" title="继续">
           <i class="iconfont icon-icons-resume_button"></i>
         </el-button>
-        <el-button size="mini" plain @click="stopOnclick" title="停止">
+        <el-button v-show="!trajectory" size="mini" plain @click="stopOnclick" title="停止">
           <i class="iconfont icon-stop"></i>
         </el-button>
+        <el-button v-show="!trajectory" type="danger" size="small" @click="heatMapFun">活动热区</el-button>
+        <el-button v-show="trajectory" type="primary" size="mini" @click="positionChange">轨迹回放</el-button>
       </div>
       <div class="timeRange">
         <span>时间(s)</span>
@@ -112,7 +114,7 @@ let map;
 let pathSimplifierIns;
 let navg;
 let infoWindow;
-let geocoder;
+let heatmap;
 let address;
 export default {
   props: ["hostObj", "propData"],
@@ -126,6 +128,7 @@ export default {
   },
   data() {
     return {
+      trajectory: true,
       btnTypeDown: "info",
       btnTypeUp: "info",
       narrowBtn: true,
@@ -184,6 +187,7 @@ export default {
       pageSize: 10,
       currentPage: 1,
       total: 0,
+      heatData: [],
       alarmData: [],
       liquidData: [],
       zoomArr: [],
@@ -197,7 +201,7 @@ export default {
   },
   destroyed() {
     map.destroy();
-    pathSimplifierIns.setData([]);
+    pathSimplifierIns && pathSimplifierIns.setData();
     this.waterLastOneTime = {};
   },
   methods: {
@@ -206,8 +210,12 @@ export default {
         resizeEnable: true,
         zoom: 10
       });
-      geocoder = new AMap.Geocoder({
-        radius: 1000 // 范围，默认：500
+      AMap.plugin(["AMap.Heatmap"], () => {
+        // 初始化heatmap对象
+        heatmap = new AMap.Heatmap(map, {
+          radius: 12, // 给定半径
+          opacity: [0, 1] // 透明度
+        });
       });
     },
     timeChanges() {
@@ -218,11 +226,8 @@ export default {
     },
     /* 确认按钮 */
     getChartData() {
-      // utils.endTime(new Date())
       let startTime = utils.toUTCTime(utils.startTime(this.start));
       let endTime = utils.toUTCTime(utils.endTime(this.end));
-      // console.log(startTime);
-      // console.log(endTime);
       this.getChartDatafun(startTime, endTime);
     },
     /* 获取Echart相关数据 以及 地图坐标 */
@@ -244,13 +249,15 @@ export default {
             singleVoltage: [],
             temperature: [],
             voltage: [],
-            current: []
+            current: [],
+            capacity: []
           };
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
             this.exportData = result.list;
-            // this.positions = [];
-            let positions = [];
+            this.positions = []; // 轨迹点集合
+            // let positions = [];
+            this.heatData = []; // 热力图集合
             this.resultList = result.list;
             if (this.resultList.length < 300) {
               this.btnTypeUp = "info";
@@ -258,6 +265,7 @@ export default {
             }
             this.resultList.forEach((key, index) => {
               let timeArr = utils.TimeSconds(key.time); // 时间
+              let capacity = Math.round(key.capacity * 100);
               this.dataObj.singleVoltage.push({
                 name: timeArr,
                 value: [timeArr, key.singleVoltage]
@@ -274,6 +282,10 @@ export default {
                 name: timeArr,
                 value: [timeArr, -key.current]
               });
+              this.dataObj.capacity.push({
+                name: timeArr,
+                value: [timeArr, capacity]
+              });
               let gcjLongitude = Number(key.gcjLongitude);
               let gcjLatitude = Number(key.gcjLatitude);
               if (
@@ -284,7 +296,16 @@ export default {
                 Math.abs(gcjLongitude) > 1 &&
                 Math.abs(gcjLatitude) > 1
               ) {
-                positions.push([key.gcjLongitude, key.gcjLatitude, timeArr]); // 坐标
+                this.positions.push([
+                  key.gcjLongitude,
+                  key.gcjLatitude,
+                  timeArr
+                ]); // 坐标
+                this.heatData.push({
+                  lng: key.gcjLongitude,
+                  lat: key.gcjLatitude,
+                  count: 100
+                });
               }
             });
             this.enlargeBtn = true; // 放大按钮禁止
@@ -308,31 +329,50 @@ export default {
             };
             this.peiObj.eventSummary = result.eventSummary || {};
             this.peiObj.summary = this.summary || {};
-            this.positionChange(positions);
+            this.heatMapFun();
+            // this.positionChange(positions);
           }
         });
       this.getAlarmData();
     },
+    /* 热力图 方法 */
+    heatMapFun() {
+      this.trajectory = true;
+      if (this.markerArr.length > 0) {
+        // 显示热力图的时候 删除地图上的marker点
+        map.remove(this.markerArr);
+      }
+      pathSimplifierIns && pathSimplifierIns.setData([]); // 同理 去除轨迹
+      map.setCenter([this.heatData[0].lng, this.heatData[0].lat]); // 显示热力图的时候，把热力图的第一个的 作为地图中心点
+      heatmap.setDataSet({
+        data: this.heatData
+      });
+    },
     /* 轨迹相关方法 */
-    positionChange(travalData) {
-      if (!travalData || travalData.length < 1) {
+    positionChange() {
+      this.trajectory = false;
+      heatmap && heatmap.setDataSet({ data: [] });
+      if (!this.positions || this.positions.length < 1) {
         return;
       }
       if (this.markerArr.length > 0) {
+        // 先删除地图上的marker点 然后在后面添加
         map.remove(this.markerArr);
       }
-      this.alldistance = 0;
-      for (let i = 0; i < travalData.length; i++) {
+      this.alldistance = 0; // 两个点之间的距离
+      for (let i = 0; i < this.positions.length; i++) {
         var distance, p1, p2;
-        let key = travalData[i];
-        if (i < travalData.length - 1) {
+        let key = this.positions[i];
+        if (i < this.positions.length - 1) {
           p1 = new AMap.LngLat(key[0], key[1]);
-          p2 = new AMap.LngLat(travalData[i + 1][0], travalData[i + 1][1]);
+          p2 = new AMap.LngLat(
+            this.positions[i + 1][0],
+            this.positions[i + 1][1]
+          );
           distance = Math.round(p1.distance(p2));
         }
         this.alldistance += distance;
       }
-      pathSimplifierIns && pathSimplifierIns.setData([]);
       AMapUI.load(["ui/misc/PathSimplifier"], PathSimplifier => {
         if (!PathSimplifier.supportCanvas) {
           alert("当前环境不支持 Canvas！");
@@ -376,24 +416,18 @@ export default {
             let pointIndex = info.pointIndex;
             let pathData = info.pathData;
             let point = pathData.path[pointIndex];
-            // console.log("point=>>>>>>>>>>>>>>", point);
             let position = new AMap.LngLat(point[0], point[1]);
             positionPicker.start(position);
             positionPicker.on("success", result => {
               var info = [];
               info.push(`<div><div>时间：${utils.dateFomat(point[2])}</div>`);
-              // info.push(
-              //   `<div style="font-size:14px;">路口 :${
-              //     result.nearestJunction
-              //   }</div>`
-              // );
               info.push(
                 `<div style="font-size:14px;">地址 :${
                   result.address
                 }</div></div>`
               );
               infoWindow = new AMap.InfoWindow({
-                content: info.join("<br/>") // 使用默认信息窗体框样式，显示信息内容
+                content: info.join("<br/>")
               });
               infoWindow.open(map, position);
               map.on("click", () => {
@@ -405,7 +439,7 @@ export default {
           pathSimplifierIns.setData([
             {
               name: "轨迹",
-              path: travalData
+              path: this.positions
             }
           ]);
           // console.log("this.lineArr", this.lineArr);
@@ -427,8 +461,8 @@ export default {
             }
           });
         });
-        let startPot = travalData[0];
-        let endPot = travalData[travalData.length - 1];
+        let startPot = this.positions[0];
+        let endPot = this.positions[this.positions.length - 1];
         let start = new AMap.Marker({
           map: map,
           position: [startPot[0], startPot[1]], // 基点位置  开始位置
@@ -524,24 +558,32 @@ export default {
             if (result) {
               this.total = result.total;
               this.liquidData = [];
+              let dataArr = [];
               if (result.pageData.length > 0) {
                 result.pageData.forEach((key, index) => {
-                  let position = new AMap.LngLat(
+                  let currentTime = utils.TimeSconds(key.time);
+                  key.position = new AMap.LngLat(
                     key.gcjLongitude,
                     key.gcjLatitude
                   );
-                  lnglatTrabsofor(position, res => {
-                    // console.log(res);
-                    key.address = res || "-";
+                  if (index + 1 < result.pageData.length) {
                     key.updateWater = utils.Days(
-                      key.lastFluidSupplementDuration
+                      currentTime -
+                        utils.TimeSconds(result.pageData[index + 1].time)
                     );
-                    key.temperature = `${key.temperature}°C`;
-                    key.Replenishing = utils.UTCTime(key.time);
+                  } else {
+                    key.updateWater = "-";
+                  }
 
-                    this.liquidData.push(key);
-                  });
+                  key.temperature = `${key.temperature}°C`;
+                  key.Replenishing = utils.UTCTime(key.time);
+                  key.address = "查看地址";
+                  key.disabled = false;
+                  if (index < 10) {
+                    dataArr.push(key);
+                  }
                 });
+                this.liquidData = dataArr;
               }
             }
           }

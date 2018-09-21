@@ -1,15 +1,17 @@
-export default function valid() {
+export default function permissionFun() {
+  let role = JSON.parse(JSON.parse(sessionStorage.getItem('userRoles')));
+  let userData = JSON.parse(sessionStorage.getItem("loginData"));
   let permissions = {
     type: "",
-    addBattery: true, // 电池登记
+    AddBatteries: true, // 电池登记
     info: true, // 基础信息
     runState: true, // 运行状况
     monitoring: true, // 主动监测
     historyData: true, // 历史数据
-    // alarmSetting: true, // 告警设置
-    alarm: true, // 告警数据
+    alarmDatas: true, // 告警数据 （单个电池的告警）
+    alarm: true, // 告警事件（全部的电池告警）
     deleteBattery: true, // 删除电池
-    addblack: true, // 添加给名单
+    addblack: true, // 添加黑名单
     recovery: true, // 回复拉黑电池,
     sameAnalysis: true, // 同一电池单元的数据分析
     sameBatch: true, // 同批次不同电池单元的数据分析
@@ -22,15 +24,12 @@ export default function valid() {
     addAdmin: true, // 添加管理员
     deleteAdmin: true, // 删除管理员
   };
-  let role = sessionStorage.getItem('userRoles');
-  let userData = JSON.parse(sessionStorage.getItem("loginData"));
-  console.log('role', role);
-  if (role === "null") {
+  if (role == null) {
     if (userData.type === 1) {
       permissions.type = "plat";
-      permissions.addBattery = false;
-      permissions.alarmSetting = false;
-      permissions.addblack = false;
+      permissions.AddBatteries = false;
+      permissions.info = false;
+      permissions.runState = false;
       permissions.recovery = false;
       permissions.deleteBattery = false;
       permissions.addCompany = false;
@@ -45,13 +44,12 @@ export default function valid() {
     }
     if (userData.type === 2 && userData.layerName === "采购企业") {
       permissions.type = "purchase";
-      permissions.addBattery = false;
+      permissions.AddBatteries = false;
       permissions.alarmSetting = false;
       permissions.addblack = false;
       permissions.recovery = false;
       permissions.sameAnalysis = false; // 同一电池单元的数据分析
       permissions.sameBatch = false; // 同批次不同电池单元的数据分析
-      permissions.threshold = false;
       permissions.addAdmin = false;
       permissions.deleteAdmin = false;
     }
@@ -70,8 +68,9 @@ export default function valid() {
     }
     if (userData.type === 3 && userData.layerName === "采购企业") {
       permissions.type = "purchaseUser";
-      permissions.addBattery = false;
+      permissions.AddBatteries = false;
       permissions.alarmSetting = false;
+      permissions.alarm = false;
       permissions.addblack = false;
       permissions.recovery = false;
       permissions.sameAnalysis = false; // 同一电池单元的数据分析
@@ -85,7 +84,7 @@ export default function valid() {
     }
   } else {
     // permissions.type = "purchaseUser";
-    permissions.addBattery = role.addBattery;
+    permissions.AddBatteries = role.AddBatteries;
     permissions.info = role.info;
     permissions.runState = role.runState;
     permissions.monitoring = role.monitoring;
@@ -94,6 +93,8 @@ export default function valid() {
     permissions.sameAnalysis = role.sameAnalysis;
     permissions.sameBatch = role.sameBatch;
     permissions.personalInfo = role.personalInfo;
+    permissions.alarmDatas = role.alarmDatas;
   }
+  console.log(permissions);
   return permissions;
 }

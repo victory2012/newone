@@ -8,12 +8,8 @@ export default {
   manfictor(state) {
     return state.manfictor;
   },
-  /* 获取用户角色类型 */
-  getUserType(state) {
-    if (state.loginData) {
-      return JSON.parse(state.loginData).type;
-    }
-    return "";
+  getPermision(state) {
+    return JSON.parse(state.permissions);
   },
   /* 获取用户角色类型 */
   getLayerName(state) {

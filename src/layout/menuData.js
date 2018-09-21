@@ -1,6 +1,5 @@
 import _ from "lodash";
-import utils from "../utils/utils";
-import valid from "../utils/valated";
+import permissionFun from "../utils/valated";
 
 /* eslint-disable */
 const menu = [{
@@ -95,49 +94,79 @@ const menu = [{
   }
 ];
 
-if (!utils.getStorage('userRoles')) {
-  window.location.href = "/login"
-}
-let userRoles = valid();
-
-let listData1 = _.cloneDeep(menu); // 生产企业管理员
+let listData1 = _.cloneDeep(menu); // 生产企业管理员\
+let listData5 = _.cloneDeep(menu); // 生产企业用户
 let listData2 = _.cloneDeep(menu); // 平台管理员
 let listData3 = _.cloneDeep(menu); // 电池采购企业管理员
 let listData4 = _.cloneDeep(menu); // 电池采购企业用户
-let listData5 = _.cloneDeep(menu); // 生产企业用户
 
+// let rolesData = permissionFun();
+console.log("202222222222", menu);
 export default {
-  /* 测试 */
-  test: () => menu,
-  /* 生产企业 */
   getManifactor: () => {
-    listData1[3] = "";
-    return listData1;
+    let personRole = {}
+    // listData1[3] = "";
+    listData1[3].children[1] = "";
+    listData1[3].children[2] = "";
+    personRole.data = listData1;
+    personRole.permissions = permissionFun();
+    return personRole;
   },
   /* 生产企业用户 */
   getManifactorCus: () => {
+    let personRole = {}
+    if (!permissionFun().sameAnalysis && !permissionFun().sameBatch) {
+      listData5[0].children[1] = "";
+    }
+    if (!permissionFun().runState) {
+      listData5[0].children[0].children[2] = "";
+    }
+    if (!permissionFun().alarm) {
+      listData5[0].children[2] = "";
+    }
     listData5[1] = "";
-    listData5[3] = "";
-    return listData5;
+    listData5[3].children[1] = "";
+    listData5[3].children[2] = "";
+    personRole.data = listData5;
+    personRole.permissions = permissionFun();
+    return personRole;
   },
   /* 平台 */
   getPlat: () => {
+    let personRole = {}
     listData2[0].children[0].children[1] = "";
     listData2[1] = "";
-    return listData2;
+    personRole.data = listData2;
+    personRole.permissions = permissionFun();
+    return personRole;
   },
   /* 电池采购企业管理员 */
   purchaseAdmin: () => {
-    listData3[0].children[1] = "";
-    listData3[1].children[0] = "";
+    let personRole = {}
+    if (!permissionFun().sameAnalysis && !permissionFun().sameBatch) {
+      listData3[0].children[1] = "";
+    }
+    if (!permissionFun().alarm) {
+      listData3[0].children[2] = "";
+    }
     listData3[3] = "";
-    return listData3;
+    personRole.data = listData3;
+    personRole.permissions = permissionFun();
+    return personRole;
   },
   /* 电池采购企业用户 */
   purchaseCus: () => {
-    listData4[0].children[1] = "";
+    let personRole = {}
+    if (!permissionFun().sameAnalysis && !permissionFun().sameBatch) {
+      listData4[0].children[1] = "";
+    }
+    if (!permissionFun().alarm) {
+      listData4[0].children[2] = "";
+    }
     listData4[1] = "";
     listData4[3] = "";
-    return listData4;
+    personRole.data = listData4;
+    personRole.permissions = permissionFun();
+    return personRole;
   }
-};
+}

@@ -1,16 +1,19 @@
 <template>
   <div class="bgFFF">
-    <!-- <div class="btns">
-      <el-button type="primary" icon="el-icon-remove-outline"></el-button>
-      <el-button type="primary" icon="el-icon-circle-plus-outline"></el-button>
-    </div> -->
+    <div class="btns">
+      <el-button @click="exportExcel" type="primary">导出Excel</el-button>
+    </div>
     <div class="chartWarrp">
       <div class="chartInfo" id="echart1"></div>
       <div class="chartInfo" id="echart2"></div>
     </div>
     <div class="chartWarrp">
       <div class="chartInfo" id="echart3"></div>
+      <div class="chartInfo" id="echart5"></div>
+    </div>
+    <div class="chartWarrp">
       <div class="chartInfo" id="echart4"></div>
+      <div class="chartInfo"></div>
     </div>
     <div class="chartWarrp">
       <div class="chartInfo">
@@ -87,7 +90,8 @@ export default {
       voltage: [],
       current: [],
       myEcharts: null,
-      isOptionAbnormal: false
+      isOptionAbnormal: false,
+      exportData: ""
     };
   },
   watch: {
@@ -101,7 +105,7 @@ export default {
     loading: {
       handler: function(vals) {
         this.showLoading(vals);
-        console.log(vals);
+        // console.log(vals);
       },
       deep: true
     },
@@ -109,7 +113,7 @@ export default {
       handler: function(vals) {
         this.barDataChange(vals);
         this.barTime(vals);
-        console.log(vals);
+        // console.log(vals);
       },
       deep: true
     }
@@ -123,6 +127,7 @@ export default {
       let $echartsDOM2 = document.getElementById("echart2");
       let $echartsDOM3 = document.getElementById("echart3");
       let $echartsDOM4 = document.getElementById("echart4");
+      let $echartsDOM5 = document.getElementById("echart5");
       let BarDOM1 = document.getElementById("echartBar1");
       let BarDOM2 = document.getElementById("echartBar2");
       let BarDOM3 = document.getElementById("echartBar3");
@@ -133,6 +138,7 @@ export default {
       this.myBarEcharts2 = echarts.init(BarDOM2);
       this.myBarEcharts3 = echarts.init(BarDOM3);
       this.myBarEcharts4 = echarts.init(BarDOM4);
+      this.lineEcharts5 = echarts.init($echartsDOM5); // 电量
       this.lineEcharts1 = echarts.init($echartsDOM1);
       this.lineEcharts2 = echarts.init($echartsDOM2);
       this.lineEcharts3 = echarts.init($echartsDOM3);
@@ -144,20 +150,15 @@ export default {
         this.lineEcharts1,
         this.lineEcharts2,
         this.lineEcharts3,
-        this.lineEcharts4
+        this.lineEcharts4,
+        this.lineEcharts5
       ]);
-      // console.log(myEcharts1);
-      // console.log(echarts);
-      this.lineEcharts1.on("datazoom", param => {
-        console.log(param);
-        // console.log(option.dataZoom.start);
-        // console.log(myEcharts1.dataZoom.start);
-      });
       window.onresize = () => {
         this.lineEcharts1.resize();
         this.lineEcharts2.resize();
         this.lineEcharts3.resize();
         this.lineEcharts4.resize();
+        this.lineEcharts5.resize();
         this.myBarEcharts1.resize();
         this.myBarEcharts2.resize();
         this.myBarEcharts3.resize();
@@ -188,6 +189,7 @@ export default {
         this.myBarEcharts2.showLoading();
         this.myBarEcharts3.showLoading();
         this.myBarEcharts4.showLoading();
+        this.lineEcharts5.showLoading();
       } else {
         this.lineEcharts1.hideLoading();
         this.lineEcharts2.hideLoading();
@@ -197,10 +199,12 @@ export default {
         this.myBarEcharts2.hideLoading();
         this.myBarEcharts3.hideLoading();
         this.myBarEcharts4.hideLoading();
+        this.lineEcharts5.hideLoading();
       }
     },
     dataChange(datas) {
-      console.log(datas);
+      // console.log(datas);
+      this.exportData = datas;
       let name1;
       let name2;
       if (datas.battertCode) {
@@ -260,9 +264,9 @@ export default {
           if (p[0].seriesName === "上期") {
             item = `${utils.dateFomat(p[0].value[0] - datas.different)}<br/>${
               v.seriesName
-            }:${v.value[1]}<br/>`;
+            }: ${v.value[1]}<br/>`;
           } else {
-            item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
+            item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
               v.value[1]
             }<br/>`;
           }
@@ -273,7 +277,7 @@ export default {
           let item;
           let v = p[0];
           // console.log(v);
-          item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
+          item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
             v.value[1]
           }<br/>`;
           return item;
@@ -293,9 +297,9 @@ export default {
           if (p[0].seriesName === "上期") {
             item = `${utils.dateFomat(p[0].value[0] - datas.different)}<br/>${
               v.seriesName
-            }:${v.value[1]}<br/>`;
+            }: ${v.value[1]}<br/>`;
           } else {
-            item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
+            item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
               v.value[1]
             }<br/>`;
           }
@@ -306,7 +310,7 @@ export default {
           let item;
           let v = p[0];
           // console.log(v);
-          item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
+          item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
             v.value[1]
           }<br/>`;
           return item;
@@ -326,9 +330,9 @@ export default {
           if (v.seriesName === "上期") {
             item = `${utils.dateFomat(p[0].value[0] - datas.different)}<br/>${
               v.seriesName
-            }:${v.value[1]}<br/>`;
+            }: ${v.value[1]}<br/>`;
           } else {
-            item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
+            item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
               v.value[1]
             }<br/>`;
           }
@@ -346,6 +350,39 @@ export default {
         };
       }
       this.lineEcharts4.setOption(temperatureOptions);
+
+      let capacity = _.cloneDeep(options);
+      capacity.title.text = "电量";
+      capacity.yAxis.axisLabel.formatter = "{value} %";
+      capacity.series[0].data = datas.dataObjFirst.capacity;
+      capacity.series[1].data = datas.dataObjSecond.capacity;
+      if (!datas.battertCode) {
+        capacity.tooltip.formatter = p => {
+          let item;
+          let v = p[0];
+          if (v.seriesName === "上期") {
+            item = `${utils.dateFomat(p[0].value[0] - datas.different)}<br/>${
+              v.seriesName
+            }: ${v.value[1]}%<br/>`;
+          } else {
+            item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
+              v.value[1]
+            }%<br/>`;
+          }
+          return item;
+        };
+      } else {
+        capacity.tooltip.formatter = p => {
+          let item;
+          let v = p[0];
+          // console.log(v);
+          item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
+            v.value[1]
+          }%<br/>`;
+          return item;
+        };
+      }
+      this.lineEcharts5.setOption(capacity);
     },
     barDataChange(datas) {
       // console.log(datas);legend
@@ -462,6 +499,48 @@ export default {
       DsiChargeTimesOption.series[0].data = [datas.now.dischargeTimes];
       DsiChargeTimesOption.series[1].data = [datas.last.dischargeTimes];
       this.berCharts2.setOption(DsiChargeTimesOption);
+    },
+    /* 导出 Excel */
+    exportExcel() {
+      console.log(this.exportData);
+
+      let storage = JSON.parse(utils.getStorage("loginData"));
+      let arr = [
+        ["制表时间", new Date()],
+        ["制表人", `${storage.companyName}-${storage.account}`],
+        [
+          "设备编号",
+          this.exportData.deviceCode,
+          "电池组编号",
+          this.exportData.batteryCode
+        ],
+        ["时间", "温度", "电压", "电流", "单体电压"]
+      ];
+      this.$messageBox
+        .prompt("请输入导出文件名", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消"
+        })
+        .then(({ value }) => {
+          if (!value) {
+            this.$message("请输入文件名");
+          } else {
+            // if (this.exportData.length < 1) return;
+            // this.exportData.forEach(key => {
+            //   let opts = [
+            //     utils.UTCTime(key.time),
+            //     key.temperature,
+            //     key.voltage,
+            //     key.current,
+            //     key.singleVoltage
+            //   ];
+            //   arr.push(opts);
+            // });
+            // this.$outputXlsxFile(arr, value);
+          }
+          // this.$outputXlsxFile(arr, value);
+        })
+        .catch(() => {});
     }
   }
 };
@@ -490,8 +569,10 @@ export default {
   }
 }
 .btns {
-  padding-left: 22px;
+  // padding-left: 22px;
+  padding: 0 30px;
   margin-bottom: 20px;
+  text-align: right;
 }
 // .echarts {
 //   width: 100%;

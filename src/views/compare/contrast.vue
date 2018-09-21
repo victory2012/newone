@@ -1,17 +1,17 @@
 <template>
   <div>
-    <div class="titleTab">
+    <div class="titleTab textAlain">
       <div class="tabInfo">
-        <a @click="showSameData" v-if="AdminRoles.sameAnalysis" :class="{'active': actived == 'same'}">同一电池单元</a>
-        <span class="divider" v-if="AdminRoles.sameAnalysis || AdminRoles.sameBatch"></span>
-        <a @click="showDiffData" v-if="AdminRoles.sameBatch" :class="{'active': actived == 'diff'}">不同电池单元</a>
+        <a @click="showSameData" v-if="permision.sameAnalysis" :class="{'active': actived == 'same'}">同一电池单元</a>
+        <span class="divider"></span>
+        <a @click="showDiffData" v-if="permision.sameBatch" :class="{'active': actived == 'diff'}">不同电池单元</a>
       </div>
     </div>
     <component :is="activeComponent"></component>
   </div>
 </template>
 <script>
-import valid from "@/utils/valated";
+import permissionFun from "@/utils/valated";
 // import sameCompent from "./same";
 // import diffCompent from "./different";
 // import comChart from "../../components/compare/compare-chart";
@@ -23,7 +23,7 @@ export default {
   },
   data() {
     return {
-      AdminRoles: {},
+      permision: permissionFun(),
       actived: "same",
       activeComponent: "sameCompent"
     };
@@ -39,7 +39,7 @@ export default {
     }
   },
   mounted() {
-    this.AdminRoles = valid();
+    // this.AdminRoles = valid();
   }
 };
 </script>

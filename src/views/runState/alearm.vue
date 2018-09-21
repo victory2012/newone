@@ -169,8 +169,14 @@ export default {
     alarmSeting() {
       this.settings = true;
     },
-    handleSizeChange() {},
-    handleCurrentChange() {},
+    handleSizeChange(val) {
+      this.pageSize = val;
+      this.getAlarmData();
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.getAlarmData();
+    },
     getAlarmData() {
       let pageObj = {
         pageSize: this.pageSize,

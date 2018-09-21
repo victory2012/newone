@@ -3,7 +3,7 @@
     <div class="topTab">
       <div class="icons">
         <div>
-          <div class="items" v-if="AdminRoles.addBattery">
+          <div class="items" v-if="AdminRoles.AddBatteries">
             <el-dropdown trigger="click" placement="bottom" @command="handleCommand">
               <span>
                 <img src="../../../static/img/device_reg.png" alt=""><br/>
@@ -17,7 +17,7 @@
               </el-dropdown-menu>
             </el-dropdown>
           </div>
-          <div class="items" v-if="AdminRoles.addBattery" style="position: relative">
+          <div class="items" v-if="AdminRoles.AddBatteries" style="position: relative">
             <input class="fileUpload" type="file" @change="fileUpload" />
             <img id="upers" src="../../../static/img/device_import.png" alt="">
             <p>批量导入</p>
@@ -82,10 +82,10 @@
         </el-table-column>
         <el-table-column align="center" width="200" label="操作">
           <template slot-scope="scope">
-            <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind || getUserType === 1" type="text" size="small">绑定</el-button>
-            <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind || getUserType === 1" type="text" size="small">解绑</el-button>
+            <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind" type="text" size="small">绑定</el-button>
+            <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">解绑</el-button>
             <!-- <el-button @click="bindDeviceClick(scope.row)" type="text" size="small">拉黑</el-button> -->
-            <el-button @click="deleteBattery(scope.row)" :disabled="!scope.row.hasbind || getUserType === 1" type="text" size="small">删除</el-button>
+            <el-button @click="deleteBattery(scope.row)" :disabled="!scope.row.canDelete" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -184,7 +184,7 @@
 }
 </style>
 <script>
-import valid from "@/utils/valated";
+import permissionFun from "@/utils/valated";
 /* eslint-disable */
 import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
@@ -201,7 +201,7 @@ export default {
   },
   data() {
     return {
-      AdminRoles: {},
+      AdminRoles: permissionFun(),
       fullscreenLoading: false,
       showAdd: "",
       deviceModel: {},
@@ -242,9 +242,6 @@ export default {
       tableData: []
     };
   },
-  computed: {
-    ...mapGetters(["getUserType"])
-  },
   methods: {
     connectMqtt() {
       mqttClient = new Paho.MQTT.Client(
@@ -267,7 +264,7 @@ export default {
         typeof mqttClient === "object" &&
         typeof mqttClient.subscribe === "function"
       ) {
-        console.log("onConnect");
+        console.log("mqtt is connected");
         // mqttClient.subscribe(`dev/${this.infoData.deviceCode}`);
         // let message = new Paho.MQTT.Message(`k:${this.bindRows.code}`);
         // message.destinationName = `cmd/${this.bindRows.code}`;
@@ -313,8 +310,10 @@ export default {
               this.bindDevice = false;
               this.bindHostId = null;
               let message = new Paho.MQTT.Message(`k:${this.bindRows.code}`);
-              message.destinationName = `cmd/${this.bindRows.code}`;
+              message.destinationName = `cmd/${bindObj.deviceCode}`;
+              console.log(message);
               mqttClient.send(message);
+
               this.getBatteryList();
             }
           });
@@ -395,12 +394,11 @@ export default {
       this.getBatteryList();
     },
     lookFor(row) {
-      // console.log(row);
       this.$router.push({
         path: "battery/run",
         query: {
           deviceId: row.deviceId,
-          batteryId: row.code,
+          deviceCode: row.deviceCode,
           hostId: row.hostId
         }
       });
@@ -449,12 +447,6 @@ export default {
     fileUpload(event) {
       console.log(event);
       this.fullscreenLoading = true;
-      // const loading = this.$loading({
-      //   lock: true,
-      //   text: "Loading",
-      //   spinner: "el-icon-loading",
-      //   background: "rgba(0, 0, 0, 0.7)"
-      // });
       this.eventUpload = event.target;
       let obj = event.target;
       if (!obj.files) {
@@ -615,6 +607,7 @@ export default {
     },
     /* 获取电池列表 */
     getBatteryList() {
+      let loginData = JSON.parse(utils.getStorage("loginData"));
       let options = {
         pageSize: this.pageSize,
         pageNum: this.currentPage,
@@ -624,11 +617,11 @@ export default {
         bindingStatus: this.bindStatus
       };
       this.$axios.get("/battery_group", options).then(res => {
-        console.log(res);
         this.tableData = [];
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
           this.total = result.total;
+          // AdminRoles
           result.pageData.forEach(key => {
             key.onLine = key.onlineStatus === 0 || key.onlineStatus === null;
             if (key.deviceId) {
@@ -639,6 +632,16 @@ export default {
               key.bindingName = "未绑定";
               key.hasbind = true;
               key.deviceCode = "无";
+            }
+            if (loginData.type === 1) {
+              key.hasbind = false;
+            } else {
+              key.canDelete = false;
+              if (this.AdminRoles.deleteBattery && key.hasbind) {
+                key.canDelete = true;
+              } else {
+                key.canDelete = false;
+              }
             }
             this.tableData.push(key);
           });
@@ -682,7 +685,6 @@ export default {
     }
   },
   mounted() {
-    this.AdminRoles = valid();
     this.$store.state.addBattery = false;
     this.getBatteryModelList();
     this.getCompanyId();

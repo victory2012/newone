@@ -14,7 +14,7 @@ const daysInMonth = [
   [31]
 ];
 export default {
-  accountType: (type) => {
+  accountType: type => {
     let str = type.toString();
     switch (str) {
       case "1":
@@ -27,7 +27,7 @@ export default {
         return "未知";
     }
   },
-  fomats: (str) => {
+  fomats: str => {
     let yy = str.substring(0, 4);
     let mm = str.substring(4, 6);
     let day = str.substring(6, 8);
@@ -36,7 +36,8 @@ export default {
     let seconds = str.substring(12, 14);
     return `${yy}-${mm}-${day} ${hour}:${minute}:${seconds}`;
   },
-  dateFomat: (str) => {
+  /* 时间格式化 */
+  dateFomat: str => {
     let timeDate = new Date(str);
     let year = timeDate.getFullYear();
     let mounth = timeDate.getMonth() + 1;
@@ -51,7 +52,8 @@ export default {
     second = second < 10 ? `0${second}` : second;
     return `${year}-${mounth}-${day} ${hours}:${minute}:${second}`;
   },
-  UTCTime: (str) => {
+  /* 硬件的格林威治时间 转北京时间 并格式化 */
+  UTCTime: str => {
     let yy = str.substring(0, 4);
     let mm = str.substring(4, 6);
     let day = str.substring(6, 8);
@@ -61,26 +63,27 @@ export default {
     let utc = `${yy}-${mm}-${day} ${hour}:${minute}:${seconds} UTC`;
     return this.a.dateFomat(utc);
   },
-  Days: (str) => {
-    let days = parseInt((str / 86400));
-    let hours = parseInt((str % 86400) / 3600);
-    let minutes = parseInt((str % 3600) / 60);
+  Days: str => {
+    let days = parseInt(str / 86400000);
+    let hours = parseInt((str % 86400000) / 3600000);
+    let minutes = parseInt((str % 3600000) / 60000);
     let seconds = str % 60;
     return `${days}天${hours}小时${minutes}分钟${seconds}秒`;
   },
   setStorage: (key, data) => {
     sessionStorage.setItem(key, data);
   },
-  getStorage: (key) => {
+  getStorage: key => {
     return sessionStorage.getItem(key);
   },
-  removeStorage: (key) => {
+  removeStorage: key => {
     sessionStorage.removeItem(key);
   },
   removeStorageAll: () => {
     sessionStorage.clear();
   },
-  dateFomats: (str) => {
+  /* 时间格式化 无分割线 */
+  dateFomats: str => {
     let timeDate = new Date(str);
     let year = timeDate.getFullYear();
     let mounth = timeDate.getMonth() + 1;
@@ -102,13 +105,13 @@ export default {
   },
   getFourHours: () => {
     let now = new Date().getTime();
-    let yestoday = Number(now) - (4 * 60 * 60 * 1000);
+    let yestoday = now - 14400000;
     let yesTime = this.a.dateFomat(yestoday);
     return this.a.toUTCTime(yesTime);
   },
   getWeek: () => {
     let now = new Date().getTime();
-    let yestoday = new Date(now - (7 * 24 * 3600 * 1000));
+    let yestoday = new Date(now - 604800000);
     return yestoday;
   },
   getMouth: () => {
@@ -215,14 +218,20 @@ export default {
     }
     return `${strYear}-${strMonth}-${strDay}`;
   },
-  checkDate: (data) => {
+  checkDate: data => {
     let res = data.toString();
-    if (res.indexOf('年') > 0 || res.indexOf('月') > 0 || res.indexOf('日') > 0 || res.length < 7 || res.length > 11) {
+    if (
+      res.indexOf("年") > 0 ||
+      res.indexOf("月") > 0 ||
+      res.indexOf("日") > 0 ||
+      res.length < 7 ||
+      res.length > 11
+    ) {
       return false;
     }
     return true;
   },
-  yyyymmdd: (str) => {
+  yyyymmdd: str => {
     let timeDate = new Date(str);
     let year = timeDate.getFullYear();
     let mounth = timeDate.getMonth() + 1;
@@ -231,7 +240,7 @@ export default {
     day = day < 10 ? `0${day}` : day;
     return `${year}-${mounth}-${day}`;
   },
-  hhmmss: (str) => {
+  hhmmss: str => {
     let timeDate = new Date(str);
     let hours = timeDate.getHours();
     let minute = timeDate.getMinutes();
@@ -241,7 +250,7 @@ export default {
     second = second < 10 ? `0${second}` : second;
     return `${hours}:${minute}:${second}`;
   },
-  level: (num) => {
+  level: num => {
     let Num = Number(num);
     switch (Num) {
       case 1:
@@ -254,15 +263,15 @@ export default {
         break;
     }
   },
-  item: (str) => {
+  item: str => {
     switch (str) {
-      case 'Voltage':
+      case "Voltage":
         return "电压";
-      case 'Current':
+      case "Current":
         return "电流";
-      case 'Temperature':
+      case "Temperature":
         return "温度";
-      case 'Fluid':
+      case "Fluid":
         return "液位";
       default:
         break;
@@ -316,7 +325,7 @@ export default {
       endTime: this.a.toUTCTime(period)
     };
   },
-  sortTime: (str) => {
+  sortTime: str => {
     let timeDate = new Date(str);
     let year = timeDate.getFullYear();
     let mounth = timeDate.getMonth() + 1;
@@ -331,21 +340,22 @@ export default {
     let days = endTime - startTime;
     return days;
   },
-  RexTime: (str) => {
+  RexTime: str => {
     let start = str.replace(/-/g, "");
     let starts = start.replace(/:/g, "");
     let startss = starts.replace(/ /g, "");
     return startss;
   },
-  toUTCTime: (data) => {
+  /* 北京时间 转格林威治时间 */
+  toUTCTime: data => {
     let res = new Date(data).toISOString();
-    let res1 = res.replace(/-/g, '');
-    let res2 = res1.replace(/T/g, '');
-    let res3 = res2.replace(/:/g, '');
+    let res1 = res.replace(/-/g, "");
+    let res2 = res1.replace(/T/g, "");
+    let res3 = res2.replace(/:/g, "");
     return res3.substr(0, 14);
   },
   /* 格林威治时间转北京时间 毫秒数 */
-  TimeSconds: (str) => {
+  TimeSconds: str => {
     let yy = str.substring(0, 4);
     let mm = str.substring(4, 6);
     let day = str.substring(6, 8);
@@ -360,7 +370,7 @@ export default {
     let endTime = new Date(time2).getTime();
     return endTime - startTime;
   },
-  endTime: (date) => {
+  endTime: date => {
     let endTime = new Date(date);
     let hours = endTime.getHours();
     let year = endTime.getFullYear();
@@ -377,7 +387,7 @@ export default {
     }
     return result;
   },
-  startTime: (date) => {
+  startTime: date => {
     let endTime = new Date(date);
     let year = endTime.getFullYear();
     let mounth = endTime.getMonth() + 1;

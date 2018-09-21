@@ -266,12 +266,14 @@ export default {
             singleVoltage: [],
             temperature: [],
             voltage: [],
-            current: []
+            current: [],
+            capacity: []
           };
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
             result.list.forEach(key => {
               let timeArr = utils.TimeSconds(key.time); // 时间
+              let capacity = Math.round(key.capacity * 100);
               this.dataObjFirst.singleVoltage.push({
                 name: timeArr,
                 value: [timeArr, key.singleVoltage]
@@ -288,6 +290,10 @@ export default {
                 name: timeArr,
                 value: [timeArr, -key.current]
               }); // 电流
+              this.dataObjFirst.capacity.push({
+                name: timeArr,
+                value: [timeArr, capacity]
+              }); // 电量
             });
             this.now = result.summary || {};
             this.now_eventSummary =
@@ -315,12 +321,14 @@ export default {
             singleVoltage: [],
             temperature: [],
             voltage: [],
-            current: []
+            current: [],
+            capacity: []
           };
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
             result.list.forEach(key => {
               let timeArr = utils.TimeSconds(key.time) + this.differTime; // 时间
+              let capacity = Math.round(key.capacity * 100);
               this.dataObjSecond.singleVoltage.push({
                 name: timeArr,
                 value: [timeArr, key.singleVoltage]
@@ -337,6 +345,10 @@ export default {
                 name: timeArr,
                 value: [timeArr, -key.current]
               }); // 电流
+              this.dataObjSecond.capacity.push({
+                name: timeArr,
+                value: [timeArr, capacity]
+              }); // 电量
             });
             this.chartloading = false;
             this.last = result.summary || {};
@@ -345,7 +357,9 @@ export default {
             this.dataArr = {
               dataObjFirst: this.dataObjFirst,
               dataObjSecond: this.dataObjSecond,
-              different: this.differTime
+              different: this.differTime,
+              batteryCode: this.chooseObj.code,
+              deviceCode: this.chooseObj.deviceCode
             };
             this.summary = {
               now: this.now,

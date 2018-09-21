@@ -21,7 +21,7 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="150">
         <template slot-scope="scope">
-          <el-button :disabled="!scope.row.userType" size="small" class="limite" @click.native.prevent="changeQuanxian(scope.row)" type="text">
+          <el-button :disabled="scope.row.userType" size="small" class="limite" @click.native.prevent="changeQuanxian(scope.row)" type="text">
             修改权限
           </el-button>
           <el-button size="small" type="text" @click="secondary(scope.row)" :disabled="scope.row.canNotDelete">删除</el-button>
@@ -59,7 +59,7 @@
 /* eslint-disable */
 import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
-import valid from "@/utils/valated";
+// import valid from "@/utils/valated";
 import addData from "../../config/add-user-data";
 import Manfictors from "../../components/user/manfictor";
 import Custom from "../../components/user/custom";
@@ -89,22 +89,27 @@ export default {
       userRole: [
         {
           label: "电池登记",
-          id: "addBattery",
+          id: "AddBatteries",
           value: false
         },
         {
-          label: "基础信息",
-          id: "info",
+          label: "拉黑及恢复电池",
+          id: "recovery",
           value: false
         },
+        // {
+        //   label: "基础信息",
+        //   id: "info",
+        //   value: false
+        // },
+        // {
+        //   label: "运行状况",
+        //   id: "runState",
+        //   value: false
+        // },
         {
-          label: "运行状况",
-          id: "runState",
-          value: false
-        },
-        {
-          label: "主动监测",
-          id: "monitoring",
+          label: "告警数据",
+          id: "alarmDatas",
           value: false
         },
         {
@@ -136,10 +141,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getLayerName", "getUserType"])
+    ...mapGetters(["getLayerName"])
   },
   mounted() {
-    this.AdminRoles = valid();
+    this.AdminRoles = JSON.parse(utils.getStorage("permissions"));
     this.$store.state.manfictor = false;
     this.$store.state.custom = false;
     this.getUserList();
@@ -154,9 +159,18 @@ export default {
         this.userData = addData.getProduct();
       }
     },
-    /* 删除用户 */
+    /* 删除按钮 */
     secondary(item) {
       console.log(item);
+      if (item.type === 2) {
+        this.deleteAdmin(item);
+      }
+      if (item.type === 3) {
+        this.deleteUser(item);
+      }
+    },
+    /* 删除用户 */
+    deleteUser(item) {
       this.$messageBox.alert("确定删除此用户吗？", {
         showCancelButton: true,
         confirmButtonText: "确定",
@@ -178,6 +192,28 @@ export default {
         }
       });
     },
+    /* 刪除企业 */
+    deleteAdmin(item) {
+      this.$messageBox.alert("确定删除此公司吗？", {
+        showCancelButton: true,
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        callback: action => {
+          console.log(action);
+          if (action === "confirm") {
+            this.$axios.delete(`/company/${item.id}`).then(res => {
+              if (res.data && res.data.code === 0) {
+                this.$message({
+                  message: "删除成功",
+                  type: "success"
+                });
+                this.getUserList();
+              }
+            });
+          }
+        }
+      });
+    },
     /* 修改权限 -- 按钮 */
     changeQuanxian(item) {
       // console.log(item);
@@ -187,6 +223,7 @@ export default {
         if (res.data && res.data.code === 0) {
           if (res.data.data !== null) {
             let permis = JSON.parse(res.data.data);
+            console.log(permis);
             let keys = Object.keys(permis);
             let values = Object.values(permis);
             this.userRole.forEach((key, index) => {
@@ -196,7 +233,7 @@ export default {
             });
           } else {
             this.userRole.forEach(key => {
-              key.value = false;
+              key.value = true;
             });
           }
           this.jurisdiction = !this.jurisdiction;
@@ -263,34 +300,22 @@ export default {
         if (result && result.code === 0) {
           this.tableData = [];
           this.total = result.data.total;
-          // this.currentPage = result.data.totalPage;
           let storge = JSON.parse(utils.getStorage("loginData"));
           if (result.data.pageData.length > 0) {
             result.data.pageData.forEach(key => {
-              // console.log("uesrRole", key);
               key.role = utils.accountType(key.type);
-              key.userType = key.type > 2;
-              if (
-                key.type === 2 &&
-                this.AdminRoles.deleteAdmin &&
-                storge.companyId !== key.companyId
-              ) {
-                key.canNotDelete = false;
-              } else if (key.type === 3 && this.AdminRoles.deleteCompany) {
-                key.canNotDelete = false;
+              key.userType = this.AdminRoles.deleteAdmin;
+              key.email = key.email || "-";
+              if (key.type === 1) {
+                key.userType = false;
               } else {
-                key.canNotDelete = true;
+                if (storge.companyId !== key.companyId) {
+                  key.userType = false;
+                  key.canNotDelete = false;
+                } else {
+                  key.canNotDelete = true;
+                }
               }
-              console.log(this.AdminRoles.deleteAdmin);
-              console.log(key.canNotDelete);
-              // if (
-              //   this.AdminRoles.deleteAdmin &&
-              //   storge.companyId !== key.companyId
-              // ) {
-              //   key.canNotDelete = false;
-              // } else {
-              //   key.canNotDelete = true;
-              // }
               this.tableData.push(key);
             });
           }

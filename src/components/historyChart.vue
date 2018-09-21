@@ -6,6 +6,10 @@
     </div>
     <div class="chartWarrp">
       <div class="chartInfo" id="echart3"></div>
+      <div class="chartInfo" id="echart5"></div>
+    </div>
+    <div class="chartWarrp">
+      <div class="chartInfo" id="echart4"></div>
       <div class="chartInfo" id="echart4"></div>
     </div>
   </div>
@@ -63,14 +67,17 @@ export default {
       let $echartsDOM2 = document.getElementById("echart2");
       let $echartsDOM3 = document.getElementById("echart3");
       let $echartsDOM4 = document.getElementById("echart4");
+      let $echartsDOM5 = document.getElementById("echart5");
       this.myEcharts1 = echarts.init($echartsDOM1);
       this.myEcharts2 = echarts.init($echartsDOM2);
       this.myEcharts3 = echarts.init($echartsDOM3);
       this.myEcharts4 = echarts.init($echartsDOM4);
+      this.myEcharts5 = echarts.init($echartsDOM5);
       echarts.connect([
         this.myEcharts1,
         this.myEcharts2,
         this.myEcharts3,
+        this.myEcharts5,
         this.myEcharts4
       ]);
 
@@ -104,6 +111,7 @@ export default {
         this.myEcharts2.resize();
         this.myEcharts3.resize();
         this.myEcharts4.resize();
+        this.myEcharts5.resize();
       };
       this.showLoading();
       this.dataChange(this.chartData);
@@ -114,16 +122,16 @@ export default {
         this.myEcharts2.showLoading();
         this.myEcharts3.showLoading();
         this.myEcharts4.showLoading();
+        this.myEcharts5.showLoading();
       } else {
         this.myEcharts1.hideLoading();
         this.myEcharts2.hideLoading();
         this.myEcharts3.hideLoading();
         this.myEcharts4.hideLoading();
+        this.myEcharts5.hideLoading();
       }
     },
     dataChange(datas) {
-      // options.xAxis.data = datas.timeArr;
-
       let voltageOptions = _.cloneDeep(options);
       voltageOptions.title.text = "电压";
       voltageOptions.yAxis.axisLabel.formatter = "{value} v";
@@ -150,7 +158,6 @@ export default {
         return item;
       };
       this.myEcharts2.setOption(singleVoltageOptions);
-
       let currentOptions = _.cloneDeep(options);
       currentOptions.title.text = "电流";
       currentOptions.yAxis.axisLabel.formatter = "{value} A";
@@ -188,6 +195,25 @@ export default {
         return item;
       };
       this.myEcharts4.setOption(temperatureOptions);
+
+      let capacity = _.cloneDeep(options);
+      capacity.title.text = "电量";
+      capacity.yAxis.axisLabel.formatter = "{value} %";
+      capacity.series[0].data = datas.capacity;
+      capacity.tooltip.formatter = p => {
+        let item = "";
+        p.forEach(v => {
+          item +=
+            utils.dateFomat(v.value[0]) +
+            "<br/>" +
+            "电量" +
+            " : " +
+            v.value[1] +
+            "<br/>";
+        });
+        return item;
+      };
+      this.myEcharts5.setOption(capacity);
     },
     formatter(p, str) {
       // console.log(p);
