@@ -21,10 +21,10 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="150">
         <template slot-scope="scope">
-          <el-button :disabled="scope.row.userType" size="small" class="limite" @click.native.prevent="changeQuanxian(scope.row)" type="text">
+          <el-button :disabled="!scope.row.userType" size="small" class="limite" @click.native.prevent="changeQuanxian(scope.row)" type="text">
             修改权限
           </el-button>
-          <el-button size="small" type="text" @click="secondary(scope.row)" :disabled="scope.row.canNotDelete">删除</el-button>
+          <el-button size="small" type="text" @click="secondary(scope.row)" :disabled="!scope.row.canNotDelete">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -59,10 +59,11 @@
 /* eslint-disable */
 import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
-// import valid from "@/utils/valated";
+import permissionFun from "@/utils/valated";
 import addData from "../../config/add-user-data";
 import Manfictors from "../../components/user/manfictor";
 import Custom from "../../components/user/custom";
+import defaultPermision from "../../utils/default-permision";
 
 export default {
   components: {
@@ -71,7 +72,7 @@ export default {
   },
   data() {
     return {
-      AdminRoles: {},
+      AdminRoles: permissionFun(),
       checked1: false,
       jurisdiction: false, // 权限
       componentId: "",
@@ -102,11 +103,11 @@ export default {
         //   id: "info",
         //   value: false
         // },
-        // {
-        //   label: "运行状况",
-        //   id: "runState",
-        //   value: false
-        // },
+        {
+          label: "运行状况",
+          id: "runState",
+          value: false
+        },
         {
           label: "告警数据",
           id: "alarmDatas",
@@ -144,7 +145,6 @@ export default {
     ...mapGetters(["getLayerName"])
   },
   mounted() {
-    this.AdminRoles = JSON.parse(utils.getStorage("permissions"));
     this.$store.state.manfictor = false;
     this.$store.state.custom = false;
     this.getUserList();
@@ -216,7 +216,7 @@ export default {
     },
     /* 修改权限 -- 按钮 */
     changeQuanxian(item) {
-      // console.log(item);
+      console.log(item);
       this.userId = item.id;
       this.$axios.get(`/user/permissions/${item.id}`).then(res => {
         console.log(res);
@@ -232,8 +232,23 @@ export default {
               }
             });
           } else {
+            let defaus;
+            if (item.type === 2 && item.layerName === "采购企业") {
+              defaus = defaultPermision.custormAdmin();
+            }
+            if (item.type === 3 && item.layerName === "采购企业") {
+              defaus = defaultPermision.custormPer();
+            }
+            if (item.type === 2 && item.layerName === "生产企业") {
+              defaus = defaultPermision.productPer();
+            }
+            let defaultValues = Object.keys(defaus);
             this.userRole.forEach(key => {
-              key.value = true;
+              defaultValues.forEach(item => {
+                if (key.id === item) {
+                  key.value = defaus[item];
+                }
+              });
             });
           }
           this.jurisdiction = !this.jurisdiction;
@@ -302,18 +317,33 @@ export default {
           this.total = result.data.total;
           let storge = JSON.parse(utils.getStorage("loginData"));
           if (result.data.pageData.length > 0) {
+            console.log(this.AdminRoles);
             result.data.pageData.forEach(key => {
               key.role = utils.accountType(key.type);
               key.userType = this.AdminRoles.deleteAdmin;
               key.email = key.email || "-";
               if (key.type === 1) {
                 key.userType = false;
+                key.canNotDelete = false;
               } else {
-                if (storge.companyId !== key.companyId) {
-                  key.userType = false;
-                  key.canNotDelete = false;
-                } else {
+                if (
+                  storge.type === 1 &&
+                  key.type === 2 &&
+                  key.layerName === "生产企业"
+                ) {
                   key.canNotDelete = true;
+                }
+                if (
+                  storge.type === 2 &&
+                  storge.layerName === "生产企业" &&
+                  key.type === 2 &&
+                  key.layerName === "采购企业"
+                ) {
+                  key.canNotDelete = true;
+                }
+                if (storge.companyId === key.companyId) {
+                  key.canNotDelete = false;
+                  key.userType = false;
                 }
               }
               this.tableData.push(key);

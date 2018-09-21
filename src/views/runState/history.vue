@@ -108,7 +108,7 @@ import iAlarm from "../../components/alarm-data";
 // import iMap from "../../components/travel";
 import chartPie from "../../components/echartPie";
 import liquid from "../../components/alarm-liquid";
-import lnglatTrabsofor from "@/utils/longlatTransfor";
+// import lnglatTrabsofor from "@/utils/longlatTransfor";
 
 let map;
 let pathSimplifierIns;

@@ -1,7 +1,7 @@
 <template>
   <div class="bgFFF">
     <div class="btns">
-      <el-button @click="exportExcel" type="primary">导出Excel</el-button>
+      <!-- <el-button @click="exportExcel" type="primary">导出Excel</el-button> -->
     </div>
     <div class="chartWarrp">
       <div class="chartInfo" id="echart1"></div>

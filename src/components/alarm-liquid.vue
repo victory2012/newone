@@ -56,7 +56,7 @@ export default {
       console.log(row);
       // let position =
       lnglatTrabsofor(row.position, res => {
-        row.address = res || "--";
+        row.address = res.formattedAddress || "--";
         row.disabled = true;
       });
     }

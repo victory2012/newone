@@ -53,7 +53,7 @@
         </el-table-column>
         <el-table-column align="center" label="监测设备">
           <template slot-scope="scope">
-            <el-button @click.native.prevent="MonitorDevice(scope.row)" :disabled="scope.row.online" type="text" size="small">
+            <el-button @click.native.prevent="MonitorDevice(scope.row)" :disabled="scope.row.canlook" type="text" size="small">
               查看
             </el-button>
           </template>
@@ -63,10 +63,10 @@
             <el-button @click.native.prevent="addBlack(scope.row)" type="text" :disabled="scope.row.blackStatus" size="small">
               拉黑
             </el-button>
-            <el-button @click.native.prevent="deleteRow(scope.row)" :disabled="scope.row.bindStatus" type="text" size="small">
+            <el-button @click.native.prevent="deleteRow(scope.row)" :disabled="scope.row.delete" type="text" size="small">
               删除
             </el-button>
-            <el-button @click.native.prevent="uplevel(scope.row)" type="text" size="small">
+            <el-button @click.native.prevent="uplevel(scope.row)" :disabled="scope.row.uplevels" type="text" size="small">
               设备升级
             </el-button>
           </template>
@@ -103,6 +103,7 @@
 <script>
 /* eslint-disable */
 import XLSX from "xlsx";
+import utils from "@/utils/utils";
 
 let wb; // 读取完成的数据
 let rABS = false; // 是否将文件读取为二进制字符串
@@ -326,6 +327,7 @@ export default {
     },
     /* 查看 */
     MonitorDevice(data) {
+      this.$router.push("/device-real");
       console.log(data);
     },
     /* 添加黑名单 */
@@ -430,6 +432,7 @@ export default {
           let result = res.data.data;
           this.total = result.total;
           this.tableData = [];
+          let storge = JSON.parse(utils.getStorage("loginData"));
           if (result.pageData.length > 0) {
             result.pageData.forEach(key => {
               key.online = key.onlineStatus === 0;
@@ -437,7 +440,14 @@ export default {
               key.registerCode =
                 key.registerCode === null ? "未注册" : "已注册";
               key.bindStatus = key.hostId === null;
+              key.canlook = key.hostId === null;
+              key.delete = !key.bindStatus;
               key.bindState = key.hostId === null ? "未绑定" : "已绑定";
+              if (storge.type !== 1 && storge.layerName !== "平台") {
+                key.blackStatus = true;
+                key.delete = true;
+                key.uplevels = true;
+              }
               this.tableData.push(key);
             });
           }

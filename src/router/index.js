@@ -39,6 +39,8 @@ const UserInfo = () =>
   import( /* webpackChunkName: "UserInfo" */ '../views/user-info/user.vue');
 const Password = () =>
   import( /* webpackChunkName: "Password" */ '../views/user-info/password.vue');
+const deviceRealData = () =>
+  import( /* webpackChunkName: "deviceRealData" */ '../views/device/deviceReal.vue');
 
 /* eslint-disable */
 export default new Router({
@@ -117,6 +119,10 @@ export default new Router({
         {
           path: '/user-pwd',
           component: Password
+        },
+        {
+          path: '/device-real',
+          component: deviceRealData
         }
       ]
     },

@@ -95,6 +95,5 @@ export default function permissionFun() {
     permissions.personalInfo = role.personalInfo;
     permissions.alarmDatas = role.alarmDatas;
   }
-  console.log(permissions);
   return permissions;
 }

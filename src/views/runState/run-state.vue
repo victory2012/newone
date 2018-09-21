@@ -65,12 +65,14 @@ export default {
     this.hostId = this.$route.query.hostId;
     this.deviceId = this.$route.query.deviceId;
     this.deviceCode = this.$route.query.deviceCode;
+    this.id = this.$route.query.id;
     this.init();
     if (this.hostId && this.deviceId) {
       this.IdObj = {
         hostId: this.hostId,
         device: this.deviceId,
-        deviceCode: this.deviceCode
+        deviceCode: this.deviceCode,
+        id: this.id
       };
       this.getCompanyInfo();
     }
@@ -179,7 +181,7 @@ export default {
   padding: 24px;
   position: relative;
   margin-bottom: 40px;
-  text-align: center;
+  // text-align: center;
   .titleCenter {
     width: 330px;
     // height: 50px;

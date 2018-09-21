@@ -1,5 +1,25 @@
 <template>
   <div class="center">
+    <div class="title">
+      <div class="titleCenter">
+        <a @click="showRealData" :class="{'active': actived == 'real'}">实时数据</a>
+        <span class="divider"></span>
+        <a @click="showHistoryData" :class="{'active': actived == 'history'}">历史数据</a>
+        <span class="divider"></span>
+        <a @click="showAlarmData" :class="{'active': actived == 'alarm'}">告警数据</a>
+      </div>
+      <div class="search">
+        <!-- <el-autocomplete v-show="actived === 'real'" size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入电池编号" @select="handleSelect"></el-autocomplete> -->
+        <el-select v-show="actived === 'real'" v-model="state" filterable placeholder="请输入电池编号" clearable @change="changeBatteryCode">
+          <el-option v-for="item in tableData" :key="item.value" :label="item.value" :value="item">
+          </el-option>
+        </el-select>
+        <div v-show="actived !== 'real'" class="devicecode">
+          <p><img src="../../assets/img/battery.png" alt="" srcset="">{{companyInfo.code}}</p>
+          <p><img src="../../assets/img/device.png" alt="" srcset="">{{companyInfo.deviceCode}}</p>
+        </div>
+      </div>
+    </div>
     <div class="dashboad">
       <div>
         <img src="../../assets/img/temp.png" alt="">
@@ -100,8 +120,6 @@ export default {
   },
   data() {
     return {
-      hasSend: false,
-      sendBack: "",
       timer: null,
       quantity: "",
       btnTip: "主动查询",
@@ -212,19 +230,6 @@ export default {
         }
       };
     },
-    /* 发送地址给后台 */
-    addressCallBack(data) {
-      let param = {
-        id: this.hostObj.id,
-        address: data
-      };
-      this.$axios.put(`battery_group/address`, param).then(res => {
-        console.log(res);
-        if (res.data && res.data.code === 0) {
-          this.hasSend = true;
-        }
-      });
-    },
     /* 收到 mqtt数据 */
     receiveData(data) {
       let payloadString = JSON.parse(data);
@@ -296,19 +301,8 @@ export default {
         marker.setMap(map);
         this.markerArr.push(marker);
         map.setCenter(position);
-        /* 根据经纬度 用高德查询详细地址 */
         lnglatTrabsofor(position, res => {
-          this.address = res.formattedAddress;
-          let sendAddress = `${res.addressComponent.province}-${
-            res.addressComponent.city
-          }`;
-          if (this.sendBack !== sendAddress) {
-            this.hasSend = false;
-            this.sendBack = sendAddress;
-          }
-          if (!this.hasSend) {
-            this.addressCallBack(sendAddress);
-          }
+          this.address = res;
         });
       }
     },
@@ -483,10 +477,68 @@ export default {
 </script>
 <style lang="scss" scoped>
 $fontColor: rgba(0, 0, 0, 0.65);
+
 .center {
   background: #ffffff;
   padding: 24px;
 }
+
+.title {
+  padding: 24px;
+  position: relative;
+  margin-bottom: 40px;
+  // text-align: center;
+  .titleCenter {
+    width: 330px;
+    // height: 50px;
+    background: #ffffff;
+    font-size: 0;
+    // line-height: 50px;
+    padding: 15px 0;
+    border-radius: 5px;
+    margin: 0 auto;
+    a {
+      width: 101px;
+      font-size: 14px;
+      text-align: center;
+      display: inline-block;
+      cursor: pointer;
+      color: #bfbfbf;
+      &.active {
+        color: #484848;
+      }
+    }
+    .divider {
+      margin: 0 6px;
+      display: inline-block;
+      height: 8px;
+      width: 1px;
+      background: #ccc;
+    }
+  }
+  .search {
+    position: absolute;
+    top: 32px;
+    right: 20px;
+    .devicecode {
+      background: #ffffff;
+      width: 182px;
+      height: 70px;
+      font-size: 13px;
+      p {
+        padding-left: 5px;
+        height: 25px;
+        line-height: 25px;
+        padding: 5px 0;
+        img {
+          margin-right: 20px;
+          vertical-align: top;
+        }
+      }
+    }
+  }
+}
+
 .dashboad {
   display: flex;
   margin-bottom: 20px;

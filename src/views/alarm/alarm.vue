@@ -142,7 +142,7 @@ export default {
               this.rowObj.temperature = result.temperature;
               this.rowObj.voltage = result.voltage;
               this.rowObj.current = result.current;
-              this.rowObj.address = callRes || "--";
+              this.rowObj.address = callRes.formattedAddress || "--";
               this.details = true;
             });
             // this.rowObj.fluidLevel = result.fluidLevel === 0 ? "正常" : "异常";

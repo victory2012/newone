@@ -399,7 +399,8 @@ export default {
         query: {
           deviceId: row.deviceId,
           deviceCode: row.deviceCode,
-          hostId: row.hostId
+          hostId: row.hostId,
+          id: row.id
         }
       });
     },
