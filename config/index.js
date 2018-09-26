@@ -4,14 +4,14 @@
 
 const path = require('path');
 
-// const apiPath = "http://192.168.1.181:8000";
+// const apiPath = "http://192.168.1.101:8000";
 const apiPath = "http://47.96.8.239:8000";
 
 module.exports = {
   dev: {
     // Paths
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: '/pc',
     proxyTable: {
       '/api': {
         target: apiPath, // 实际请求地址
@@ -61,7 +61,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: '/pc',
 
     /**
      * Source Maps

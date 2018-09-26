@@ -5,8 +5,8 @@
       </el-table-column>
       <el-table-column prop="companyName" align="center" label="企业名称">
       </el-table-column>
-      <el-table-column prop="regstate" align="center" label="设备注册状态">
-      </el-table-column>
+      <!-- <el-table-column prop="regstate" align="center" label="设备注册状态">
+      </el-table-column> -->
       <el-table-column prop="bindState" align="center" label="电池绑定状态">
       </el-table-column>
       <el-table-column align="center" label="操作" width="120">

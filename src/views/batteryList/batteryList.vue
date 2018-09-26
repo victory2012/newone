@@ -82,10 +82,10 @@
         </el-table-column>
         <el-table-column align="center" width="200" label="操作">
           <template slot-scope="scope">
-            <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind" type="text" size="small">绑定</el-button>
-            <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">解绑</el-button>
-            <!-- <el-button @click="bindDeviceClick(scope.row)" type="text" size="small">拉黑</el-button> -->
-            <el-button @click="deleteBattery(scope.row)" :disabled="!scope.row.canDelete" type="text" size="small">删除</el-button>
+            <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind || scope.row.isPlat" type="text" size="small">绑定</el-button>
+            <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind || scope.row.isPlat" type="text" size="small">解绑</el-button>
+            <el-button @click="addBlack(scope.row)" :disabled="!AdminRoles.addblack" type="text" size="small">拉黑</el-button>
+            <el-button @click="deleteBattery(scope.row)" :disabled="!scope.row.canDelete || scope.row.isPlat" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -270,6 +270,23 @@ export default {
         // message.destinationName = `cmd/${this.bindRows.code}`;
         // mqttClient.send(message);
       }
+    },
+    /* 拉黑 */
+    addBlack(row) {
+      let deviceObj = {
+        id: row.deviceId,
+        status: -1
+      };
+      this.$axios.put("device", deviceObj).then(res => {
+        console.log(res);
+        if (res.data && res.data.code === 0) {
+          this.$message({
+            type: "success",
+            message: res.data.msg
+          });
+          this.getBatteryList();
+        }
+      });
     },
     recovery() {
       this.$router.push("/battery/defriend");
@@ -615,7 +632,8 @@ export default {
         companyName: `${this.batCustom}`,
         batteryGroupOrDeviceCode: this.batteryId,
         modelId: this.batteryModel,
-        bindingStatus: this.bindStatus
+        bindingStatus: this.bindStatus,
+        status: 0
       };
       this.$axios.get("/battery_group", options).then(res => {
         this.tableData = [];
@@ -635,7 +653,7 @@ export default {
               key.deviceCode = "无";
             }
             if (loginData.type === 1) {
-              key.hasbind = false;
+              key.isPlat = true;
             } else {
               key.canDelete = false;
               if (this.AdminRoles.deleteBattery && key.hasbind) {
@@ -682,7 +700,7 @@ export default {
     /* 用户权限 */
     userRole() {
       let roles = JSON.parse(utils.getStorage("loginData"));
-      console.log("roles", roles.type);
+      console.log(this.AdminRoles);
     }
   },
   mounted() {

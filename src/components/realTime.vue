@@ -101,7 +101,7 @@ export default {
       voltageOptions.tooltip.formatter = p => {
         let item = "";
         p.forEach(v => {
-          item += `${utils.dateFomat(v.value[0])}<br/>电压:${v.value[1]}<br/>`;
+          item += `${utils.dateFomat(v.value[0])}<br/>电压:${v.value[1]}V<br/>`;
         });
         return item;
       };
@@ -116,7 +116,7 @@ export default {
         p.forEach(v => {
           item += `${utils.dateFomat(v.value[0])}<br/>单体电压:${
             v.value[1]
-          }<br/>`;
+          }V<br/>`;
         });
         return item;
       };
@@ -129,7 +129,7 @@ export default {
       currentOptions.tooltip.formatter = p => {
         let item = "";
         p.forEach(v => {
-          item += `${utils.dateFomat(v.value[0])}<br/>电流:${v.value[1]}<br/>`;
+          item += `${utils.dateFomat(v.value[0])}<br/>电流:${v.value[1]}A<br/>`;
         });
         return item;
       };
@@ -142,16 +142,13 @@ export default {
       temperatureOptions.tooltip.formatter = p => {
         let item = "";
         p.forEach(v => {
-          item += `${utils.dateFomat(v.value[0])}<br/>温度:${v.value[1]}<br/>`;
+          item += `${utils.dateFomat(v.value[0])}<br/>温度:${v.value[1]}℃<br/>`;
         });
         return item;
       };
       this.myEcharts4.setOption(temperatureOptions);
     },
     formatter(data) {
-      // console.log('实时数据', data);
-      // console.log("data.current1", data.current);
-      // console.log("data.current2", -data.current);
       this.chartData.voltage.shift();
       this.chartData.singleVoltage.shift();
       this.chartData.current.shift();

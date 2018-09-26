@@ -10,7 +10,7 @@
     </div>
     <div class="chartWarrp">
       <div class="chartInfo" id="echart4"></div>
-      <div class="chartInfo" id="echart4"></div>
+      <div class="chartInfo" id="echartasdad4"></div>
     </div>
   </div>
 </template>
@@ -142,7 +142,7 @@ export default {
 
       let singleVoltageOptions = _.cloneDeep(options);
       singleVoltageOptions.title.text = "单体电压";
-      singleVoltageOptions.yAxis.axisLabel.formatter = "{value} v";
+      singleVoltageOptions.yAxis.axisLabel.formatter = "{value} V";
       singleVoltageOptions.series[0].data = datas.singleVoltage;
       singleVoltageOptions.tooltip.formatter = p => {
         let item = "";
@@ -153,7 +153,7 @@ export default {
             "单体电压" +
             " : " +
             v.value[1] +
-            "<br/>";
+            "V<br/>";
         });
         return item;
       };
@@ -171,7 +171,7 @@ export default {
             "电流" +
             " : " +
             v.value[1] +
-            "<br/>";
+            "A<br/>";
         });
         return item;
       };
@@ -190,7 +190,7 @@ export default {
             "温度" +
             " : " +
             v.value[1] +
-            "<br/>";
+            "℃<br/>";
         });
         return item;
       };
@@ -209,7 +209,7 @@ export default {
             "电量" +
             " : " +
             v.value[1] +
-            "<br/>";
+            "%<br/>";
         });
         return item;
       };
@@ -219,7 +219,7 @@ export default {
       // console.log(p);
       let item = "";
       p.forEach(v => {
-        item += `${utils.dateFomat(v.value[0])}<br/>电压:${v.value[1]}<br/>`;
+        item += `${utils.dateFomat(v.value[0])}<br/>电压:${v.value[1]}V<br/>`;
       });
       return item;
     }

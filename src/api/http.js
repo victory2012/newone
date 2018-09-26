@@ -6,8 +6,6 @@ import {
   Message
 } from 'element-ui';
 
-// const baseURL = "/api";
-// console.log(process.env.API_HOST);
 const baseURL = process.env.API_HOST;
 
 const timeout = 30000; // 超时时间
