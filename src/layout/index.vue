@@ -18,7 +18,7 @@
               <i class="iconfont icon-logout"></i>退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <p>{{getUserLoginData.account}}</p>
+        <p>{{getUserLoginData.nickName}}</p>
         <p>{{getUserLoginData.companyName}}</p>
       </div>
       <el-menu class="sidebar-el-menu" :default-active="$route.path" background-color="#404040" text-color="rgba(255, 255, 255, 0.67)" :unique-opened='true' router>
@@ -106,7 +106,6 @@ export default {
         this.menus = menu.purchaseCus();
       }
       console.log(this.menus);
-      // this.$store.state.permissions = JSON.stringify(this.menus.permissions);
       utils.setStorage("permissions", JSON.stringify(this.menus.permissions));
     }
   },

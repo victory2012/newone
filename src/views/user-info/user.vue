@@ -9,7 +9,7 @@
           <div class="grid-content">
             <div class="sort-content">
               <p class="tips">用户名</p>
-              <p class="gridInput">{{userArr.nickName}}</p>
+              <p class="gridInput">{{userArr.account}}</p>
               <!-- <el-input v-model="userArr.userName" disabled class="gridInput"></el-input> -->
             </div>
           </div>
@@ -68,8 +68,8 @@
         <el-form-item label="手机号" prop="phones">
           <el-input size="small" v-model="InfoForm.phones" style="width:160px;"></el-input>
         </el-form-item>
-        <el-form-item label="用户名" prop="userName">
-          <el-input size="small" v-model="InfoForm.userName" style="width:160px;"></el-input>
+        <el-form-item label="昵称" prop="userName">
+          <el-input size="small" v-model="InfoForm.nickName" style="width:160px;"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
           <el-input size="small" v-model="InfoForm.email" style="width:160px;"></el-input>
@@ -98,6 +98,13 @@ export default {
             message: "手机号格式错误",
             trigger: "change"
           }
+        ],
+        email: [
+          {
+            pattern: /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/,
+            message: "邮箱格式错误",
+            trigger: "change"
+          }
         ]
       }
     };
@@ -123,13 +130,12 @@ export default {
           if (this.InfoForm.phones !== this.userArr.phone) {
             userObj.phone = this.InfoForm.phones;
           }
-          if (this.InfoForm.userName !== this.userArr.nickName) {
-            userObj.nickName = this.InfoForm.userName;
+          if (this.InfoForm.nickName !== this.userArr.nickName) {
+            userObj.nickName = this.InfoForm.nickName;
           }
           if (this.InfoForm.email !== this.userArr.email) {
             userObj.email = this.InfoForm.email;
           }
-          console.log(userObj);
           if (JSON.stringify(userObj) !== "{}") {
             this.$axios.put("/user/info", userObj).then(res => {
               console.log(res);

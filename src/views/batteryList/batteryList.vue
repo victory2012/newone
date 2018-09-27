@@ -18,7 +18,7 @@
             </el-dropdown>
           </div>
           <div class="items" v-if="AdminRoles.AddBatteries" style="position: relative">
-            <input class="fileUpload" type="file" @change="fileUpload" />
+            <input class="fileUpload" type="file" @change="fileUpload"  v-loading.fullscreen.lock="fullscreenLoading"/>
             <img id="upers" src="../../../static/img/device_import.png" alt="">
             <p>批量导入</p>
           </div>
@@ -211,7 +211,7 @@ export default {
       titles: "",
       addModel: false,
       batteryId: "",
-      loading: false,
+      loading: true,
       currentPage: 1,
       pageSize: 10,
       total: 0,
@@ -402,12 +402,14 @@ export default {
     },
     /* 每页显示的数量 */
     handleSizeChange(val) {
+      this.loading = true;
       this.pageSize = val;
       this.getBatteryList();
     },
     /* 显示第几页 */
     handleCurrentChange(val) {
       this.currentPage = val;
+      this.loading = true;
       this.getBatteryList();
     },
     lookFor(row) {
@@ -468,6 +470,7 @@ export default {
       this.eventUpload = event.target;
       let obj = event.target;
       if (!obj.files) {
+        this.fullscreenLoading = false;
         return;
       }
       const IMPORTFILE_MAXSIZE = 1 * 1024; // 这里可以自定义控制导入文件大小
@@ -637,6 +640,7 @@ export default {
       };
       this.$axios.get("/battery_group", options).then(res => {
         this.tableData = [];
+        this.loading = false;
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
           this.total = result.total;

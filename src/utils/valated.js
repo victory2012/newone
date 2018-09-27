@@ -31,6 +31,7 @@ export default function permissionFun() {
       permissions.info = false;
       permissions.runState = false;
       permissions.recovery = false;
+      permissions.addblack = false;
       permissions.deleteBattery = false;
       permissions.addCompany = false;
       permissions.deleteCompany = false;

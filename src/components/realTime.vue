@@ -92,8 +92,6 @@ export default {
       this.dataChange(this.chartData);
     },
     dataChange(datas) {
-      // console.log("datas.current1", datas.current);
-      // console.log("datas.current2", -datas.current);
       let voltageOptions = _.cloneDeep(options);
       voltageOptions.title.text = "电压";
       voltageOptions.yAxis.axisLabel.formatter = "{value} v";

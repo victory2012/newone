@@ -2,11 +2,12 @@
   <div class="alarmTable">
     <div class="addWarrp">
       <div @click="adduser(index, key)" v-for="(key, index) in userData" class="addBox" :key="key.role">
-        <img :src="key.default" alt="">
+        <!-- <img :src="key.default" alt=""> -->
+        <img src="../../../static/img/add-admin.png" alt="" srcset="">
         <p>{{key.text}}</p>
       </div>
     </div>
-    <el-table :data="tableData" style="width: 100%">
+    <el-table v-loading="loading" :data="tableData" style="width: 100%">
       <el-table-column prop="nickName" align="center" label="用户名">
       </el-table-column>
       <el-table-column prop="role" align="center" label="账户身份">
@@ -57,7 +58,7 @@
 </template>
 <script>
 /* eslint-disable */
-import { mapGetters } from "vuex";
+// import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
 import permissionFun from "@/utils/valated";
 import addData from "../../config/add-user-data";
@@ -74,6 +75,7 @@ export default {
     return {
       AdminRoles: permissionFun(),
       checked1: false,
+      loading: true,
       jurisdiction: false, // 权限
       componentId: "",
       userData: [],
@@ -141,9 +143,9 @@ export default {
       ]
     };
   },
-  computed: {
-    ...mapGetters(["getLayerName"])
-  },
+  // computed: {
+  //   ...mapGetters(["getLayerName"])
+  // },
   mounted() {
     this.$store.state.manfictor = false;
     this.$store.state.custom = false;
@@ -152,12 +154,15 @@ export default {
   },
   methods: {
     userLimit() {
-      if (this.getLayerName === "平台") {
+      let getLayerName = JSON.parse(sessionStorage.getItem("loginData"));
+      // console.log(getLayerName);
+      if (getLayerName.layerName === "平台" && getLayerName.type === 1) {
         this.userData = addData.getPlat();
       }
-      if (this.getLayerName === "生产企业") {
+      if (getLayerName.layerName === "生产企业" && getLayerName.type === 2) {
         this.userData = addData.getProduct();
       }
+      console.log(this.userData);
     },
     /* 删除按钮 */
     secondary(item) {
@@ -305,14 +310,16 @@ export default {
       }
     },
     getUserList() {
+      this.loading = true;
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage
       };
       this.$axios.get("/user", pageObj).then(res => {
         console.log(res);
-        let result = res.data;
-        if (result && result.code === 0) {
+        this.loading = false;
+        if (res.data && res.data.code === 0) {
+          let result = res.data;
           this.tableData = [];
           this.total = result.data.total;
           let storge = JSON.parse(utils.getStorage("loginData"));

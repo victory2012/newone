@@ -7,7 +7,7 @@
           <p>设备注册</p>
         </div>
         <div class="items" style="position: relative">
-          <input class="fileUpload" type="file" @change="fileUpload" />
+          <input class="fileUpload" type="file" @change="fileUpload" v-loading.fullscreen.lock="fullscreenLoading"/>
           <img src="../../../static/img/device_import.png" alt="">
           <p>批量导入</p>
         </div>
@@ -53,7 +53,7 @@
         </el-table-column>
         <el-table-column align="center" label="监测设备">
           <template slot-scope="scope">
-            <el-button @click.native.prevent="MonitorDevice(scope.row)" :disabled="scope.row.canlook" type="text" size="small">
+            <el-button @click.native.prevent="MonitorDevice(scope.row)" type="text" size="small">
               查看
             </el-button>
           </template>
@@ -117,7 +117,8 @@ export default {
       pageSize: 10,
       content: "",
       regform: {},
-      loading: false,
+      loading: true,
+      fullscreenLoading: false,
       regState: "",
       bindState: "",
       regRules: {
@@ -156,9 +157,11 @@ export default {
   methods: {
     fileUpload(event) {
       console.log(event);
+      this.fullscreenLoading = true;
       this.eventUpload = event.target;
       let obj = event.target;
       if (!obj.files) {
+        this.fullscreenLoading = false;
         return;
       }
       const IMPORTFILE_MAXSIZE = 1 * 1024; // 这里可以自定义控制导入文件大小
@@ -173,6 +176,7 @@ export default {
           message: "请导入xls格式或者xlsx格式"
         });
         this.eventUpload.value = "";
+        this.fullscreenLoading = false;
         return;
       }
       if (obj.files[0].size / 1024 > IMPORTFILE_MAXSIZE) {
@@ -180,6 +184,7 @@ export default {
           type: "error",
           message: "导入的表格文件不能大于1M"
         });
+        this.fullscreenLoading = false;
         this.eventUpload.value = "";
         return;
       }
@@ -207,16 +212,19 @@ export default {
         console.log(resultObj);
         if (resultObj.length < 1) {
           this.$message.error("上传的文件内容为空，请检查文件");
+          this.fullscreenLoading = false;
         } else {
           for (let i = 0; i < resultObj.length; i++) {
             let results = resultObj[i];
             console.log(results);
             if (!results["生产企业"] || !results["编号"]) {
               this.$message.error("生产企业或设备编号不能为空，请检查文件");
+              this.fullscreenLoading = false;
               return;
             }
             if (!results["编号"]) {
               this.$message.error("生产企业或设备编号不能为空，请检查文件");
+              this.fullscreenLoading = false;
               return;
             }
             if (
@@ -224,6 +232,7 @@ export default {
               results["编号"] === resultObj[i + 1]["编号"]
             ) {
               this.$message.error("设备编号不能重复，请检查文件");
+              this.fullscreenLoading = false;
               return;
             }
             let ItemObj = {
@@ -234,7 +243,7 @@ export default {
             ItemObj.deviceCodes.push(results["编号"]);
             valuesObj.push(ItemObj);
           }
-          console.log(valuesObj);
+          // console.log(valuesObj);
           this.fileUploadTo(valuesObj);
         }
       };
@@ -262,6 +271,7 @@ export default {
     fileUploadTo(data) {
       this.$axios.post(`/device/2/batch`, data).then(res => {
         console.log(res);
+        this.fullscreenLoading = false;
         if (res.data && res.data.code === 0) {
           this.$message.success("批量添加成功");
           this.getDeviceList();
@@ -422,6 +432,7 @@ export default {
     },
     /* 获取设备列表 */
     getDeviceList() {
+      this.loading = true;
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage,
@@ -434,6 +445,7 @@ export default {
       }
       this.$axios.get("/device", pageObj).then(res => {
         console.log(res);
+        this.loading = false;
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
           this.total = result.total;

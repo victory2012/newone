@@ -6,7 +6,7 @@
         <p>告警设置</p>
       </div>
     </div> -->
-    <el-table :data="tableData" style="width: 100%">
+    <el-table v-loading="loading" :data="tableData" style="width: 100%">
       <el-table-column type="index" align="center" label="序号" width="50">
       </el-table-column>
       <el-table-column prop="createTime" align="center" label="告警发生时间" width="180">
@@ -124,6 +124,7 @@ export default {
   props: ["hostObj"],
   data() {
     return {
+      loading: true,
       total: 0,
       pageSize: 10,
       currentPage: 1,
@@ -178,6 +179,7 @@ export default {
       this.getAlarmData();
     },
     getAlarmData() {
+      this.loading = true;
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage
@@ -186,6 +188,7 @@ export default {
         .get(`/battery_group_event?hostId=${this.hostObj.hostId}`, pageObj)
         .then(res => {
           console.log(res);
+          this.loading = false;
           if (res.data && res.data.code === 0) {
             let result = res.data.data;
             if (result) {

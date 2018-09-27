@@ -1,6 +1,6 @@
 <template>
   <div class="alarmTable">
-    <el-table :data="tableData" style="width: 100%">
+    <el-table v-loading="loading" :data="tableData" style="width: 100%">
       <el-table-column type="index" align="center" label="序号" width="50">
       </el-table-column>
       <el-table-column prop="createTime" align="center" label="告警发生时间">
@@ -116,6 +116,7 @@ import lnglatTrabsofor from "@/utils/longlatTransfor";
 export default {
   data() {
     return {
+      loading: true,
       currentPage: 1,
       pageSize: 10,
       total: 0,
@@ -164,12 +165,14 @@ export default {
       this.getListData();
     },
     getListData() {
+      this.loading = true;
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage
       };
       this.$axios.get("/battery_group_event", pageObj).then(res => {
         console.log(res);
+        this.loading = false;
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
           this.total = result.total;

@@ -1,22 +1,22 @@
 <template>
-  <div>
+  <div class="maps">
     <div class="date">
-
-      <el-button size="mini" plain @click="startOnclick" title="开始">
+      <el-button v-show="!trajectory" size="mini" plain @click="startOnclick" title="开始">
         <i class="iconfont icon-ic_song_next"></i>
       </el-button>
-      <el-button size="mini" plain @click="pauseOnclick" title="暂停">
+      <el-button v-show="!trajectory" size="mini" plain @click="pauseOnclick" title="暂停">
         <i class="iconfont icon-artboard25copy"></i>
       </el-button>
-      <el-button size="mini" plain @click="resumeOnclick" title="继续">
+      <el-button v-show="!trajectory" size="mini" plain @click="resumeOnclick" title="继续">
         <i class="iconfont icon-icons-resume_button"></i>
       </el-button>
-      <el-button size="mini" plain @click="stopOnclick" title="停止">
+      <el-button v-show="!trajectory" size="mini" plain @click="stopOnclick" title="停止">
         <i class="iconfont icon-stop"></i>
       </el-button>
-
+      <el-button v-show="!trajectory" type="danger" size="small" @click="heat">活动热区</el-button>
+      <el-button v-show="trajectory" type="primary" size="mini" @click="posi">轨迹回放</el-button>
     </div>
-    <div class="timeRange">
+    <div class="timeRange" v-show="!trajectory">
       <span>时间(s)</span>
       <el-slider v-model="timeSeconds" @change="speedChange" vertical height="200px">
       </el-slider>
@@ -28,6 +28,7 @@
 /* eslint-disable */
 import AMap from "AMap";
 import AMapUI from "AMapUI";
+import utils from "@/utils/utils";
 
 let map;
 let pathSimplifierIns;
@@ -37,51 +38,94 @@ let heatmap;
 export default {
   props: {
     travelData: {
-      type: Array,
-      default: () => []
+      type: Object,
+      default: () => {
+        return {
+          travel: [],
+          heatmap: []
+        };
+      }
     }
   },
   watch: {
     travelData: {
       handler: function(vals) {
         console.log("component map", vals);
-        this.positionChange(vals);
+        if (this.trajectory) {
+          this.heatMapFun(vals.heatmap);
+        } else {
+          this.positionChange(vals.travel);
+        }
       },
       deep: true
     }
   },
   data() {
     return {
+      trajectory: true,
       markerArr: [],
       timeSeconds: 50,
       alldistance: 0
     };
   },
   mounted() {
-    this.init();
+    this.mapInit();
   },
   methods: {
-    /* 轨迹相关方法 */
-    positionChange(travalData) {
-      if (!travalData || travalData.length < 1) {
-        return;
-      }
-      console.log(travalData);
+    mapInit() {
+      map = new AMap.Map("historyContent", {
+        resizeEnable: true,
+        zoom: 10
+      });
+      AMap.plugin(["AMap.Heatmap"], () => {
+        // 初始化heatmap对象
+        heatmap = new AMap.Heatmap(map, {
+          radius: 12, // 给定半径
+          opacity: [0, 1] // 透明度
+        });
+      });
+    },
+    heat() {
+      this.heatMapFun(this.travelData.heatmap);
+    },
+    posi() {
+      this.positionChange(this.travelData.travel);
+    },
+    /* 热力图 方法 */
+    heatMapFun(heatData) {
+      this.trajectory = true;
       if (this.markerArr.length > 0) {
+        // 显示热力图的时候 删除地图上的marker点
         map.remove(this.markerArr);
       }
-      this.alldistance = 0;
-      for (let i = 0; i < travalData.length; i++) {
+      pathSimplifierIns && pathSimplifierIns.setData([]); // 同理 去除轨迹
+      map.setCenter([heatData[0].lng, heatData[0].lat]); // 显示热力图的时候，把热力图的第一个的 作为地图中心点
+      heatmap.setDataSet({
+        data: heatData
+      });
+    },
+    /* 轨迹相关方法 */
+    positionChange(positions) {
+      this.trajectory = false;
+      heatmap && heatmap.setDataSet({ data: [] });
+      if (!positions || positions.length < 1) {
+        return;
+      }
+      if (this.markerArr.length > 0) {
+        // 先删除地图上的marker点 然后在后面添加
+        map.remove(this.markerArr);
+      }
+      this.alldistance = 0; // 两个点之间的距离
+      for (let i = 0; i < positions.length; i++) {
         var distance, p1, p2;
-        let key = travalData[i];
-        if (i < travalData.length - 1) {
+        let key = positions[i];
+        if (i < positions.length - 1) {
           p1 = new AMap.LngLat(key[0], key[1]);
-          p2 = new AMap.LngLat(travalData[i + 1][0], travalData[i + 1][1]);
+          p2 = new AMap.LngLat(positions[i + 1][0], positions[i + 1][1]);
           distance = Math.round(p1.distance(p2));
         }
         this.alldistance += distance;
       }
-      pathSimplifierIns && pathSimplifierIns.setData([]);
       AMapUI.load(["ui/misc/PathSimplifier"], PathSimplifier => {
         if (!PathSimplifier.supportCanvas) {
           alert("当前环境不支持 Canvas！");
@@ -125,24 +169,18 @@ export default {
             let pointIndex = info.pointIndex;
             let pathData = info.pathData;
             let point = pathData.path[pointIndex];
-            // console.log("point=>>>>>>>>>>>>>>", point);
             let position = new AMap.LngLat(point[0], point[1]);
             positionPicker.start(position);
             positionPicker.on("success", result => {
               var info = [];
               info.push(`<div><div>时间：${utils.dateFomat(point[2])}</div>`);
-              // info.push(
-              //   `<div style="font-size:14px;">路口 :${
-              //     result.nearestJunction
-              //   }</div>`
-              // );
               info.push(
                 `<div style="font-size:14px;">地址 :${
                   result.address
                 }</div></div>`
               );
               infoWindow = new AMap.InfoWindow({
-                content: info.join("<br/>") // 使用默认信息窗体框样式，显示信息内容
+                content: info.join("<br/>")
               });
               infoWindow.open(map, position);
               map.on("click", () => {
@@ -154,10 +192,10 @@ export default {
           pathSimplifierIns.setData([
             {
               name: "轨迹",
-              path: travalData
+              path: positions
             }
           ]);
-          console.log("this.lineArr", pathSimplifierIns);
+          // console.log("this.lineArr", this.lineArr);
           let distance = Number(this.alldistance) / 1000; // 米转成千米
           let times = Number(this.timeSeconds) / 3600; // 秒转成小时
           let speeds = Math.ceil(distance / times); // 最终得到的速度是 km/h
@@ -176,8 +214,8 @@ export default {
             }
           });
         });
-        let startPot = travalData[0];
-        let endPot = travalData[travalData.length - 1];
+        let startPot = positions[0];
+        let endPot = positions[positions.length - 1];
         let start = new AMap.Marker({
           map: map,
           position: [startPot[0], startPot[1]], // 基点位置  开始位置
@@ -193,13 +231,6 @@ export default {
         this.markerArr.push(start);
         this.markerArr.push(end);
       });
-    },
-    init() {
-      map = new AMap.Map("historyContent", {
-        resizeEnable: true,
-        zoom: 10
-      });
-      // this.positionChange();
     },
     // 开始运动
     startOnclick() {
@@ -228,14 +259,11 @@ export default {
       let speeds = Math.ceil(distance / times);
       navg.setSpeed(speeds);
     }
+  },
+  destroyed() {
+    map.destroy();
+    pathSimplifierIns && pathSimplifierIns.setData();
   }
-  // destroyed() {
-  //   console.log("destroyed");
-  //   pathSimplifierIns.clearPathNavigators();
-  //   map.destroy();
-  //   pathSimplifierIns = null;
-  //   map = null;
-  // }
 };
 </script>
 <style lang="scss" scoped>

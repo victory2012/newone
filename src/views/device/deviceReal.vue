@@ -110,7 +110,7 @@ let mqttClient = {};
 let map;
 let marker;
 const PI = 3.14159265358979324;
-const x_pi = 3.14159265358979324 * 3000.0 / 180.0;
+const x_pi = (3.14159265358979324 * 3000.0) / 180.0;
 export default {
   // props: ["hostObj", "propData"],
   components: {
@@ -153,10 +153,12 @@ export default {
       id: this.id
     };
     this.init();
-    this.getData();
+    if (this.hostId) {
+      this.getData();
+      this.getCompanyInfo();
+    }
     this.connectMqtt();
     this.getQuantity();
-    this.getCompanyInfo();
     clearInterval(this.timer);
     this.timer = setInterval(() => {
       if (this.interval) {
@@ -201,7 +203,11 @@ export default {
         mqttConfig.clientId
       );
       mqttClient.connect({
-        onSuccess: this.onConnect
+        onSuccess: this.onConnect,
+        reconnect: mqttConfig.reconnect,
+        keepAliveInterval: mqttConfig.keepAliveInterval,
+        useSSL: mqttConfig.useSSL,
+        timeout: mqttConfig.timeout
       });
       mqttClient.onConnectionLost = responseObject => {
         console.log("mqtt-closed:", responseObject);
@@ -264,9 +270,27 @@ export default {
       };
       this.positionData(resultPos);
 
-      if (this.checked) {
+      if (this.checked && this.hostId) {
         this.ReceiveObj = dataObj;
-      } else {
+      }
+      if (this.checked && !this.hostId) {
+        // console.log("没有 hostId");
+        this.dataObj.singleVoltage.push({
+          name: dataObj.times,
+          value: [dataObj.times, dataObj.singleVoltage]
+        });
+        this.dataObj.temperature.push({
+          name: dataObj.times,
+          value: [dataObj.times, dataObj.temperature]
+        });
+        this.dataObj.voltage.push({
+          name: dataObj.times,
+          value: [dataObj.times, dataObj.voltage]
+        });
+        this.dataObj.current.push({
+          name: dataObj.times,
+          value: [dataObj.times, -dataObj.current]
+        });
       }
     },
     onConnect() {
@@ -418,12 +442,12 @@ export default {
       let ee = 0.00669342162296594323; //  ee: 椭球的偏心率。
       let dLat = this.transformLat(lon - 105.0, lat - 35.0);
       let dLon = this.transformLon(lon - 105.0, lat - 35.0);
-      let radLat = lat / 180.0 * PI;
+      let radLat = (lat / 180.0) * PI;
       let magic = Math.sin(radLat);
       magic = 1 - ee * magic * magic;
       let sqrtMagic = Math.sqrt(magic);
-      dLat = dLat * 180.0 / (a * (1 - ee) / (magic * sqrtMagic) * PI);
-      dLon = dLon * 180.0 / (a / sqrtMagic * Math.cos(radLat) * PI);
+      dLat = (dLat * 180.0) / (((a * (1 - ee)) / (magic * sqrtMagic)) * PI);
+      dLon = (dLon * 180.0) / ((a / sqrtMagic) * Math.cos(radLat) * PI);
       return { lat: dLat, lon: dLon };
     },
 
@@ -448,14 +472,15 @@ export default {
         0.1 * x * y +
         0.2 * Math.sqrt(Math.abs(x));
       ret +=
-        (20.0 * Math.sin(6.0 * x * PI) + 20.0 * Math.sin(2.0 * x * PI)) *
-        2.0 /
+        ((20.0 * Math.sin(6.0 * x * PI) + 20.0 * Math.sin(2.0 * x * PI)) *
+          2.0) /
         3.0;
       ret +=
-        (20.0 * Math.sin(y * PI) + 40.0 * Math.sin(y / 3.0 * PI)) * 2.0 / 3.0;
+        ((20.0 * Math.sin(y * PI) + 40.0 * Math.sin((y / 3.0) * PI)) * 2.0) /
+        3.0;
       ret +=
-        (160.0 * Math.sin(y / 12.0 * PI) + 320 * Math.sin(y * PI / 30.0)) *
-        2.0 /
+        ((160.0 * Math.sin((y / 12.0) * PI) + 320 * Math.sin((y * PI) / 30.0)) *
+          2.0) /
         3.0;
       return ret;
     },
@@ -468,14 +493,16 @@ export default {
         0.1 * x * y +
         0.1 * Math.sqrt(Math.abs(x));
       ret +=
-        (20.0 * Math.sin(6.0 * x * PI) + 20.0 * Math.sin(2.0 * x * PI)) *
-        2.0 /
+        ((20.0 * Math.sin(6.0 * x * PI) + 20.0 * Math.sin(2.0 * x * PI)) *
+          2.0) /
         3.0;
       ret +=
-        (20.0 * Math.sin(x * PI) + 40.0 * Math.sin(x / 3.0 * PI)) * 2.0 / 3.0;
+        ((20.0 * Math.sin(x * PI) + 40.0 * Math.sin((x / 3.0) * PI)) * 2.0) /
+        3.0;
       ret +=
-        (150.0 * Math.sin(x / 12.0 * PI) + 300.0 * Math.sin(x / 30.0 * PI)) *
-        2.0 /
+        ((150.0 * Math.sin((x / 12.0) * PI) +
+          300.0 * Math.sin((x / 30.0) * PI)) *
+          2.0) /
         3.0;
       return ret;
     }
