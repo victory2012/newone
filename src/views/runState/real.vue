@@ -138,10 +138,11 @@ export default {
       }
     }, 25000);
   },
-  beforeDestroy() {
+  destroyed() {
     if (typeof mqttClient === "object" && mqttClient.isConnected()) {
+      // console.log(mqttClient);
       mqttClient.disconnect();
-      mqttClient = {};
+      mqttClient = null;
       map = null;
     }
     this.dataObj = {};
@@ -197,6 +198,9 @@ export default {
         useSSL: mqttConfig.useSSL,
         timeout: mqttConfig.timeout
       });
+      mqttClient.onFailure = res => {
+        console.log(res);
+      };
       mqttClient.onConnectionLost = responseObject => {
         console.log("mqtt-closed:", responseObject);
       };

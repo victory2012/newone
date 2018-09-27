@@ -104,7 +104,7 @@
   </div>
 </template>
 <script>
-import { Message } from "element-ui";
+// import { Message } from "element-ui";
 
 export default {
   data() {
@@ -311,7 +311,7 @@ export default {
         if (res.data && res.data.code === 0) {
           let result = res.data;
           if (result.data === null) {
-            Message({
+            this.$message({
               message: "暂未设置全局阈值",
               type: "warning"
             });

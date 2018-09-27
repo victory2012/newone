@@ -68,7 +68,7 @@
           </div>
           <div>
             <img width="22px" src="../../assets/img/address.png" alt="">
-            <span>{{address}}</span>
+            <span>{{infoData.address}}</span>
           </div>
           <div>
             <img width="25px" src="../../assets/img/battery.png" alt="">
@@ -101,6 +101,7 @@
 import AMap from "AMap";
 import AMapUI from "AMapUI";
 import Paho from "Paho";
+// import { Message } from "element-ui";
 import utils from "@/utils/utils";
 import echartMap from "@/components/realTime";
 import mqttConfig from "@/api/mqtt.config";
@@ -166,10 +167,11 @@ export default {
       }
     }, 25000);
   },
-  beforeDestroy() {
+  destroyed() {
     if (typeof mqttClient === "object" && mqttClient.isConnected()) {
+      // console.log(mqttClient);
       mqttClient.disconnect();
-      mqttClient = {};
+      mqttClient = null;
       map = null;
     }
     this.dataObj = {};
@@ -264,6 +266,10 @@ export default {
       this.infoData.yyddmm = utils.yyyymmdd(new Date());
       this.infoData.gcjLongitude = posData.lon;
       this.infoData.gcjLatitude = posData.lat;
+      this.$set(this.infoData, "yyddmm", utils.yyyymmdd(new Date()));
+      this.$set(this.infoData, "hhmmss", utils.hhmmss(new Date()));
+      // console.log(this.infoData.yyddmm);
+      // console.log(this.infoData.hhmmss);
       let resultPos = {
         gcjLongitude: posData.lon,
         gcjLatitude: posData.lat
@@ -299,6 +305,7 @@ export default {
         typeof mqttClient === "object" &&
         typeof mqttClient.subscribe === "function"
       ) {
+        // console.log(`dev/${this.hostObj.deviceCode}`);
         mqttClient.subscribe(`dev/${this.hostObj.deviceCode}`);
       }
     },
@@ -319,7 +326,8 @@ export default {
         this.markerArr.push(marker);
         map.setCenter(position);
         lnglatTrabsofor(position, res => {
-          this.address = res.formattedAddress;
+          // this.address = res.formattedAddress;
+          this.$set(this.infoData, "address", res.formattedAddress);
         });
       }
     },
@@ -328,13 +336,18 @@ export default {
         .get(`/battery_group/${this.hostObj.hostId}/info`)
         .then(res => {
           console.log(res);
-          this.companyInfo = "";
+          this.infoData = {};
           if (res.data && res.data.code === 0 && res.data.data) {
             let result = res.data.data;
             this.infoData = result;
             this.infoData.fluid = result.fluidLevel === 0 ? "正常" : "异常";
             this.infoData.yyddmm = utils.yyyymmdd(new Date());
             this.infoData.hhmmss = utils.hhmmss(new Date());
+            let positionData = {
+              gcjLongitude: result.gcjLongitude,
+              gcjLatitude: result.gcjLatitude
+            };
+            this.positionData(positionData);
           }
         });
     },
@@ -406,6 +419,11 @@ export default {
         let message = new Paho.MQTT.Message("c:get");
         message.destinationName = `cmd/${this.infoData.deviceCode}`;
         mqttClient.send(message);
+      } else {
+        this.$message({
+          message: "当前网络链接失败，请刷新重试",
+          type: "warning"
+        });
       }
     },
     toggleUpdate() {
@@ -416,25 +434,6 @@ export default {
       } else {
         this.connectMqtt();
       }
-    },
-    getCity(long, lat) {
-      AMapUI.loadUI(["misc/PositionPicker"], PositionPicker => {
-        let positionPicker = new PositionPicker({
-          mode: "dragMarker",
-          map: map,
-          iconStyle: {
-            url: "../../static/img/iocna.png",
-            size: [1, 1],
-            ancher: [1, 1]
-          }
-        });
-        let position = new AMap.LngLat(long, lat);
-        positionPicker.start(position);
-        positionPicker.on("success", result => {
-          // console.log("adress", result);
-          this.address = `${result.address}`;
-        });
-      });
     },
     //硬件GPS----转高德经纬度 ----开始
     delta(lat, lon) {

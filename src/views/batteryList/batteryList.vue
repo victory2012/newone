@@ -250,8 +250,15 @@ export default {
         mqttConfig.clientId
       );
       mqttClient.connect({
-        onSuccess: this.onConnect
+        onSuccess: this.onConnect,
+        reconnect: mqttConfig.reconnect,
+        keepAliveInterval: mqttConfig.keepAliveInterval,
+        useSSL: mqttConfig.useSSL,
+        timeout: mqttConfig.timeout
       });
+      mqttClient.onFailure = res => {
+        console.log(res);
+      };
       mqttClient.onConnectionLost = responseObject => {
         console.log("mqtt-closed:", responseObject);
       };
@@ -705,6 +712,13 @@ export default {
     userRole() {
       let roles = JSON.parse(utils.getStorage("loginData"));
       console.log(this.AdminRoles);
+    }
+  },
+  destroyed() {
+    if (typeof mqttClient === "object" && mqttClient.isConnected()) {
+      // console.log(mqttClient);
+      mqttClient.disconnect();
+      mqttClient = null;
     }
   },
   mounted() {
