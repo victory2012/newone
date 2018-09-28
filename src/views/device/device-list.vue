@@ -2,16 +2,16 @@
   <div class="device">
     <div class="topTab">
       <div class="icons">
-        <div class="items" @click="regDialog">
+        <div v-if="storge.type === 1" class="items" @click="regDialog">
           <img src="../../../static/img/device_reg.png" alt="">
           <p>设备注册</p>
         </div>
-        <div class="items" style="position: relative">
+        <div v-if="storge.type === 1" class="items" style="position: relative">
           <input class="fileUpload" type="file" @change="fileUpload" v-loading.fullscreen.lock="fullscreenLoading"/>
           <img src="../../../static/img/device_import.png" alt="">
           <p>批量导入</p>
         </div>
-        <div class="items">
+        <div v-if="storge.type === 1" class="items">
           <router-link to="/device/defriend">
             <img src="../../../static/img/device_recover.png" alt="">
             <p>恢复拉黑设备</p>
@@ -95,7 +95,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button size="small" @click="resetRegform('regform')">取 消</el-button>
-        <el-button size="small" type="primary " @click="submitRegForm('regform')">确 定</el-button>
+        <el-button :loading="createDevice" size="small" type="primary " @click="submitRegForm('regform')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -110,6 +110,8 @@ let rABS = false; // 是否将文件读取为二进制字符串
 export default {
   data() {
     return {
+      createDevice: false,
+      storge: "",
       categoryArr: [],
       regDevice: false,
       total: 0, // 总数量
@@ -289,6 +291,7 @@ export default {
     submitRegForm(form) {
       this.$refs[form].validate(valid => {
         if (valid) {
+          this.createDevice = true;
           let category;
           let companyName;
           this.categoryArr.forEach(key => {
@@ -310,6 +313,7 @@ export default {
           };
           this.$axios.post("/device", deviceObj).then(res => {
             console.log(res);
+            this.createDevice = false;
             if (res.data && res.data.code === 0) {
               this.$message({
                 type: "success",
@@ -450,7 +454,7 @@ export default {
           let result = res.data.data;
           this.total = result.total;
           this.tableData = [];
-          let storge = JSON.parse(utils.getStorage("loginData"));
+
           if (result.pageData.length > 0) {
             result.pageData.forEach(key => {
               key.online = key.onlineStatus === 0;
@@ -461,7 +465,7 @@ export default {
               key.canlook = key.hostId === null;
               key.delete = !key.bindStatus;
               key.bindState = key.hostId === null ? "未绑定" : "已绑定";
-              if (storge.type !== 1 && storge.layerName !== "平台") {
+              if (this.storge.type !== 1 && this.storge.layerName !== "平台") {
                 key.blackStatus = true;
                 key.delete = true;
                 key.uplevels = true;
@@ -474,6 +478,7 @@ export default {
     }
   },
   mounted() {
+    this.storge = JSON.parse(utils.getStorage("loginData"));
     this.getDeviceList();
   }
 };

@@ -30,7 +30,7 @@
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button @click="resetAdmin('adminForm')">重 置</el-button>
-      <el-button @click="submitAdmin('adminForm')" type="primary">确 认</el-button>
+      <el-button :loading="addcustorm" @click="submitAdmin('adminForm')" type="primary">确 认</el-button>
     </div>
   </el-dialog>
 </template>
@@ -48,6 +48,7 @@ export default {
   data() {
     return {
       creatAdmin: true,
+      addcustorm: false,
       adminForm: {},
       customerRules: {
         account: [
@@ -94,6 +95,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           console.log("yes");
+          this.addcustorm = true;
           if (this.typeId === "3") {
             let params = {
               account: this.adminForm.account,
@@ -104,6 +106,7 @@ export default {
             };
             this.$axios.post("/user", params).then(res => {
               console.log(res);
+              this.addcustorm = false;
               if (res.data && res.data.code === 0) {
                 this.$message({
                   type: "success",

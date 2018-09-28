@@ -10,7 +10,7 @@
                 <span class="el-dropdown-link">电池</span>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="addBattery" :disabled="false">添加电池</el-dropdown-item>
+                <el-dropdown-item command="addBattery">添加电池</el-dropdown-item>
                 <el-dropdown-item command="addModel">添加型号</el-dropdown-item>
                 <el-dropdown-item command="addSpfic">添加规格</el-dropdown-item>
                 <el-dropdown-item command="addSingel">添加单体规格</el-dropdown-item>
@@ -103,7 +103,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button size="small" @click="resetModelAdd">重 置</el-button>
-        <el-button size="small" @click="submitModelAdd" type="primary">确 认</el-button>
+        <el-button :loading="addallTypes" size="small" @click="submitModelAdd" type="primary">确 认</el-button>
       </div>
     </el-dialog>
     <!-- 电池绑定 -->
@@ -118,10 +118,11 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button size="small" @click="resetBind">重 置</el-button>
-        <el-button size="small" @click="submitBind" type="primary">确 认</el-button>
+        <el-button :loading="bindings" size="small" @click="submitBind" type="primary">确 认</el-button>
       </div>
     </el-dialog>
-    <component @hasCreated="reloadBattery" :is="showAdd"></component>
+    <add-battery @hasCreated="reloadBattery"></add-battery>
+    <!-- <component @hasCreated="reloadBattery" :is="showAdd"></component> -->
   </div>
 </template>
 <style lang="scss" scoped>
@@ -185,6 +186,7 @@
 </style>
 <script>
 import permissionFun from "@/utils/valated";
+import addBattery from "@/components/battery/addBattery";
 /* eslint-disable */
 import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
@@ -197,13 +199,14 @@ let rABS = false; // 是否将文件读取为二进制字符串
 let mqttClient = {};
 export default {
   components: {
-    "add-battery": () => import("@/components/battery/addBattery")
+    "add-battery": addBattery
   },
   data() {
     return {
       AdminRoles: permissionFun(),
       fullscreenLoading: false,
-      showAdd: "",
+      addallTypes: false,
+      bindings: false,
       deviceModel: {},
       bindDevice: false,
       addType: "",
@@ -313,6 +316,7 @@ export default {
     submitBind() {
       this.$refs.deviceModel.validate(vlited => {
         if (vlited) {
+          this.bindings = true;
           this.deviceIdOpts.forEach(key => {
             if (this.deviceModel.deviceId === key.id) {
               this.deviceModel.code = key.code;
@@ -325,6 +329,7 @@ export default {
             deviceCode: this.deviceModel.code
           };
           this.$axios.put("host/bind", bindObj).then(res => {
+            this.bindings = false;
             if (res.data && res.data.code === 0) {
               this.$message({
                 type: "success",
@@ -349,7 +354,7 @@ export default {
       // this.modelForm.value = "";
       if (command === "addBattery") {
         this.$store.commit("triggerAddBattery");
-        this.showAdd = "add-battery";
+        // this.showAdd = "add-battery";
       }
       if (command === "addModel") {
         this.addModel = true;
@@ -371,11 +376,36 @@ export default {
       this.$refs.modelForm.resetFields();
       this.modelForm = {};
     },
+    /* 获取电池组规格列表 */
+    getGroupSpecif() {
+      this.$axios.get("/dic?type=Norm&categoryId=2").then(res => {
+        console.log("电池组规格", res);
+        if (res.data && res.data.code === 0) {
+          this.$store.commit(
+            "SETbatGroupSpecifOpts",
+            JSON.stringify(res.data.data)
+          );
+        }
+      });
+    },
+    /* 获取电池单体型号列表 */
+    getSinglBattery() {
+      this.$axios.get("/dic?type=SingleModel&categoryId=2").then(res => {
+        console.log("电池单体型号", res);
+        if (res.data && res.data.code === 0) {
+          this.$store.commit(
+            "SETsingleBatteryOpts",
+            JSON.stringify(res.data.data)
+          );
+        }
+      });
+    },
     /* 添加电池组型号、规格、单体规格 */
     submitModelAdd() {
       console.log(this.batteryForm);
       this.$refs.modelForm.validate(valid => {
         if (valid) {
+          this.addallTypes = true;
           let params = {
             dicKey: this.modelForm.dicValue,
             categoryId: 2
@@ -391,6 +421,7 @@ export default {
           }
           this.$axios.post("/dic", params).then(res => {
             console.log(this.addType, res);
+            this.addallTypes = false;
             if (res.data && res.data.code === 0) {
               this.$message({
                 type: "success",
@@ -398,7 +429,15 @@ export default {
               });
               this.addModel = false;
               this.modelForm = {};
-              this.getBatteryModelList();
+              if (params.type === "Model") {
+                this.getBatteryModelList();
+              }
+              if (params.type === "Norm") {
+                this.getGroupSpecif();
+              }
+              if (params.type === "SingleModel") {
+                this.getSinglBattery();
+              }
             }
           });
         } else {
@@ -686,6 +725,10 @@ export default {
           this.Modeloptions = res.data.data;
           // console.log(utils);
           utils.setStorage("Modeloptions", JSON.stringify(res.data.data));
+          this.$store.commit(
+            "SETGroupModelOpts",
+            JSON.stringify(res.data.data)
+          );
         }
       });
     },
@@ -695,6 +738,7 @@ export default {
         console.log("获取电池组客户企业表", res);
         if (res.data && res.data.code === 0) {
           this.batCustomOpts = res.data.data;
+          this.$store.commit("SETCustomOpts", JSON.stringify(res.data.data));
           utils.setStorage("batCustomOpts", JSON.stringify(res.data.data));
         }
       });
@@ -705,6 +749,7 @@ export default {
         if (res.data && res.data.code === 0) {
           this.deviceIdOpts = res.data.data;
           utils.setStorage("deviceIdOpts", JSON.stringify(res.data.data));
+          this.$store.commit("SETdeviceIdOpts", JSON.stringify(res.data.data));
         }
       });
     },
@@ -712,6 +757,14 @@ export default {
     userRole() {
       let roles = JSON.parse(utils.getStorage("loginData"));
       console.log(this.AdminRoles);
+    },
+    init() {
+      this.getGroupSpecif();
+      this.getSinglBattery();
+      this.getBatteryModelList();
+      this.getCompanyId();
+
+      this.getDeviceList();
     }
   },
   destroyed() {
@@ -723,11 +776,9 @@ export default {
   },
   mounted() {
     this.$store.state.addBattery = false;
-    this.getBatteryModelList();
-    this.getCompanyId();
-    this.getBatteryList();
-    this.getDeviceList();
+    this.init();
     this.userRole();
+    this.getBatteryList();
     this.connectMqtt();
   }
 };

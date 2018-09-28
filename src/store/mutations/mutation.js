@@ -45,5 +45,25 @@ export default {
   },
   SETPERMISION(state, data) {
     state.permissions = data;
+  },
+  /* 客户企业名称 */
+  SETCustomOpts(state, data) {
+    state.batCustomOpts = data;
+  },
+  /* 电池型号 */
+  SETGroupModelOpts(state, data) {
+    state.GroupModelOpts = data;
+  },
+  /* 设备编号 */
+  SETdeviceIdOpts(state, data) {
+    state.deviceIdOpts = data;
+  },
+  /* 电池组额定电压 */
+  SETsingleBatteryOpts(state, data) {
+    state.singleBatteryOpts = data;
+  },
+  /* 电池组规格 */
+  SETbatGroupSpecifOpts(state, data) {
+    state.batGroupSpecifOpts = data;
   }
 };

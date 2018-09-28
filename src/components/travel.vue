@@ -136,7 +136,7 @@ export default {
             mode: "dragMarker",
             map: map,
             iconStyle: {
-              url: "../../static/img/iocna.png",
+              url: "./static/img/iocna.png",
               size: [1, 1],
               ancher: [1, 1]
             }
@@ -209,7 +209,7 @@ export default {
               fillStyle: null,
               // 使用图片
               content: PathSimplifier.Render.Canvas.getImageContent(
-                "../../../../static/img/car.png"
+                "./static/img/car.png"
               )
             }
           });

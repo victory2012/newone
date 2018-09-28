@@ -8,5 +8,10 @@ export default {
   batteryModel: null,
   userRoles: null,
   addUserText: "",
+  batCustomOpts: "", // 客户企业名称
+  GroupModelOpts: "", // 电池型号
+  deviceIdOpts: "", // 设备编号
+  singleBatteryOpts: "", // 电池组额定电压
+  batGroupSpecifOpts: "", // 电池组规格
   permissions: "" // 用户权限
 };

@@ -20,5 +20,40 @@ export default {
   },
   userText(state) {
     return state.addUserText;
+  },
+  /* 客户企业名称 */
+  getCustomOpts(state) {
+    if (state.batCustomOpts) {
+      return JSON.parse(state.batCustomOpts);
+    }
+    return '';
+  },
+  /* 电池型号 */
+  getGroupModelOpts(state) {
+    if (state.GroupModelOpts) {
+      return JSON.parse(state.GroupModelOpts);
+    }
+    return '';
+  },
+  /* 设备编号 */
+  getDeviceIdOpts(state) {
+    if (state.deviceIdOpts) {
+      return JSON.parse(state.deviceIdOpts);
+    }
+    return '';
+  },
+  /* 电池组额定电压 */
+  getSingleBatteryOpts(state) {
+    if (state.singleBatteryOpts) {
+      return JSON.parse(state.singleBatteryOpts);
+    }
+    return '';
+  },
+  /* 电池组规格 */
+  getBatGroupSpecifOpts(state) {
+    if (state.batGroupSpecifOpts) {
+      return JSON.parse(state.batGroupSpecifOpts);
+    }
+    return "";
   }
 };

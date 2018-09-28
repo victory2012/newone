@@ -10,7 +10,7 @@
         <el-col :span="12">
           <el-form-item label="电池组客户企业" prop="batCustom">
             <el-select size="small" style="width:210px" v-model="batteryForm.batCustom" placeholder="电池组客户企业">
-              <el-option v-for="item in batCustomOpts" :key="item.id" :label="item.name" :value="item.id" :disabled="item.disabled">
+              <el-option v-for="item in getCustomOpts" :key="item.id" :label="item.name" :value="item.id" :disabled="item.disabled">
               </el-option>
             </el-select>
           </el-form-item>
@@ -25,7 +25,7 @@
         <el-col :span="12">
           <el-form-item label="电池组型号" prop="batGroupModel">
             <el-select size="small" style="width:210px" v-model="batteryForm.batGroupModel" placeholder="电池组型号">
-              <el-option v-for="item in GroupModelOpts" :key="item.id" :label="item.dicKey" :value="item.id">
+              <el-option v-for="item in getGroupModelOpts" :key="item.id" :label="item.dicKey" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -35,7 +35,7 @@
         <el-col :span="12">
           <el-form-item label="电池组规格" prop="batGroupSpecif">
             <el-select size="small" style="width:210px" v-model="batteryForm.batGroupSpecif" placeholder="电池组规格">
-              <el-option v-for="item in batGroupSpecifOpts" :key="item.id" :label="item.dicKey" :value="item.id">
+              <el-option v-for="item in getBatGroupSpecifOpts" :key="item.id" :label="item.dicKey" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -55,7 +55,7 @@
         <el-col :span="12">
           <el-form-item label="电池单体型号" prop="singleBattery">
             <el-select size="small" style="width:210px" v-model="batteryForm.singleBattery" placeholder="电池单体型号">
-              <el-option v-for="item in singleBatteryOpts" :key="item.id" :label="item.dicKey" :value="item.id">
+              <el-option v-for="item in getSingleBatteryOpts" :key="item.id" :label="item.dicKey" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -85,7 +85,7 @@
         <el-col :span="12">
           <el-form-item label="监测设备编号（选填）" prop="deviceId">
             <el-select size="small" style="width:210px" v-model="batteryForm.deviceId" placeholder="设备编号">
-              <el-option v-for="item in deviceIdOpts" :key="item.code" :label="item.code" :value="item.id" :disabled="item.disabled">
+              <el-option v-for="item in getDeviceIdOpts" :key="item.code" :label="item.code" :value="item.id" :disabled="item.disabled">
               </el-option>
             </el-select>
           </el-form-item>
@@ -101,6 +101,9 @@
   </el-dialog>
 </template>
 <script>
+/* eslint-disable */
+
+import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
 
 export default {
@@ -153,6 +156,13 @@ export default {
     };
   },
   computed: {
+    ...mapGetters([
+      "getCustomOpts",
+      "getGroupModelOpts",
+      "getDeviceIdOpts",
+      "getSingleBatteryOpts",
+      "getBatGroupSpecifOpts"
+    ]),
     addBattery: {
       get: function() {
         return this.$store.state.addBattery;
@@ -169,22 +179,22 @@ export default {
       this.$refs.batteryForm.validate(valid => {
         if (valid) {
           console.log("submit!");
-          this.GroupModelOpts.forEach(key => {
+          this.getGroupModelOpts.forEach(key => {
             if (key.id === this.batteryForm.batGroupModel) {
               this.batteryForm.model = key.dicKey;
             }
           });
-          this.batGroupSpecifOpts.forEach(key => {
+          this.getBatGroupSpecifOpts.forEach(key => {
             if (key.id === this.batteryForm.batGroupSpecif) {
               this.batteryForm.norm = key.dicKey;
             }
           });
-          this.batCustomOpts.forEach(key => {
+          this.getCustomOpts.forEach(key => {
             if (key.id === this.batteryForm.batCustom) {
               this.batteryForm.company = key.name;
             }
           });
-          this.singleBatteryOpts.forEach(key => {
+          this.getSingleBatteryOpts.forEach(key => {
             if (key.id === this.batteryForm.singleBattery) {
               this.batteryForm.singleMode = key.dicKey;
             }
@@ -206,8 +216,8 @@ export default {
             qualityGuaranteeDate: utils.dateFomat(this.batteryForm.qualityDate)
           };
 
-          this.deviceIdOpts &&
-            this.deviceIdOpts.forEach(key => {
+          this.getDeviceIdOpts &&
+            this.getDeviceIdOpts.forEach(key => {
               if (key.id === this.batteryForm.deviceId) {
                 params.deviceId = this.batteryForm.deviceId;
                 params.deviceCode = key.code;
@@ -238,36 +248,21 @@ export default {
       this.$store.state.addBattery = false;
     },
 
-    /* 获取电池组规格列表 */
-    getGroupSpecif() {
-      this.$axios.get("/dic?type=Norm&categoryId=2").then(res => {
-        console.log("电池组规格", res);
-        if (res.data && res.data.code === 0) {
-          this.batGroupSpecifOpts = res.data.data;
-        }
-      });
-    },
-    /* 获取电池单体型号列表 */
-    getSinglBattery() {
-      this.$axios.get("/dic?type=SingleModel&categoryId=2").then(res => {
-        console.log("电池单体型号", res);
-        if (res.data && res.data.code === 0) {
-          this.singleBatteryOpts = res.data.data;
-        }
-      });
-    },
     init() {
-      this.batCustomOpts = JSON.parse(utils.getStorage("batCustomOpts"));
-      this.GroupModelOpts = JSON.parse(utils.getStorage("Modeloptions"));
-      this.deviceIdOpts = JSON.parse(utils.getStorage("deviceIdOpts"));
-      this.getGroupSpecif();
-      this.getSinglBattery();
-      // this.getDeviceList();
+      // this.batCustomOpts = JSON.parse(utils.getStorage("batCustomOpts"));
+      // this.GroupModelOpts = JSON.parse(utils.getStorage("Modeloptions"));
+      // this.deviceIdOpts = JSON.parse(utils.getStorage("deviceIdOpts"));
+      // this.singleBatteryOpts = JSON.parse(
+      //   utils.getStorage("singleBatteryOpts")
+      // );
+      // this.batGroupSpecifOpts = JSON.parse(
+      //   utils.getStorage("batGroupSpecifOpts")
+      // );
     }
-  },
-  mounted() {
-    this.init();
   }
+  // created() {
+  //   this.init();
+  // }
 };
 </script>
 
