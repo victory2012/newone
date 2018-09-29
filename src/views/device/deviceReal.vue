@@ -168,8 +168,10 @@ export default {
     }, 25000);
   },
   destroyed() {
-    if (typeof mqttClient === "object" && mqttClient.isConnected()) {
-      // console.log(mqttClient);
+    if (
+      typeof mqttClient === "object" &&
+      typeof mqttClient.isConnected === "function"
+    ) {
       mqttClient.disconnect();
       mqttClient = null;
       map = null;

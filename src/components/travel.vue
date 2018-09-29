@@ -136,7 +136,7 @@ export default {
             mode: "dragMarker",
             map: map,
             iconStyle: {
-              url: "./static/img/iocna.png",
+              url: "http://pfsm46mq4.bkt.clouddn.com/iocna.png",
               size: [1, 1],
               ancher: [1, 1]
             }
@@ -209,7 +209,7 @@ export default {
               fillStyle: null,
               // 使用图片
               content: PathSimplifier.Render.Canvas.getImageContent(
-                "./static/img/car.png"
+                "http://pfsm46mq4.bkt.clouddn.com/car.png"
               )
             }
           });
@@ -267,9 +267,36 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.historyContent {
-  width: 100%;
+.maps {
+  position: relative;
+  background: #ffffff;
+  padding: 24px;
   height: 450px;
+  .date {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    background: #ffffff;
+    z-index: 10;
+    padding: 5px;
+    border-radius: 3px;
+    border: 1px solid #e5e5e5;
+  }
+  .timeRange {
+    position: absolute;
+    top: 70px;
+    right: 25px;
+    background: #ffffff;
+    z-index: 10;
+    padding: 5px;
+    font-size: 12px;
+    border-radius: 3px;
+    border: 1px solid #e5e5e5;
+  }
+  .historyContent {
+    width: 100%;
+    height: 450px;
+  }
 }
 </style>
 

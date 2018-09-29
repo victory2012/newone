@@ -178,19 +178,6 @@ export default {
     this.waterLastOneTime = {};
   },
   methods: {
-    mapInit() {
-      map = new AMap.Map("historyContent", {
-        resizeEnable: true,
-        zoom: 10
-      });
-      AMap.plugin(["AMap.Heatmap"], () => {
-        // 初始化heatmap对象
-        heatmap = new AMap.Heatmap(map, {
-          radius: 12, // 给定半径
-          opacity: [0, 1] // 透明度
-        });
-      });
-    },
     timeChanges() {
       this.defaultGray = true;
     },
@@ -272,16 +259,6 @@ export default {
                 Math.abs(gcjLongitude) > 1 &&
                 Math.abs(gcjLatitude) > 1
               ) {
-                // this.positions.push([
-                //   key.gcjLongitude,
-                //   key.gcjLatitude,
-                //   timeArr
-                // ]); // 坐标
-                // this.heatData.push({
-                //   lng: key.gcjLongitude,
-                //   lat: key.gcjLatitude,
-                //   count: 100
-                // });
                 this.positions.travel.push([
                   key.gcjLongitude,
                   key.gcjLatitude,
@@ -525,7 +502,7 @@ export default {
           "电池组编号",
           this.propData.code
         ],
-        ["时间", "温度", "电压", "电流", "单体电压"]
+        ["时间", "温度", "电压", "电流", "单体电压", "电量"]
       ];
       this.$messageBox
         .prompt("请输入导出文件名", "提示", {
@@ -540,13 +517,15 @@ export default {
             this.exportData.forEach(key => {
               let opts = [
                 utils.UTCTime(key.time),
-                key.temperature,
-                key.voltage,
-                key.current,
-                key.singleVoltage
+                `${key.temperature} ℃`,
+                `${key.voltage} V`,
+                `${-key.current} A`,
+                `${key.singleVoltage} V`,
+                `${Math.round(key.capacity * 100)}%`
               ];
               arr.push(opts);
             });
+
             this.$outputXlsxFile(arr, value);
           }
           // this.$outputXlsxFile(arr, value);
@@ -687,37 +666,7 @@ export default {
     padding: 24px;
     margin-bottom: 20px;
   }
-  .maps {
-    position: relative;
-    background: #ffffff;
-    padding: 24px;
-    height: 450px;
-    .date {
-      position: absolute;
-      top: 25px;
-      right: 25px;
-      background: #ffffff;
-      z-index: 10;
-      padding: 5px;
-      border-radius: 3px;
-      border: 1px solid #e5e5e5;
-    }
-    .timeRange {
-      position: absolute;
-      top: 70px;
-      right: 25px;
-      background: #ffffff;
-      z-index: 10;
-      padding: 5px;
-      font-size: 12px;
-      border-radius: 3px;
-      border: 1px solid #e5e5e5;
-    }
-    .historyContent {
-      width: 100%;
-      height: 450px;
-    }
-  }
+
   .pb {
     padding-bottom: 50px;
     border-bottom: 1px solid #d7d7d7;

@@ -5,7 +5,8 @@
 const path = require('path');
 
 // const apiPath = "http://192.168.1.110:8000";
-const apiPath = "http://47.96.8.239:8000";
+// const apiPath = "http://47.96.8.239:8000";
+const apiPath = "https://www.myriadiot.net/api";
 
 module.exports = {
   dev: {

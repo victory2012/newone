@@ -9,7 +9,8 @@ import {
 const baseURL = process.env.API_HOST;
 
 const timeout = 30000; // 超时时间
-axios.interceptors.request.use(config => { // 这里的config包含每次请求的内容
+axios.interceptors.request.use(config => {
+  // 这里的config包含每次请求的内容
   // config.headers['Access-Control-Allow-Headers'] = '*';
   if (sessionStorage.getItem('token')) {
     config.headers.token = `${sessionStorage.getItem('token')}`;
@@ -32,27 +33,26 @@ function checkStatus(response) {
   if (response && (response.status === 200 || response.status === 304 || response.status === 400)) {
     // console.log(response);
     if (response.data.code === 1) {
-      // Message.warning(response.data.msg);
-      // setTimeout(() => {
-      //   window.location.href = '#/login';
-      // }, 1000);
+      // code = 1时 登录超时
       return {
         status: 300,
         msg: response.data.msg
       };
     } else if (response.data.code === -1) {
+      // code = -1时 请求失败
       Message.error(response.data.msg);
       return {
         status: 404,
         msg: response.data.msg
       };
     } else if (response.data.code === 0) {
+      // code = 0时 请求正常，正常返回
       return response;
     }
   } else {
     // 异常状态下，把错误信息返回去
     return {
-      status: 404,
+      status: response.status,
       msg: '网络异常'
     };
   }
@@ -69,9 +69,6 @@ function checkCode(res) {
       window.location.href = '#/login';
       sessionStorage.clear();
     }, 1000);
-  }
-  if (res.data && (!res.data.success)) {
-    // alert(res.data.error_msg)
   }
   return res;
 }
