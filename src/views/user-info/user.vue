@@ -8,8 +8,8 @@
         <el-col :span="8">
           <div class="grid-content">
             <div class="sort-content">
-              <p class="tips">昵称</p>
-              <p class="gridInput">{{userArr.nickName}}</p>
+              <p class="tips">用户名</p>
+              <p class="gridInput">{{userArr.account}}</p>
               <!-- <el-input v-model="userArr.userName" disabled class="gridInput"></el-input> -->
             </div>
           </div>

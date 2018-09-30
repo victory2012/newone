@@ -8,7 +8,9 @@
       </div>
     </div>
     <el-table v-loading="loading" :data="tableData" style="width: 100%">
-      <el-table-column prop="nickName" align="center" label="用户名">
+      <el-table-column prop="account" align="center" label="用户名">
+      </el-table-column>
+      <el-table-column prop="nickName" align="center" label="昵称">
       </el-table-column>
       <el-table-column prop="role" align="center" label="账户身份">
       </el-table-column>
