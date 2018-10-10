@@ -7,7 +7,7 @@
           <p>设备注册</p>
         </div>
         <div v-if="storge.type === 1" class="items" style="position: relative">
-          <input class="fileUpload" type="file" @change="fileUpload" v-loading.fullscreen.lock="fullscreenLoading"/>
+          <input class="fileUpload" type="file" @change="fileUpload" v-loading.fullscreen.lock="fullscreenLoading" />
           <img src="../../../static/img/device_import.png" alt="">
           <p>批量导入</p>
         </div>
@@ -22,12 +22,12 @@
         <div class="item">
           <el-input size="small" style="width:100%" v-model="content" placeholder="设备编号"></el-input>
         </div>
-        <!-- <div class="item">
-          <el-select size="small" style="width:100%" v-model="regState" placeholder="设备状态">
-            <el-option v-for="item in stateOptions" :key="item.value" :label="item.label" :value="item.value">
+        <div class="item">
+          <el-select size="small" style="width:100%" v-model="manufactur" placeholder="生产企业">
+            <el-option v-for="item in manufacturOptions" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
-        </div> -->
+        </div>
         <div class="item">
           <el-select size="small" style="width:100%" v-model="bindState" placeholder="绑定状态">
             <el-option v-for="item in bindOptions" :key="item.value" :label="item.label" :value="item.value">
@@ -113,6 +113,7 @@ export default {
       createDevice: false,
       storge: "",
       categoryArr: [],
+      manufactur: "", // 生产企业名称
       regDevice: false,
       total: 0, // 总数量
       currentPage: 1, // 当前页
@@ -134,6 +135,7 @@ export default {
       },
       companyArr: [],
       tableData: [],
+      manufacturOptions: [],
       stateOptions: [
         {
           value: "1",

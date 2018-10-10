@@ -159,9 +159,9 @@ export default {
           this.userArr = res.data.data;
           this.userArr.accountType = utils.accountType(this.userArr.type);
           this.userArr.email = res.data.data.email || "暂无";
-          // this.InfoForm.email = this.userArr.email;
-          // this.InfoForm.phones = res.data.data.phone;
-          // this.InfoForm.userName = res.data.data.nickName;
+          this.InfoForm.email = this.userArr.email;
+          this.InfoForm.phones = this.userArr.phone;
+          this.InfoForm.nickName = this.userArr.nickName;
         }
       });
     }

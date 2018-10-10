@@ -12,10 +12,11 @@
                 <el-input v-model="LoginForm.account"></el-input>
               </el-form-item>
               <el-form-item label="密码" prop="password">
-                <el-input type="password" v-model="LoginForm.password"></el-input>
+                <el-input type="password" v-model="LoginForm.password" @keyup.enter.native="accountLogin('LoginForm')"></el-input>
               </el-form-item>
               <el-form-item>
-                <button @click.stop.prevent="accountLogin('LoginForm')" class="accpwsBtn">登录</button>
+                <!-- <button @click.stop.prevent="accountLogin('LoginForm')" class="accpwsBtn">登录</button> -->
+                <el-button :loading="doLogin" type="primary" class="accpwsBtn" @click="accountLogin('LoginForm')" round>登录</el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
@@ -25,11 +26,12 @@
                 <el-input v-model="smsForm.phone"></el-input>
               </el-form-item>
               <el-form-item label="短信验证码" class="smsCode" prop="smsCode">
-                <el-input v-model="smsForm.smsCode"></el-input>
+                <el-input v-model="smsForm.smsCode" @keyup.enter.native="getSmsCode"></el-input>
                 <el-button class="getSms" @click="getSmsCode" :disabled="hasGetSms" type="primary" plain>{{smsMsg}}</el-button>
               </el-form-item>
               <el-form-item>
-                <button @click.stop.prevent="checkSmsCode" class="accpwsBtn">登录</button>
+                <el-button :loading="doLogin" type="primary" class="accpwsBtn" @click="checkSmsCode" round>登录</el-button>
+                <!-- <button @click.stop.prevent="checkSmsCode" class="accpwsBtn">登录</button> -->
               </el-form-item>
             </el-form>
           </el-tab-pane>
@@ -49,6 +51,7 @@ export default {
         phone: "",
         smsCode: ""
       },
+      doLogin: false,
       phoneRules: {
         phone: [
           { required: true, message: "请输入手机号", trigger: "change" },
@@ -73,6 +76,7 @@ export default {
     accountLogin(LoginForm) {
       this.$refs[LoginForm].validate(valid => {
         if (valid) {
+          this.doLogin = true;
           let person = {
             account: this.LoginForm.account,
             password: this.LoginForm.password
@@ -133,12 +137,14 @@ export default {
     checkSmsCode() {
       this.$refs.smsPhone.validate(valid => {
         if (valid) {
+          this.doLogin = true;
           let phoneObj = {
             phone: this.smsForm.phone,
             code: this.smsForm.smsCode
           };
           this.$axios.post("/login/sms/verify", phoneObj).then(res => {
             console.log(res);
+            this.doLogin = false;
             if (res.data && res.data.code === 0) {
               this.$store.commit("setTokenStorage", res.headers.token);
               this.$store.commit("setStorage", JSON.stringify(res.data.data));
@@ -217,15 +223,11 @@ export default {
     width: 156px;
     height: 45px;
     border-radius: 10px;
-    cursor: pointer;
     text-align: center;
     touch-action: manipulation;
     background-image: none;
     border: 1px solid transparent;
     white-space: nowrap;
-    line-height: 1.15;
-    padding: 0 15px;
-    color: #ffffff;
     background: #71bfdb;
   }
 }

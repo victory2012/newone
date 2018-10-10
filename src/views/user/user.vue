@@ -20,7 +20,7 @@
       </el-table-column>
       <el-table-column prop="phone" align="center" label="手机号码">
       </el-table-column>
-      <el-table-column prop="email" align="center" label="邮箱" width="200">
+      <el-table-column prop="email" align="center" label="邮箱" width="240">
       </el-table-column>
       <el-table-column align="center" label="操作" width="150">
         <template slot-scope="scope">
@@ -164,6 +164,10 @@ export default {
       if (getLayerName.layerName === "生产企业" && getLayerName.type === 2) {
         this.userData = addData.getProduct();
       }
+      if (getLayerName.layerName === "采购企业" && getLayerName.type === 2) {
+        this.userData = addData.getCreateUser();
+      }
+
       console.log(this.userData);
     },
     /* 删除按钮 */
@@ -178,48 +182,49 @@ export default {
     },
     /* 删除用户 */
     deleteUser(item) {
-      this.$messageBox.alert("确定删除此用户吗？", {
-        showCancelButton: true,
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        callback: action => {
-          console.log(action);
-          if (action === "confirm") {
-            this.$axios.delete(`/user/${item.id}`).then(res => {
-              console.log(res);
-              if (res.data && res.data.code === 0) {
-                this.$message({
-                  message: "删除成功",
-                  type: "success"
-                });
-                this.getUserList();
-              }
-            });
-          }
-        }
-      });
+      this.$messageBox
+        .confirm("此操作将删除该用户, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+        .then(() => {
+          this.$axios.delete(`/user/${item.id}`).then(res => {
+            console.log(res);
+            if (res.data && res.data.code === 0) {
+              this.$message({
+                message: "删除成功",
+                type: "success"
+              });
+              this.getUserList();
+            }
+          });
+        });
     },
     /* 刪除企业 */
     deleteAdmin(item) {
-      this.$messageBox.alert("确定删除此公司吗？", {
-        showCancelButton: true,
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        callback: action => {
-          console.log(action);
-          if (action === "confirm") {
-            this.$axios.delete(`/company/${item.id}`).then(res => {
-              if (res.data && res.data.code === 0) {
-                this.$message({
-                  message: "删除成功",
-                  type: "success"
-                });
-                this.getUserList();
-              }
-            });
+      this.$messageBox
+        .confirm(
+          "此操作将删除该企业以及该企业下的所有用户, 是否继续?",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
           }
-        }
-      });
+        )
+        .then(() => {
+          console.log("yes");
+          this.$axios.delete(`/company/${item.id}`).then(res => {
+            if (res.data && res.data.code === 0) {
+              this.$message({
+                message: "删除成功",
+                type: "success"
+              });
+              this.getUserList();
+            }
+          });
+        });
     },
     /* 修改权限 -- 按钮 */
     changeQuanxian(item) {
@@ -326,15 +331,23 @@ export default {
           this.total = result.data.total;
           let storge = JSON.parse(utils.getStorage("loginData"));
           if (result.data.pageData.length > 0) {
-            console.log(this.AdminRoles);
+            // console.log(this.AdminRoles);
             result.data.pageData.forEach(key => {
               key.role = utils.accountType(key.type);
               key.userType = this.AdminRoles.deleteAdmin;
               key.email = key.email || "-";
-              if (key.type === 1) {
-                key.userType = false;
+              if (
+                storge.companyId === key.companyId &&
+                storge.type === key.type
+              ) {
                 key.canNotDelete = false;
+                key.userType = false;
               } else {
+                if (key.type === 1) {
+                  // 平台
+                  key.userType = false;
+                  key.canNotDelete = false;
+                }
                 if (
                   storge.type === 1 &&
                   key.type === 2 &&
@@ -350,11 +363,17 @@ export default {
                 ) {
                   key.canNotDelete = true;
                 }
-                if (storge.companyId === key.companyId) {
-                  key.canNotDelete = false;
-                  key.userType = false;
+                if (
+                  storge.type === 2 &&
+                  storge.layerName === "采购企业" &&
+                  key.type === 3
+                ) {
+                  console.log("123456879");
+                  key.userType = true;
+                  key.canNotDelete = true;
                 }
               }
+
               this.tableData.push(key);
             });
           }

@@ -121,7 +121,7 @@ export default {
       console.log(this.typeId);
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.addadmin = false;
+          this.addadmin = true;
           if (this.typeId === "1") {
             let params = {
               account: this.adminForm.account,
@@ -133,7 +133,7 @@ export default {
             };
             this.$axios.post("/company/manufacturer", params).then(res => {
               console.log(res);
-              this.addadmin = true;
+              this.addadmin = false;
               if (res.data && res.data.code === 0) {
                 this.$message({
                   type: "success",

@@ -6,7 +6,7 @@
           <div class="items" v-if="AdminRoles.AddBatteries">
             <el-dropdown trigger="click" placement="bottom" @command="handleCommand">
               <span>
-                <img src="../../../static/img/device_reg.png" alt=""><br/>
+                <img src="../../../static/img/device_reg.png" alt=""><br />
                 <span class="el-dropdown-link">电池</span>
               </span>
               <el-dropdown-menu slot="dropdown">
@@ -18,7 +18,7 @@
             </el-dropdown>
           </div>
           <div class="items" v-if="AdminRoles.AddBatteries" style="position: relative">
-            <input class="fileUpload" type="file" @change="fileUpload"  v-loading.fullscreen.lock="fullscreenLoading"/>
+            <input class="fileUpload" type="file" @change="fileUpload" v-loading.fullscreen.lock="fullscreenLoading" />
             <img id="upers" src="../../../static/img/device_import.png" alt="">
             <p>批量导入</p>
           </div>
@@ -130,7 +130,7 @@
   background: #ffffff;
   border-radius: 5px;
   padding: 20px;
-  min-width: 1180px;
+  // min-width: 1180px;
   overflow: auto;
   .topTab {
     display: flex;
