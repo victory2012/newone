@@ -41,6 +41,8 @@ const Password = () =>
   import( /* webpackChunkName: "Password" */ '../views/user-info/password.vue');
 const deviceRealData = () =>
   import( /* webpackChunkName: "deviceRealData" */ '../views/device/deviceReal.vue');
+const overviewComponent = () =>
+  import( /* webpackChunkName: "overviewComponent" */ '../views/overview/overview.vue')
 
 /* eslint-disable */
 export default new Router({
@@ -63,6 +65,11 @@ export default new Router({
         {
           path: '/battery/run',
           component: Run
+        },
+        {
+          path: '/overview',
+          name: 'overview',
+          component: overviewComponent,
         },
         {
           path: '/battery/compare',

@@ -22,10 +22,9 @@
         <div class="item">
           <el-input size="small" style="width:100%" v-model="content" placeholder="设备编号"></el-input>
         </div>
-        <div class="item">
+        <div class="item" v-if="manufacturerName">
           <el-select size="small" style="width:100%" v-model="manufactur" placeholder="生产企业">
-            <el-option v-for="item in manufacturOptions" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
+            <el-option v-for="item in companyArr" :key="item.id" :label="item.name" :value="item.id"></el-option>
           </el-select>
         </div>
         <div class="item">
@@ -110,6 +109,7 @@ let rABS = false; // 是否将文件读取为二进制字符串
 export default {
   data() {
     return {
+      manufacturerName: false,
       createDevice: false,
       storge: "",
       categoryArr: [],
@@ -398,7 +398,6 @@ export default {
     /* 设备注册 -- 按钮 */
     regDialog() {
       this.regDevice = true;
-      this.getCompany();
     },
     /* 获取公司列表 */
     getCompany() {
@@ -431,6 +430,7 @@ export default {
       this.regState = "";
       this.bindState = "";
       this.content = "";
+      this.manufactur = "";
       this.getDeviceList();
     },
     searchDevice() {
@@ -442,8 +442,9 @@ export default {
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage,
-        registerStatus: this.regState,
+        // registerStatus: this.regState,
         status: 0,
+        topLayerCompanyId: this.manufactur,
         bindingStatus: this.bindState
       };
       if (this.content || this.content === 0) {
@@ -482,6 +483,10 @@ export default {
   mounted() {
     this.storge = JSON.parse(utils.getStorage("loginData"));
     this.getDeviceList();
+    if (this.storge.type === 1) {
+      this.manufacturerName = true;
+      this.getCompany();
+    }
   }
 };
 </script>

@@ -6,6 +6,7 @@ import Vuex from 'vuex';
 import 'element-ui/lib/theme-chalk/index.css';
 import XLSX from 'xlsx';
 import '../static/icon/iconfont.css';
+import './assets/css/iconfont.css';
 import App from './App';
 import router from './router';
 import createStore from "./store/store";

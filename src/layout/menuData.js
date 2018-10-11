@@ -3,6 +3,11 @@ import permissionFun from "../utils/valated";
 
 /* eslint-disable */
 const menu = [{
+    text: "概览",
+    link: "/overview",
+    icon: "iconfont icon-allnormal",
+  },
+  {
     text: "电池管理",
     link: "1",
     icon: "iconfont icon-dashboard",
@@ -100,14 +105,12 @@ let listData2 = _.cloneDeep(menu); // 平台管理员
 let listData3 = _.cloneDeep(menu); // 电池采购企业管理员
 let listData4 = _.cloneDeep(menu); // 电池采购企业用户
 
-// let rolesData = permissionFun();
-console.log("202222222222", menu);
 export default {
   getManifactor: () => {
     let personRole = {}
     // listData1[3] = "";
-    listData1[3].children[1] = "";
-    listData1[3].children[2] = "";
+    listData1[4].children[1] = "";
+    listData1[4].children[2] = "";
     personRole.data = listData1;
     personRole.permissions = permissionFun();
     return personRole;
@@ -116,17 +119,17 @@ export default {
   getManifactorCus: () => {
     let personRole = {}
     if (!permissionFun().sameAnalysis && !permissionFun().sameBatch) {
-      listData5[0].children[1] = "";
+      listData5[1].children[1] = "";
     }
     if (!permissionFun().runState) {
-      listData5[0].children[0].children[2] = "";
+      listData5[1].children[0].children[2] = "";
     }
     if (!permissionFun().alarm) {
-      listData5[0].children[2] = "";
+      listData5[1].children[2] = "";
     }
-    listData5[1] = "";
-    listData5[3].children[1] = "";
-    listData5[3].children[2] = "";
+    listData5[2] = "";
+    listData5[4].children[1] = "";
+    listData5[4].children[2] = "";
     personRole.data = listData5;
     personRole.permissions = permissionFun();
     return personRole;
@@ -134,8 +137,8 @@ export default {
   /* 平台 */
   getPlat: () => {
     let personRole = {}
-    listData2[0].children[0].children[1] = "";
-    listData2[1] = "";
+    listData2[1].children[0].children[1] = "";
+    listData2[2] = "";
     personRole.data = listData2;
     personRole.permissions = permissionFun();
     return personRole;
@@ -144,12 +147,12 @@ export default {
   purchaseAdmin: () => {
     let personRole = {}
     if (!permissionFun().sameAnalysis && !permissionFun().sameBatch) {
-      listData3[0].children[1] = "";
+      listData3[1].children[1] = "";
     }
     if (!permissionFun().alarm) {
-      listData3[0].children[2] = "";
+      listData3[1].children[2] = "";
     }
-    listData3[3] = "";
+    listData3[4] = "";
     personRole.data = listData3;
     personRole.permissions = permissionFun();
     return personRole;
@@ -158,13 +161,13 @@ export default {
   purchaseCus: () => {
     let personRole = {}
     if (!permissionFun().sameAnalysis && !permissionFun().sameBatch) {
-      listData4[0].children[1] = "";
+      listData4[1].children[1] = "";
     }
     if (!permissionFun().alarm) {
-      listData4[0].children[2] = "";
+      listData4[1].children[2] = "";
     }
-    listData4[1] = "";
-    listData4[3] = "";
+    listData4[2] = "";
+    listData4[4] = "";
     personRole.data = listData4;
     personRole.permissions = permissionFun();
     return personRole;

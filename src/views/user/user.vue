@@ -365,12 +365,22 @@ export default {
                 }
                 if (
                   storge.type === 2 &&
+                  storge.layerName === "生产企业" &&
+                  key.type === 3
+                ) {
+                  key.canNotDelete = true;
+                }
+                if (
+                  storge.type === 2 &&
                   storge.layerName === "采购企业" &&
                   key.type === 3
                 ) {
-                  console.log("123456879");
                   key.userType = true;
                   key.canNotDelete = true;
+                }
+                if (storge.type === 3 && (key.type === 2 || key.type === 1)) {
+                  key.userType = false;
+                  key.canNotDelete = false;
                 }
               }
 

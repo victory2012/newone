@@ -38,12 +38,19 @@
             </el-option>
           </el-select>
         </div>
-        <div class="item">
-          <el-select size="small" v-model="batCustom" placeholder="客户企业名称">
-            <el-option v-for="item in batCustomOpts" :key="item.id" :label="item.name" :value="item.name" :disabled="item.disabled">
+        <div class="item" v-if="loginData.type === 1">
+          <el-select size="small" v-model="manufacter" placeholder="生产企业名称">
+            <el-option v-for="item in companyArr" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </div>
+        <div v-else class="item">
+          <el-select size="small" v-model="batCustom" placeholder="客户企业名称">
+            <el-option v-for="item in batCustomOpts" :key="item.id" :label="item.name" :value="item.name">
+            </el-option>
+          </el-select>
+        </div>
+
         <div class="item">
           <el-select size="small" v-model="bindStatus" placeholder="绑定状态">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
@@ -65,7 +72,9 @@
         </el-table-column>
         <el-table-column prop="norm" align="center" label="电池组规格">
         </el-table-column>
-        <el-table-column prop="companyName" align="center" label="客户企业名称">
+        <el-table-column v-if="loginData.type === 1" prop="parentCompanyName" align="center" label="生产企业名称">
+        </el-table-column>
+        <el-table-column v-else prop="companyName" align="center" label="客户企业名称">
         </el-table-column>
         <el-table-column prop="deviceCode" align="center" label="监测设备编号">
         </el-table-column>
@@ -204,10 +213,13 @@ export default {
   data() {
     return {
       AdminRoles: permissionFun(),
+      companyArr: [], // 生产企业公司名称
+      manufacter: "", // 选中的生产企业
       fullscreenLoading: false,
       addallTypes: false,
       bindings: false,
       deviceModel: {},
+      loginData: "",
       bindDevice: false,
       addType: "",
       labels: "",
@@ -275,10 +287,6 @@ export default {
         typeof mqttClient.subscribe === "function"
       ) {
         console.log("mqtt is connected");
-        // mqttClient.subscribe(`dev/${this.infoData.deviceCode}`);
-        // let message = new Paho.MQTT.Message(`k:${this.bindRows.code}`);
-        // message.destinationName = `cmd/${this.bindRows.code}`;
-        // mqttClient.send(message);
       }
     },
     /* 拉黑 */
@@ -674,7 +682,6 @@ export default {
     },
     /* 获取电池列表 */
     getBatteryList() {
-      let loginData = JSON.parse(utils.getStorage("loginData"));
       let options = {
         pageSize: this.pageSize,
         pageNum: this.currentPage,
@@ -684,12 +691,16 @@ export default {
         bindingStatus: this.bindStatus,
         status: 0
       };
+      if (this.loginData.type === 1 && this.manufacter) {
+        options.parentCompanyId = this.manufacter;
+      }
       this.$axios.get("/battery_group", options).then(res => {
         this.tableData = [];
         this.loading = false;
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
           this.total = result.total;
+          console.log("result.total", result.total);
           // AdminRoles
           result.pageData.forEach(key => {
             key.onLine = key.onlineStatus === 0 || key.onlineStatus === null;
@@ -702,7 +713,7 @@ export default {
               key.hasbind = true;
               key.deviceCode = "无";
             }
-            if (loginData.type === 1) {
+            if (this.loginData.type === 1) {
               key.isPlat = true;
             } else {
               key.canDelete = false;
@@ -765,6 +776,14 @@ export default {
       this.getCompanyId();
 
       this.getDeviceList();
+    },
+    getCompany() {
+      this.$axios.get(`company/manufacturer_names`).then(res => {
+        console.log("companyArr", res);
+        if (res.data && res.data.code === 0) {
+          this.companyArr = res.data.data;
+        }
+      });
     }
   },
   destroyed() {
@@ -778,8 +797,12 @@ export default {
   },
   mounted() {
     this.$store.state.addBattery = false;
+    this.loginData = JSON.parse(utils.getStorage("loginData"));
     this.init();
-    this.userRole();
+    // this.userRole();
+    if (this.loginData.type === 1) {
+      this.getCompany();
+    }
     this.getBatteryList();
     this.connectMqtt();
   }

@@ -37,7 +37,7 @@ let manfictor = [{
   {
     icon: '../../../static/img/add-admin_not.png',
     default: '../../../static/img/add-admin.png',
-    text: '添加生产企业用户',
+    text: '添加本企业用户',
     role: '3'
   }
 ];
@@ -45,7 +45,7 @@ let manfictor = [{
 let createUser = [{
   icon: '../../../static/img/add-admin_not.png',
   default: '../../../static/img/add-admin.png',
-  text: '创建采购企业用户',
+  text: '添加本企业用户',
   role: '3'
 }];
 export default {

@@ -83,6 +83,7 @@ export default {
           };
           this.$axios.post(`/login`, person).then(res => {
             console.log(res);
+            this.doLogin = false;
             if (res.data && res.data.code === 0) {
               this.$store.commit("setTokenStorage", res.headers.token);
               this.$store.commit("setStorage", JSON.stringify(res.data.data));
