@@ -3,8 +3,8 @@
     <div class="title">
       <div class="titleCenter">
         <a @click="showRealData" :class="{'active': actived == 'real'}">实时数据</a>
-        <span class="divider"></span>
-        <a @click="showHistoryData" :class="{'active': actived == 'history'}">历史数据</a>
+        <span v-if="permision.historyData" class="divider"></span>
+        <a v-if="permision.historyData" @click="showHistoryData" :class="{'active': actived == 'history'}">历史数据</a>
         <span class="divider"></span>
         <a @click="showAlarmData" :class="{'active': actived == 'alarm'}">告警数据</a>
       </div>
@@ -165,11 +165,13 @@ export default {
         this.companyInfo = "";
         if (res.data && res.data.code === 0 && res.data.data) {
           let result = res.data.data;
+          let Times = utils.TimeSconds(result.time);
           this.companyInfo = result;
           this.companyInfo.fluid = result.fluidLevel === 0 ? "正常" : "异常";
-          this.companyInfo.yyddmm = utils.yyyymmdd(new Date());
-          this.companyInfo.hhmmss = utils.hhmmss(new Date());
+          this.companyInfo.yyddmm = utils.yyyymmdd(Times);
+          this.companyInfo.hhmmss = utils.hhmmss(Times);
           this.showRealData();
+          // console.log(result.time);
         }
       });
     }
@@ -187,7 +189,7 @@ export default {
     // height: 50px;
     background: #ffffff;
     font-size: 0;
-    // line-height: 50px;
+    text-align: center;
     padding: 15px 0;
     border-radius: 5px;
     margin: 0 auto;

@@ -267,8 +267,8 @@ export default {
       this.infoData.voltage = dataObj.voltage;
       this.infoData.singleVoltage = dataObj.singleVoltage;
       this.infoData.current = dataObj.current;
-      this.infoData.hhmmss = utils.hhmmss(new Date());
-      this.infoData.yyddmm = utils.yyyymmdd(new Date());
+      this.infoData.hhmmss = utils.hhmmss(dataObj.times);
+      this.infoData.yyddmm = utils.yyyymmdd(dataObj.times);
       this.infoData.gcjLongitude = posData.lon;
       this.infoData.gcjLatitude = posData.lat;
       let resultPos = {

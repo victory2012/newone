@@ -41,7 +41,7 @@ const menu = [{
   {
     text: "配置管理",
     link: "2",
-    icon: "iconfont icon-manage",
+    icon: "iconfont icon-seting",
     children: [{
         text: "报警阈值",
         link: "22",
@@ -120,6 +120,11 @@ export default {
     let personRole = {}
     if (!permissionFun().sameAnalysis && !permissionFun().sameBatch) {
       listData5[1].children[1] = "";
+    } else {
+      listData5[1].children[1] = {
+        text: "数据对比",
+        link: "/battery/compare"
+      }
     }
     if (!permissionFun().runState) {
       listData5[1].children[0].children[2] = "";
@@ -148,6 +153,11 @@ export default {
     let personRole = {}
     if (!permissionFun().sameAnalysis && !permissionFun().sameBatch) {
       listData3[1].children[1] = "";
+    } else {
+      listData3[1].children[1] = {
+        text: "数据对比",
+        link: "/battery/compare"
+      }
     }
     if (!permissionFun().alarm) {
       listData3[1].children[2] = "";
@@ -162,6 +172,11 @@ export default {
     let personRole = {}
     if (!permissionFun().sameAnalysis && !permissionFun().sameBatch) {
       listData4[1].children[1] = "";
+    } else {
+      listData4[1].children[1] = {
+        text: "数据对比",
+        link: "/battery/compare"
+      }
     }
     if (!permissionFun().alarm) {
       listData4[1].children[2] = "";

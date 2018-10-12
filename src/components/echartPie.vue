@@ -18,7 +18,8 @@
 <script>
 /* eslint-disable */
 import echarts from "echarts";
-import _ from "lodash";
+// import _ from "lodash";
+import { deepClone } from "@/utils/functions";
 
 export default {
   props: {
@@ -119,14 +120,7 @@ export default {
       }
     },
     dataChange(peiData) {
-      // console.log("peiData", peiData.eventSummary === "{}");
-      // if (JSON.stringify(peiData.eventSummary)) {
-      //   peiData.eventSummary.temperature = 2;
-      //   peiData.eventSummary.fluidLevel = 2;
-      //   peiData.eventSummary.voltage = 2;
-      //   peiData.eventSummary.current = 2;
-      // }
-      let voltageOptions = _.cloneDeep(this.pieOption);
+      let voltageOptions = deepClone(this.pieOption);
       voltageOptions.legend.data = ["充电时间", "放电时间", "空载时间"];
       voltageOptions.tooltip.formatter = p => {
         let item = `${p.percent}%<br />${p.data.name}: ${p.data.value}h`;
@@ -145,7 +139,7 @@ export default {
         Number(peiData.eventSummary.fluidLevel) +
         Number(peiData.eventSummary.voltage) +
         Number(peiData.eventSummary.current);
-      let currentOptions = _.cloneDeep(this.pieOption);
+      let currentOptions = deepClone(this.pieOption);
       currentOptions.legend.data = ["温度", "液位", "电压", "电流"];
       currentOptions.series[0].data = [
         { value: peiData.eventSummary.temperature, name: "温度" },

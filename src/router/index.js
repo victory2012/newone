@@ -56,15 +56,19 @@ export default new Router({
       component: Login,
     },
     {
-      path: '/battery',
+      path: '/overview',
       component: Home,
       children: [{
           path: '',
-          component: batteryList
+          component: overviewComponent
         },
         {
           path: '/battery/run',
           component: Run
+        },
+        {
+          path: '/battery',
+          component: batteryList
         },
         {
           path: '/overview',

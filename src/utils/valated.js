@@ -1,6 +1,14 @@
+import defaultPermion from "./default-permision";
+
 export default function permissionFun() {
+  let sessionData = sessionStorage.getItem("loginData");
+  if (!sessionData) {
+    window.location.href = "#login";
+    return;
+  }
+  let userData = JSON.parse(sessionData);
   let role = JSON.parse(JSON.parse(sessionStorage.getItem('userRoles')));
-  let userData = JSON.parse(sessionStorage.getItem("loginData"));
+
   let permissions = {
     type: "",
     AddBatteries: true, // 电池登记
@@ -44,6 +52,7 @@ export default function permissionFun() {
       permissions.type = "manufactur";
     }
     if (userData.type === 2 && userData.layerName === "采购企业") {
+      let defaultper = defaultPermion.custormAdmin();
       permissions.type = "purchase";
       permissions.AddBatteries = false;
       permissions.alarmSetting = false;
@@ -53,12 +62,18 @@ export default function permissionFun() {
       permissions.sameBatch = false; // 同批次不同电池单元的数据分析
       permissions.addAdmin = false;
       permissions.deleteAdmin = false;
+      permissions.info = defaultper.info;
+      permissions.runState = defaultper.runState;
+      permissions.recovery = defaultper.recovery;
+      permissions.alarmDatas = defaultper.alarmDatas;
+      permissions.historyData = defaultper.historyData;
+      permissions.alarm = defaultper.alarm;
     }
     if (userData.type === 3 && userData.layerName === "生产企业") {
+      let defaultper = defaultPermion.productPer();
       permissions.type = "manufacturUser";
       permissions.alarmSetting = false;
       permissions.addblack = false;
-      permissions.recovery = false;
       permissions.notice = false;
       permissions.threshold = false;
       permissions.addCompany = false;
@@ -66,14 +81,19 @@ export default function permissionFun() {
       permissions.modifyPermissions = false;
       permissions.addAdmin = false;
       permissions.deleteAdmin = false;
+      permissions.info = defaultper.info;
+      permissions.runState = defaultper.runState;
+      permissions.recovery = defaultper.recovery;
+      permissions.alarmDatas = defaultper.alarmDatas;
+      permissions.historyData = defaultper.historyData;
+      permissions.alarm = defaultper.alarm;
     }
     if (userData.type === 3 && userData.layerName === "采购企业") {
+      let defaultper = defaultPermion.custormPer();
       permissions.type = "purchaseUser";
       permissions.AddBatteries = false;
       permissions.alarmSetting = false;
-      permissions.alarm = false;
       permissions.addblack = false;
-      permissions.recovery = false;
       permissions.sameAnalysis = false; // 同一电池单元的数据分析
       permissions.sameBatch = false; // 同批次不同电池单元的数据分析
       permissions.threshold = false;
@@ -82,6 +102,12 @@ export default function permissionFun() {
       permissions.modifyPermissions = false;
       permissions.addAdmin = false;
       permissions.deleteAdmin = false;
+      permissions.info = defaultper.info;
+      permissions.runState = defaultper.runState;
+      permissions.recovery = defaultper.recovery;
+      permissions.alarmDatas = defaultper.alarmDatas;
+      permissions.historyData = defaultper.historyData;
+      permissions.alarm = defaultper.alarm;
     }
   } else {
     // permissions.type = "purchaseUser";

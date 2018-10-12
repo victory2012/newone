@@ -95,7 +95,7 @@ export default {
                       "setUserRole",
                       JSON.stringify(opts.data.data)
                     );
-                    this.$router.push("/battery");
+                    this.$router.push("/overview");
                   }
                 });
             }
@@ -157,7 +157,7 @@ export default {
                       "setUserRole",
                       JSON.stringify(opts.data.data)
                     );
-                    this.$router.push("/battery");
+                    this.$router.push("/overview");
                   }
                 });
             }

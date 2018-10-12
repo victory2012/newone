@@ -27,7 +27,7 @@ export default {
     let permis = {
       info: true,
       runState: true,
-      recovery: true,
+      recovery: false,
       alarmDatas: true,
       historyData: true
     };

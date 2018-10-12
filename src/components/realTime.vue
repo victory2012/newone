@@ -18,9 +18,10 @@
 <script>
 /* eslint-disable */
 import echarts from "echarts"; /* eslint-disable */
-import _ from "lodash";
+// import _ from "lodash";
 import utils from "@/utils/utils";
 import options from "@/config/echartOptions";
+import { deepClone } from "@/utils/functions";
 
 export default {
   props: {
@@ -92,7 +93,7 @@ export default {
       this.dataChange(this.chartData);
     },
     dataChange(datas) {
-      let voltageOptions = _.cloneDeep(options);
+      let voltageOptions = deepClone(options);
       voltageOptions.title.text = "电压";
       voltageOptions.yAxis.axisLabel.formatter = "{value} v";
       voltageOptions.series[0].data = datas.voltage;
@@ -105,7 +106,7 @@ export default {
       };
       this.myEcharts1.setOption(voltageOptions);
 
-      let singleVoltageOptions = _.cloneDeep(options);
+      let singleVoltageOptions = deepClone(options);
       singleVoltageOptions.title.text = "单体电压";
       singleVoltageOptions.yAxis.axisLabel.formatter = "{value} v";
       singleVoltageOptions.series[0].data = datas.singleVoltage;
@@ -120,7 +121,7 @@ export default {
       };
       this.myEcharts2.setOption(singleVoltageOptions);
 
-      let currentOptions = _.cloneDeep(options);
+      let currentOptions = deepClone(options);
       currentOptions.title.text = "电流";
       currentOptions.yAxis.axisLabel.formatter = "{value} A";
       currentOptions.series[0].data = datas.current;
@@ -133,7 +134,7 @@ export default {
       };
       this.myEcharts3.setOption(currentOptions);
 
-      let temperatureOptions = _.cloneDeep(options);
+      let temperatureOptions = deepClone(options);
       temperatureOptions.title.text = "温度";
       temperatureOptions.yAxis.axisLabel.formatter = "{value} ℃";
       temperatureOptions.series[0].data = datas.temperature;

@@ -45,7 +45,7 @@ import permissionFun from "@/utils/valated";
 export default {
   data() {
     return {
-      AdminRoles: permissionFun(),
+      AdminRoles: {},
       isCollapse: false,
       menus: "",
       roles: "",
@@ -56,9 +56,16 @@ export default {
     MenuTree: MenuTree
   },
   mounted() {
-    let getUserType = JSON.parse(sessionStorage.getItem("loginData"));
-    this.getUserLoginData = getUserType;
-    this.switchMenu(getUserType);
+    let loginData = sessionStorage.getItem("loginData");
+    if (loginData) {
+      this.AdminRoles = permissionFun();
+
+      let getUserType = JSON.parse(loginData);
+      this.getUserLoginData = getUserType;
+      this.switchMenu(getUserType);
+    } else {
+      this.$router.push("/login");
+    }
   },
   methods: {
     handleCommand(command) {
@@ -127,7 +134,7 @@ export default {
   .content {
     box-sizing: border-box;
     flex: 1;
-    background: #f5f7fa;
+    background: #f0f2f5;
     overflow: auto;
     .scrollwarrp {
       padding: 20px;

@@ -156,7 +156,12 @@ export default {
   },
   methods: {
     userLimit() {
-      let getLayerName = JSON.parse(sessionStorage.getItem("loginData"));
+      let loginData = sessionStorage.getItem("loginData");
+      if (!loginData) {
+        this.$router.push("/login");
+        return;
+      }
+      let getLayerName = JSON.parse(loginData);
       // console.log(getLayerName);
       if (getLayerName.layerName === "平台" && getLayerName.type === 1) {
         this.userData = addData.getPlat();
@@ -252,6 +257,9 @@ export default {
               defaus = defaultPermision.custormPer();
             }
             if (item.type === 2 && item.layerName === "生产企业") {
+              defaus = defaultPermision.productPer();
+            }
+            if (item.type === 3 && item.layerName === "生产企业") {
               defaus = defaultPermision.productPer();
             }
             let defaultValues = Object.keys(defaus);

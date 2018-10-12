@@ -282,12 +282,7 @@ export default {
       };
     },
     onConnect() {
-      if (
-        typeof mqttClient === "object" &&
-        typeof mqttClient.subscribe === "function"
-      ) {
-        console.log("mqtt is connected");
-      }
+      console.log("mqtt is connected");
     },
     /* 拉黑 */
     addBlack(row) {
@@ -700,7 +695,6 @@ export default {
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
           this.total = result.total;
-          console.log("result.total", result.total);
           // AdminRoles
           result.pageData.forEach(key => {
             key.onLine = key.onlineStatus === 0 || key.onlineStatus === null;

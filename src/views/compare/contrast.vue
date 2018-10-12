@@ -3,7 +3,7 @@
     <div class="titleTab textAlain">
       <div class="tabInfo">
         <a @click="showSameData" v-if="permision.sameAnalysis" :class="{'active': actived == 'same'}">同一电池单元</a>
-        <span class="divider"></span>
+        <span class="divider" v-if="permision.sameAnalysis && permision.sameBatch"></span>
         <a @click="showDiffData" v-if="permision.sameBatch" :class="{'active': actived == 'diff'}">不同电池单元</a>
       </div>
     </div>
@@ -23,7 +23,7 @@ export default {
   },
   data() {
     return {
-      permision: permissionFun(),
+      permision: "",
       actived: "same",
       activeComponent: "sameCompent"
     };
@@ -39,7 +39,13 @@ export default {
     }
   },
   mounted() {
-    // this.AdminRoles = valid();
+    let defaultPermission = permissionFun();
+    this.permision = permissionFun();
+    if (defaultPermission.sameAnalysis) {
+      this.showSameData();
+    } else if (defaultPermission.sameBatch && !defaultPermission.sameAnalysis) {
+      this.showDiffData();
+    }
   }
 };
 </script>

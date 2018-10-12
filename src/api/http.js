@@ -51,8 +51,9 @@ function checkStatus(response) {
     }
   } else {
     // 异常状态下，把错误信息返回去
+    Message.error('网络异常');
     return {
-      status: response.status,
+      status: 500,
       msg: '网络异常'
     };
   }
