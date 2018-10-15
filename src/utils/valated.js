@@ -32,6 +32,7 @@ export default function permissionFun() {
     addAdmin: true, // 添加管理员
     deleteAdmin: true, // 删除管理员
   };
+  console.log(permissions);
   if (role == null) {
     if (userData.type === 1) {
       permissions.type = "plat";
@@ -68,6 +69,7 @@ export default function permissionFun() {
       permissions.alarmDatas = defaultper.alarmDatas;
       permissions.historyData = defaultper.historyData;
       permissions.alarm = defaultper.alarm;
+      permissions.personalInfo = defaultper.personalInfo;
     }
     if (userData.type === 3 && userData.layerName === "生产企业") {
       let defaultper = defaultPermion.productPer();
@@ -79,8 +81,10 @@ export default function permissionFun() {
       permissions.addCompany = false;
       permissions.deleteCompany = false;
       permissions.modifyPermissions = false;
+      permissions.AddBatteries = false;
       permissions.addAdmin = false;
       permissions.deleteAdmin = false;
+      permissions.personalInfo = defaultper.personalInfo;
       permissions.info = defaultper.info;
       permissions.runState = defaultper.runState;
       permissions.recovery = defaultper.recovery;
@@ -102,6 +106,7 @@ export default function permissionFun() {
       permissions.modifyPermissions = false;
       permissions.addAdmin = false;
       permissions.deleteAdmin = false;
+      permissions.personalInfo = defaultper.personalInfo;
       permissions.info = defaultper.info;
       permissions.runState = defaultper.runState;
       permissions.recovery = defaultper.recovery;
@@ -110,7 +115,6 @@ export default function permissionFun() {
       permissions.alarm = defaultper.alarm;
     }
   } else {
-    // permissions.type = "purchaseUser";
     permissions.AddBatteries = role.AddBatteries;
     permissions.info = role.info;
     permissions.runState = role.runState;

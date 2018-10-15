@@ -7,6 +7,7 @@ export default {
       recovery: true,
       alarmDatas: true,
       historyData: true,
+      personalInfo: true,
       alarm: true
     };
     return permis;
@@ -18,7 +19,9 @@ export default {
       runState: true,
       recovery: true,
       alarmDatas: true,
-      historyData: true
+      personalInfo: true,
+      historyData: true,
+      alarm: true
     };
     return permis;
   },
@@ -28,8 +31,10 @@ export default {
       info: true,
       runState: true,
       recovery: false,
+      personalInfo: true,
       alarmDatas: true,
-      historyData: true
+      historyData: true,
+      alarm: true
     };
     return permis;
   },

@@ -8,7 +8,7 @@
         <div class="account">
           <div class="datas">
             <p class="title">电池总数</p>
-            <p class="info">{{tatolData.total}}</p>
+            <p class="info">{{tatolData.total || 0}}</p>
           </div>
         </div>
       </div>
@@ -21,8 +21,8 @@
         </div>
         <div class="account">
           <div class="datas">
-            <p class="title">新增电池数</p>
-            <p class="info">{{tatolData.currentMonthTotal}}</p>
+            <p class="title">本月新增电池数</p>
+            <p class="info">{{tatolData.currentMonthTotal || 0}}</p>
           </div>
         </div>
       </div>
@@ -36,7 +36,7 @@
         <div class="account">
           <div class="datas">
             <p class="title">有效监控数</p>
-            <p class="info">{{tatolData.activeTotal}}</p>
+            <p class="info">{{tatolData.activeTotal || 0}}</p>
           </div>
         </div>
       </div>
@@ -50,7 +50,7 @@
         <div class="account">
           <div class="datas">
             <p class="title">告警电池数</p>
-            <p class="info">{{tatolData.alarmedTotal}}</p>
+            <p class="info">{{tatolData.alarmedTotal || 0}}</p>
           </div>
         </div>
       </div>
@@ -140,7 +140,7 @@ export default {
         .datas {
           float: right;
           overflow: hidden;
-          width: 110px;
+          width: 115px;
         }
         .title {
           line-height: 18px;
@@ -149,10 +149,10 @@ export default {
           margin-bottom: 12px;
           font-weight: bold;
           margin-top: 26px;
-          width: 110px;
+          width: 115px;
         }
         .info {
-          width: 110px;
+          width: 115px;
           font-size: 18px;
           font-weight: bold;
           color: #666;

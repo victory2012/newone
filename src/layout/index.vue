@@ -112,7 +112,6 @@ export default {
       ) {
         this.menus = menu.purchaseCus();
       }
-      console.log(this.menus);
       utils.setStorage("permissions", JSON.stringify(this.menus.permissions));
     }
   },

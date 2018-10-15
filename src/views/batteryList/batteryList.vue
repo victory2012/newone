@@ -790,6 +790,7 @@ export default {
     }
   },
   mounted() {
+    console.log("AdminRoles", this.AdminRoles);
     this.$store.state.addBattery = false;
     this.loginData = JSON.parse(utils.getStorage("loginData"));
     this.init();

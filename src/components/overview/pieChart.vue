@@ -38,32 +38,27 @@ export default {
           trigger: "item",
           formatter: "{b}: {d}%"
         },
-        legend: {
-          bottom: 5,
-          left: "center",
-          data: []
-        },
         series: [
           {
-            type: "pie",
-            radius: ["25%", "50%"],
-            center: ["50%", "50%"],
+            type: "gauge",
+            center: ["50%", "60%"], // 仪表位置
+            radius: "90%", //仪表大小
+            startAngle: 200, //开始角度
+            endAngle: -20, //结束角度
+            detail: { formatter: "{value}" },
             data: [],
-            itemStyle: {
-              emphasis: {
-                shadowBlur: 10,
-                shadowOffsetX: 0,
-                shadowColor: "rgba(0, 0, 0, 0.5)"
-              }
-            },
-            label: {
-              normal: {
-                show: true,
-                textStyle: {
-                  fontWeight: 300,
-                  fontSize: 16 // 文字的字体大小
-                },
-                formatter: "{c}"
+            axisLine: {
+              show: true,
+              lineStyle: {
+                // 属性lineStyle控制线条样式
+                color: [
+                  //表盘颜色
+                  [0.2, "#DA462C"], // 0-50%处的颜色
+                  [0.5, "#FF9618"], // 51%-70%处的颜色
+                  // [0.6, "#FFED44"], // 70%-90%处的颜色
+                  [1, "#20AE51"] // 90%-100%处的颜色
+                ],
+                width: 30 //表盘宽度
               }
             }
           }
@@ -93,10 +88,6 @@ export default {
       let $pieChart2 = document.getElementById("pieChart2");
       this.pieChart1 = echarts.init($pieChart1);
       this.pieChart2 = echarts.init($pieChart2);
-      // window.onresize = () => {
-      //   this.pieChart1.resize();
-      //   this.pieChart2.resize();
-      // };
       this.dataChange(this.cardData);
     },
     showLoading(curVal) {
@@ -109,37 +100,48 @@ export default {
       }
     },
     dataChange(data) {
+      if (!data.hasData) {
+        data = {
+          activeTotal: 0,
+          alarmedTotal: 0,
+          currentMonthTotal: 0,
+          total: 100
+        };
+      }
+      this.pieOption.series[0].max = data.total;
+      let defrence = Number(data.activeTotal) - Number(data.alarmedTotal); // 运行正常数
+      let runNomal = defrence < 0 ? 0 : defrence;
+      let effective = Number(data.activeTotal) / Number(data.total); // 有效数
+      let jiankongshu = (effective * 100).toFixed(2);
+
+      let namals = ((runNomal / Number(data.total)) * 100).toFixed(2);
+
       let voltageOptions = deepClone(this.pieOption);
-      voltageOptions.legend.data = ["有效监控数", "电池总数"];
-      voltageOptions.color = ["#F88860", "#62BEE7"];
       voltageOptions.tooltip.formatter = p => {
-        // console.log(p);
-        let item = `${p.data.name}：${p.data.value}<br />${p.percent}%`;
+        let item = `有效监控数：${p.data.value}<br />${jiankongshu}%`;
         return item;
       };
-      voltageOptions.title.text = "有效监控仪表盘";
+      voltageOptions.title.text = "有效监控数";
       voltageOptions.series[0].data = [
-        { value: data.activeTotal, name: "有效监控数" },
-        { value: data.total, name: "电池总数" }
+        {
+          value: data.activeTotal
+          // name: "有效监控"
+        }
       ];
-      // voltageOptions.series[0].label.normal.formatter = "{c}h";
       this.pieChart1.setOption(voltageOptions);
 
       let currentOptions = deepClone(this.pieOption);
       currentOptions.color = ["#8DED81", "#E36568"];
-      currentOptions.title.text = "正常运行仪表盘";
-      currentOptions.legend.data = ["运行正常数", "有效监控数"];
+      currentOptions.title.text = "正常运行数";
       currentOptions.tooltip.formatter = p => {
-        // console.log(p);
-        let item = `${p.data.name}：${p.data.value}<br />${p.percent}%`;
+        let item = `正常运行数：${p.data.value}<br />${namals}%`;
         return item;
       };
       currentOptions.series[0].data = [
         {
-          value: `${Number(data.activeTotal) - Number(data.alarmedTotal)}`,
-          name: "运行正常数"
-        },
-        { value: data.activeTotal, name: "有效监控数" }
+          value: runNomal
+          // name: "运行正常"
+        }
       ];
       this.pieChart2.setOption(currentOptions);
     }

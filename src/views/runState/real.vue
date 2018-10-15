@@ -141,7 +141,8 @@ export default {
   destroyed() {
     if (
       typeof mqttClient === "object" &&
-      typeof mqttClient.isConnected === "function"
+      typeof mqttClient.isConnected === "function" &&
+      mqttClient.isConnected()
     ) {
       mqttClient.disconnect();
       mqttClient = null;
@@ -202,6 +203,10 @@ export default {
       });
       mqttClient.onFailure = res => {
         console.log(res);
+        // this.$message({
+        //   type: "error",
+        //   message: "链接断开，请刷新网页"
+        // });
       };
       mqttClient.onConnectionLost = responseObject => {
         console.log("mqtt-closed:", responseObject);
@@ -226,7 +231,8 @@ export default {
     addressCallBack(data) {
       let param = {
         id: this.hostObj.id,
-        address: data
+        province: data.province ? data.province : data.city,
+        city: data.city
       };
       this.$axios.put(`battery_group/address`, param).then(res => {
         console.log(res);
@@ -309,6 +315,7 @@ export default {
         map.setCenter(position);
         /* 根据经纬度 用高德查询详细地址 */
         lnglatTrabsofor(position, res => {
+          console.log("adress", res);
           this.address = res.formattedAddress;
           let sendAddress = `${res.addressComponent.province}-${
             res.addressComponent.city
@@ -318,7 +325,7 @@ export default {
             this.sendBack = sendAddress;
           }
           if (!this.hasSend) {
-            this.addressCallBack(sendAddress);
+            this.addressCallBack(res.addressComponent);
           }
         });
       }

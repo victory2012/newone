@@ -6,12 +6,14 @@
         <el-col :span="14">
           <div class="chart">
             <div class="warperItme">
-              <pie-chart :cardData="cardData"></pie-chart>
+              <pie-chart :loadingData="chatLoading" :cardData="cardData"></pie-chart>
               <div class="tables shadow">
-                <el-table v-loading="loading" :data="tableData" style="width: 100%">
+                <el-table v-loading="loading" :data="tableData" style="width: 100%;">
                   <!-- <el-table-column type="index" align="center" label="序号" width="50">
               </el-table-column> -->
-                  <el-table-column prop="createTime" align="center" label="告警发生时间">
+                  <el-table-column prop="createTime" align="center" label="告警发生时间" width="170">
+                  </el-table-column>
+                  <el-table-column prop="hostCode" align="center" label="电池组编号">
                   </el-table-column>
                   <el-table-column prop="items" align="center" label="告警项目">
                   </el-table-column>
@@ -19,9 +21,8 @@
               </el-table-column> -->
                   <!-- <el-table-column prop="actualValue" align="center" label="实际值">
               </el-table-column> -->
-                  <!-- <el-table-column prop="hostCode" align="center" label="电池组编号">
-              </el-table-column> -->
-                  <el-table-column prop="content" align="center" label="告警内容">
+
+                  <el-table-column prop="content" align="center" label="告警内容" width="220">
                   </el-table-column>
                   <el-table-column prop="hierarchy" align="center" label="告警层级">
                   </el-table-column>
@@ -35,48 +36,67 @@
                 </template>
               </el-table-column> -->
                 </el-table>
-                <p class="more"><a @click="ToMore">更多</a><i class="iconfont icon-more"></i></p>
+                <p v-show="!isNoAlarmData" class="more"><a @click="ToMore">更多</a><i class="iconfont icon-more"></i></p>
               </div>
             </div>
           </div>
         </el-col>
         <el-col :span="10">
           <div class="list">
-            <div class="listItme shadow">
-              <el-table v-loading="company" :data="custormTable" style="">
-                <el-table-column prop="company" align="center" label="客户">
+            <div v-if="!isUser" class="listItme shadow">
+              <el-table v-loading="company" :data="custormTable">
+                <el-table-column prop="company" align="center" label="客户" width="180">
                 </el-table-column>
                 <el-table-column prop="total" align="center" label="电池数">
                 </el-table-column>
-                <el-table-column prop="activeTotal" align="center" label="有效电池数">
+                <el-table-column prop="activeTotal" align="center" label="有效监控数">
                 </el-table-column>
                 <el-table-column prop="alarmedTotal" align="center" label="告警电池数">
                 </el-table-column>
               </el-table>
+              <div v-if="companyMoreBtn" class="showMore">
+                <p @click="showCampanyMore" class="">
+                  <span>{{companyBtnText}}</span>
+                  <i :class="{'routo': openMoreCompany}" class="iconfont icon-down"></i>
+                </p>
+              </div>
             </div>
-            <div class="listItme shadow">
-              <el-table :data="provenceTable" style="">
-                <el-table-column prop="createTime" align="center" label="省份">
+            <div class="listItme shadow" :style="{minHeight: minHeight + 'px'}">
+              <el-table v-loading="provence" :data="provenceTable">
+                <el-table-column prop="address" align="center" label="省份" width="180">
                 </el-table-column>
                 <el-table-column prop="total" align="center" label="电池数">
                 </el-table-column>
-                <el-table-column prop="activeTotal" align="center" label="有效电池数">
+                <el-table-column prop="activeTotal" align="center" label="有效监控数">
                 </el-table-column>
                 <el-table-column prop="alarmedTotal" align="center" label="告警电池数">
                 </el-table-column>
               </el-table>
+              <!-- provenceMoreBtn -->
+              <div v-if="provenceMoreBtn" class="showMore">
+                <p @click="showProvenceMore">
+                  <span>{{provenceBtnText}}</span>
+                  <i :class="{'routo': openMoreProvence}" class="iconfont icon-down"></i>
+                </p>
+              </div>
             </div>
-            <div class="listItme shadow">
-              <el-table v-loading="models" :data="modelTable" style="">
-                <el-table-column prop="models" align="center" label="型号">
+            <div class="listItme shadow" :style="{minHeight: minHeight + 'px'}">
+              <el-table v-loading="models" :data="modelTable">
+                <el-table-column prop="models" align="center" label="型号" width="180">
                 </el-table-column>
                 <el-table-column prop="total" align="center" label="电池数">
                 </el-table-column>
-                <el-table-column prop="activeTotal" align="center" label="有效电池数">
+                <el-table-column prop="activeTotal" align="center" label="有效监控数">
                 </el-table-column>
                 <el-table-column prop="alarmedTotal" align="center" label="告警电池数">
                 </el-table-column>
               </el-table>
+              <div v-if="modelMoreBtn" class="showMore">
+                <p @click="showModelMore">
+                  <span>{{modelBtnText}}</span>
+                  <i :class="{'routo': openMoreModel}" class="iconfont icon-down"></i>
+                </p>
+              </div>
             </div>
           </div>
         </el-col>
@@ -96,63 +116,186 @@ export default {
   },
   data() {
     return {
+      minHeight: "",
+      isUser: false,
+      isNoAlarmData: true,
       cardData: {},
+      chatLoading: true,
       loading: false,
       models: false,
       company: false,
+      provence: false,
+      modelMoreBtn: false,
+      companyMoreBtn: false,
+      provenceMoreBtn: false,
+      openMoreCompany: false,
+      companyBtnText: "展开",
+      openMoreProvence: false,
+      provenceBtnText: "展开",
+      openMoreModel: false,
+      modelBtnText: "展开",
       tableData: [],
+
       custormTable: [],
       provenceTable: [],
       modelTable: [],
-      pageSize: 10
+
+      sortCustormTable: [],
+      sortProvenceTable: [],
+      sortModelTable: [],
+
+      allCustormTable: [],
+      allProvenceTable: [],
+      allModelTable: [],
+
+      pageSize: 5,
+      stripNum: 3
     };
   },
   mounted() {
-    this.init();
+    let userType = JSON.parse(sessionStorage.getItem("loginData"));
+    this.init(userType);
   },
   methods: {
-    init() {
+    init(userType) {
       this.getCardData();
       this.getListData();
-      this.getCampanyData();
       this.getModelData();
+      this.getProvenceData();
+      if (userType.type !== 3 && userType.layerName !== "采购企业") {
+        this.getCampanyData();
+      } else {
+        this.isUser = true;
+        this.minHeight = "352";
+      }
     },
     /* 统计数据 */
     getCardData() {
+      this.chatLoading = true;
       this.$axios.get(`/battery_group/count`).then(res => {
+        this.chatLoading = false;
         if (res.data && res.data.code === 0) {
-          // console.log("getCardData", res);
-          this.cardData = res.data.data;
+          this.chatLoading = false;
+          if (res.data.data) {
+            this.cardData = res.data.data;
+            this.cardData.hasData = true;
+          } else {
+            this.cardData = {
+              currentMonthTotal: 0,
+              alarmedTotal: 0,
+              activeTotal: 0,
+              total: 0,
+              hasData: false
+            };
+          }
         }
       });
     },
+    showMoreData() {},
+    /* 展开 收起-- 客户数 */
+    showCampanyMore() {
+      if (!this.openMoreCompany) {
+        this.companyBtnText = "收起";
+        this.custormTable = this.allCustormTable;
+      } else {
+        this.companyBtnText = "展开";
+        this.custormTable = this.sortCustormTable;
+      }
+      this.openMoreCompany = !this.openMoreCompany;
+    },
+    /* 展开 收起-- 型号 */
+    showModelMore() {
+      if (!this.openMoreModel) {
+        this.modelBtnText = "收起";
+        this.modelTable = this.allModelTable;
+      } else {
+        this.modelBtnText = "展开";
+        this.modelTable = this.sortModelTable;
+      }
+      this.openMoreModel = !this.openMoreModel;
+    },
+    /* 展开 收起-- 省份 */
+    showProvenceMore() {
+      if (!this.openMoreProvence) {
+        this.provenceBtnText = "收起";
+        this.provenceTable = this.allProvenceTable;
+      } else {
+        this.provenceBtnText = "展开";
+        this.provenceTable = this.sortProvenceTable;
+      }
+      this.openMoreProvence = !this.openMoreProvence;
+    },
+    /* 获取客户数据 */
     getCampanyData() {
       this.company = true;
       this.$axios.get(`/battery_group/sub_companies/count`).then(res => {
         // console.log("getCampanyData", res);
         this.company = false;
         if (res.data && res.data.code === 0) {
+          if (!res.data.data) return;
           let resultKey = Object.keys(res.data.data);
           let resultValue = Object.values(res.data.data);
+          if (resultValue.length > this.stripNum) {
+            this.companyMoreBtn = true;
+          }
           resultValue.forEach((key, index) => {
             key.company = resultKey[index];
-            this.custormTable.push(key);
+            this.allCustormTable.push(key);
+            if (index < this.stripNum) {
+              this.sortCustormTable.push(key);
+            }
           });
+          this.custormTable = this.sortCustormTable;
         }
       });
     },
+
+    /* 型号数据 */
     getModelData() {
       this.models = true;
       this.$axios.get(`/battery_group/model/count`).then(res => {
         // console.log("型号", res);
         this.models = false;
         if (res.data && res.data.code === 0) {
+          if (!res.data.data) return;
           let resultKey = Object.keys(res.data.data);
           let resultValue = Object.values(res.data.data);
+          if (resultValue.length > this.stripNum) {
+            this.modelMoreBtn = true;
+          }
           resultValue.forEach((key, index) => {
             key.models = resultKey[index];
-            this.modelTable.push(key);
+            if (index < this.stripNum) {
+              this.sortModelTable.push(key);
+            }
+            this.allModelTable.push(key);
           });
+          this.modelTable = this.sortModelTable;
+        }
+      });
+    },
+
+    /* 省份数据 */
+    getProvenceData() {
+      this.provence = true;
+      this.$axios.get(`/battery_group/province/count`).then(res => {
+        // console.log("型号", res);
+        this.provence = false;
+        if (res.data && res.data.code === 0) {
+          if (!res.data.data) return;
+          let resultKey = Object.keys(res.data.data);
+          let resultValue = Object.values(res.data.data);
+          if (resultValue.length > this.stripNum) {
+            this.provenceMoreBtn = true;
+          }
+          resultValue.forEach((key, index) => {
+            key.address = resultKey[index];
+            if (index < this.stripNum) {
+              this.sortProvenceTable.push(key);
+            }
+            this.allProvenceTable.push(key);
+          });
+          this.provenceTable = this.sortProvenceTable;
         }
       });
     },
@@ -164,12 +307,13 @@ export default {
         pageNum: 1
       };
       this.$axios.get("/battery_group_event", pageObj).then(res => {
-        console.log(res);
+        // console.log(res);
         this.loading = false;
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
           this.tableData = [];
           if (result.pageData.length > 0) {
+            this.isNoAlarmData = false;
             result.pageData.forEach(key => {
               // key.alarmtime = utils.fomats(key.time);
               key.levels = utils.level(key.level);
@@ -181,6 +325,8 @@ export default {
               }
               this.tableData.push(key);
             });
+          } else {
+            this.isNoAlarmData = true;
           }
         }
       });
@@ -200,8 +346,13 @@ export default {
   margin-right: 15px;
 }
 .list {
-  flex: 0 0 500px;
+  // flex: 0 0 500px;
+  // display: flex;
+  // align-content: space-between;
+  // flex-wrap: wrap;
   .listItme {
+    // flex: 0 0 500px;
+    min-height: 228px;
     box-sizing: border-box;
     margin-bottom: 20px;
     padding: 10px;
@@ -209,12 +360,28 @@ export default {
     background: #ffffff;
   }
 }
+.showMore {
+  text-align: center;
+  font-size: 13px;
+  color: #409eff;
+  margin-top: 5px;
+  cursor: pointer;
+  i {
+    vertical-align: middle;
+    font-size: 12px;
+    display: inline-block;
+  }
+}
+.routo {
+  transform: rotate(180deg);
+}
 .shadow {
   box-shadow: 4px 4px 40px rgba(0, 0, 0, 0.05);
 }
 .tables {
   padding: 15px;
   margin-top: 20px;
+  height: 325px;
   background: #ffffff;
 }
 .more {

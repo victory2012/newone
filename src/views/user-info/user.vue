@@ -98,14 +98,14 @@ export default {
             message: "手机号格式错误",
             trigger: "change"
           }
-        ],
-        email: [
-          {
-            pattern: /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/,
-            message: "邮箱格式错误",
-            trigger: "change"
-          }
         ]
+        // email: [
+        //   {
+        //     pattern: /^[0-9A-Za-z][\.-_0-9A-Za-z]*@[0-9A-Za-z]+(\.[0-9A-Za-z]+)+$/,
+        //     message: "邮箱格式错误",
+        //     trigger: "change"
+        //   }
+        // ]
       }
     };
   },
