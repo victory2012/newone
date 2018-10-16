@@ -141,7 +141,7 @@ export default {
         pageNum: 1,
         bindingStatus: 1
       };
-      this.$axios.get("/battery_group", options).then(res => {
+      this.$api.batteryList(options).then(res => {
         console.log(res);
         this.tableData = [];
         if (res.data && res.data.code === 0) {
@@ -160,7 +160,7 @@ export default {
       });
     },
     getCompanyInfo() {
-      this.$axios.get(`/battery_group/${this.IdObj.hostId}/info`).then(res => {
+      this.$api.batteryGroupInfo(this.IdObj.hostId).then(res => {
         console.log(res);
         this.companyInfo = "";
         if (res.data && res.data.code === 0 && res.data.data) {

@@ -65,5 +65,13 @@ export default {
   /* 电池组规格 */
   SETbatGroupSpecifOpts(state, data) {
     state.batGroupSpecifOpts = data;
+  },
+  /* 电池详情 */
+  SETBATTERYDETAIL(state, data) {
+    state.batteryDetailsShow = data;
+  },
+  /* 电池详情 */
+  SETBATTERYDETAILDATA(state, data) {
+    state.batteryDetailsData = data;
   }
 };

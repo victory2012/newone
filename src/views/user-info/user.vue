@@ -8,8 +8,8 @@
         <el-col :span="8">
           <div class="grid-content">
             <div class="sort-content">
-              <p class="tips">用户名</p>
-              <p class="gridInput">{{userArr.account}}</p>
+              <p class="tips">昵称</p>
+              <p class="gridInput">{{userArr.nickName}}</p>
               <!-- <el-input v-model="userArr.userName" disabled class="gridInput"></el-input> -->
             </div>
           </div>
@@ -63,21 +63,21 @@
         </el-col>
       </el-row>
     </div>
-    <el-dialog width="600px" title="编辑用户信息" @close="closeIt" :visible.sync="userMsgBox">
-      <el-form :model="InfoForm" :rules="Inforules" ref="InfoForm" label-width="200px">
-        <el-form-item label="手机号" prop="phones">
-          <el-input size="small" v-model="InfoForm.phones" style="width:160px;"></el-input>
+    <el-dialog width="600px" title="编辑用户信息" @open="OpenBox" @close="closeIt" :visible.sync="userMsgBox">
+      <el-form :model="InfoForm" ref="InfoForm" label-width="200px">
+        <el-form-item label="手机号" prop="phones" :error="phonesError">
+          <el-input size="small" v-model.number="InfoForm.phones" style="width:160px;"></el-input>
         </el-form-item>
         <el-form-item label="昵称" prop="userName">
           <el-input size="small" v-model="InfoForm.nickName" style="width:160px;"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input size="small" v-model="InfoForm.email" style="width:160px;"></el-input>
+        <el-form-item label="邮箱" prop="emails" :error="emailsError">
+          <el-input size="small" v-model="InfoForm.emails" style="width:160px;"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button size="small" type="primary" @click="submitForm">确认</el-button>
-        <el-button size="small" @click="resetForm">取消</el-button>
+        <el-button size="small" type="primary" @click="submitForm('InfoForm')">确认</el-button>
+        <el-button size="small" @click="resetForm">重置</el-button>
       </div>
     </el-dialog>
   </div>
@@ -91,22 +91,8 @@ export default {
       userMsgBox: false,
       userArr: {},
       InfoForm: {},
-      Inforules: {
-        phones: [
-          {
-            pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
-            message: "手机号格式错误",
-            trigger: "change"
-          }
-        ]
-        // email: [
-        //   {
-        //     pattern: /^[0-9A-Za-z][\.-_0-9A-Za-z]*@[0-9A-Za-z]+(\.[0-9A-Za-z]+)+$/,
-        //     message: "邮箱格式错误",
-        //     trigger: "change"
-        //   }
-        // ]
-      }
+      emailsError: "",
+      phonesError: ""
     };
   },
   methods: {
@@ -119,38 +105,52 @@ export default {
       this.$refs[formName].resetFields();
     },
     resetForm() {
-      this.userMsgBox = false;
+      // this.userMsgBox = false;
       this.$refs.InfoForm.resetFields();
     },
+    OpenBox() {
+      console.log("open it", this.$refs.InfoForm);
+    },
     submitForm() {
-      this.$refs.InfoForm.validate(valid => {
-        if (valid) {
-          let userObj = {};
-          console.log(this.InfoForm);
-          if (this.InfoForm.phones !== this.userArr.phone) {
-            userObj.phone = this.InfoForm.phones;
-          }
-          if (this.InfoForm.nickName !== this.userArr.nickName) {
-            userObj.nickName = this.InfoForm.nickName;
-          }
-          if (this.InfoForm.email !== this.userArr.email) {
-            userObj.email = this.InfoForm.email;
-          }
-          if (JSON.stringify(userObj) !== "{}") {
-            this.$axios.put("/user/info", userObj).then(res => {
-              console.log(res);
-              if (res.data && res.data.code === 0) {
-                this.$message({
-                  type: "success",
-                  message: "修改成功"
-                });
-                this.init();
-                this.closeMsgBox("InfoForm");
-              }
+      const phone = /^[1][3,4,5,7,8][0-9]{9}$/;
+      const email = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+      this.emailsError = "";
+      this.phonesError = "";
+      if (!phone.test(this.InfoForm.phones)) {
+        this.phonesError = "手机号格式有误";
+        return;
+      }
+      if (!email.test(this.InfoForm.emails)) {
+        this.emailsError = "邮箱格式有误";
+        return;
+      }
+      let userObj = {};
+      // console.log(this.InfoForm);
+      // if (this.InfoForm.phones !== this.userArr.phone) {
+      //   userObj.phone = this.InfoForm.phones;
+      // }
+      // if (this.InfoForm.nickName !== this.userArr.nickName) {
+      //   userObj.nickName = this.InfoForm.nickName;
+      // }
+      // if (this.InfoForm.email !== this.userArr.email) {
+      //   userObj.email = this.InfoForm.email;
+      // }
+      userObj.phone = this.InfoForm.phones;
+      userObj.nickName = this.InfoForm.nickName;
+      userObj.email = this.InfoForm.emails;
+      if (JSON.stringify(userObj) !== "{}") {
+        this.$axios.put("/user/info", userObj).then(res => {
+          console.log(res);
+          if (res.data && res.data.code === 0) {
+            this.$message({
+              type: "success",
+              message: "修改成功"
             });
+            this.init();
+            this.closeMsgBox("InfoForm");
           }
-        }
-      });
+        });
+      }
     },
     init() {
       this.$axios.get("/user/current").then(res => {
@@ -159,7 +159,7 @@ export default {
           this.userArr = res.data.data;
           this.userArr.accountType = utils.accountType(this.userArr.type);
           this.userArr.email = res.data.data.email || "暂无";
-          this.InfoForm.email = this.userArr.email;
+          this.InfoForm.emails = this.userArr.email;
           this.InfoForm.phones = this.userArr.phone;
           this.InfoForm.nickName = this.userArr.nickName;
         }

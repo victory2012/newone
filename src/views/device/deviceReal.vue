@@ -195,7 +195,9 @@ export default {
           .then(res => {
             if (res.data && res.data.code === 0) {
               this.interval = true;
-              this.quantity = `${Math.round(res.data.data * 100)}%`;
+              if (res.data.data != null) {
+                this.quantity = `${Math.round(res.data.data * 100)}%`;
+              }
             }
           });
       }
@@ -264,14 +266,12 @@ export default {
       this.infoData.voltage = dataObj.voltage;
       this.infoData.singleVoltage = dataObj.singleVoltage;
       this.infoData.current = dataObj.current;
-      this.infoData.hhmmss = utils.hhmmss(new Date());
-      this.infoData.yyddmm = utils.yyyymmdd(new Date());
+      this.infoData.hhmmss = utils.hhmmss(dataObj.times);
+      this.infoData.yyddmm = utils.yyyymmdd(dataObj.times);
       this.infoData.gcjLongitude = posData.lon;
       this.infoData.gcjLatitude = posData.lat;
-      this.$set(this.infoData, "yyddmm", utils.yyyymmdd(new Date()));
-      this.$set(this.infoData, "hhmmss", utils.hhmmss(new Date()));
-      // console.log(this.infoData.yyddmm);
-      // console.log(this.infoData.hhmmss);
+      // this.$set(this.infoData, "yyddmm", utils.yyyymmdd(new Date()));
+      // this.$set(this.infoData, "hhmmss", utils.hhmmss(dataObj.times));
       let resultPos = {
         gcjLongitude: posData.lon,
         gcjLatitude: posData.lat
@@ -307,8 +307,8 @@ export default {
         typeof mqttClient === "object" &&
         typeof mqttClient.subscribe === "function"
       ) {
-        // console.log(`dev/${this.hostObj.deviceCode}`);
-        mqttClient.subscribe(`dev/${this.hostObj.deviceCode}`);
+        console.log(`dev/${this.deviceCode}`);
+        mqttClient.subscribe(`dev/${this.deviceCode}`);
       }
     },
     positionData(data) {
@@ -400,6 +400,7 @@ export default {
         });
     },
     activeQuery() {
+      console.log("123123");
       if (mqttClient.isConnected() && !this.queryData) {
         this.queryData = true;
         clearInterval(this.decriseTime);
@@ -419,7 +420,7 @@ export default {
           }
         }, 1000);
         let message = new Paho.MQTT.Message("c:get");
-        message.destinationName = `cmd/${this.infoData.deviceCode}`;
+        message.destinationName = `cmd/${this.deviceCode}`;
         mqttClient.send(message);
       } else {
         this.$message({

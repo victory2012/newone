@@ -197,11 +197,12 @@ export default {
       if (!this.hostObj.hostId || !this.hostObj.device) {
         return;
       }
-      this.$axios
-        .get(
-          `/battery_group/${this.hostObj.hostId}/${
-            this.hostObj.device
-          }/data2?startTime=${startTime}&endTime=${endTimes}`
+      this.$api
+        .historyData(
+          this.hostObj.hostId,
+          this.hostObj.device,
+          startTime,
+          endTimes
         )
         .then(res => {
           this.dataObj = {
@@ -338,11 +339,8 @@ export default {
         startTime: `${startTime}000000`,
         endTime: `${endTime}235959`
       };
-      this.$axios
-        .get(
-          `/battery_group/${this.hostObj.hostId}/${this.hostObj.device}/fluid`,
-          pageObj
-        )
+      this.$api
+        .historyFluid(this.hostObj.hostId, this.hostObj.device, pageObj)
         .then(res => {
           console.log(res);
           if (res.data && res.data.code === 0) {
@@ -389,13 +387,8 @@ export default {
         pageSize: 10,
         pageNum: this.currentPage
       };
-      this.$axios
-        .get(
-          `/battery_group_event?hostId=${
-            this.hostObj.hostId
-          }&startTime=${startTime}000000&endTime=${endTime}235959`,
-          pageObj
-        )
+      this.$api
+        .historyAlarm(this.hostObj.hostId, startTime, endTime, pageObj)
         .then(res => {
           // console.log(res);
           if (res.data && res.data.code === 0) {

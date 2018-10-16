@@ -9,7 +9,9 @@ export default {
     return state.manfictor;
   },
   getPermision(state) {
-    return JSON.parse(state.permissions);
+    if (state.permissions) {
+      return JSON.parse(state.permissions);
+    }
   },
   /* 获取用户角色类型 */
   getLayerName(state) {
@@ -55,5 +57,15 @@ export default {
       return JSON.parse(state.batGroupSpecifOpts);
     }
     return "";
+  },
+  /* 电池组规格 */
+  getBatteryDetailShow(state) {
+    return state.batteryDetailsShow;
+  },
+  BATTERYDETAILDATA(state) {
+    if (state.batteryDetailsData) {
+      return JSON.parse(state.batteryDetailsData);
+    }
+    return {};
   }
 };

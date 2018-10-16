@@ -91,7 +91,6 @@ export default {
       this.adminForm = {};
     },
     submitAdmin(formName) {
-      console.log(this.typeId);
       this.$refs[formName].validate(valid => {
         if (valid) {
           console.log("yes");
@@ -104,7 +103,7 @@ export default {
               email: this.adminForm.email,
               isCreator: 0
             };
-            this.$axios.post("/user", params).then(res => {
+            this.$api.createUser(params).then(res => {
               console.log(res);
               this.addcustorm = false;
               if (res.data && res.data.code === 0) {
@@ -125,8 +124,9 @@ export default {
               email: this.adminForm.email,
               isCreator: 0
             };
-            this.$axios.post("/user", params).then(res => {
+            this.$api.createUser(params).then(res => {
               console.log(res);
+              this.addcustorm = false;
               if (res.data && res.data.code === 0) {
                 this.$message({
                   type: "success",

@@ -136,6 +136,8 @@ export default {
       modelBtnText: "展开",
       tableData: [],
 
+      canInterval: false,
+
       custormTable: [],
       provenceTable: [],
       modelTable: [],
@@ -149,12 +151,21 @@ export default {
       allModelTable: [],
 
       pageSize: 5,
-      stripNum: 3
+      stripNum: 3,
+      Timer: ""
     };
   },
   mounted() {
     let userType = JSON.parse(sessionStorage.getItem("loginData"));
     this.init(userType);
+    this.Timer = setInterval(() => {
+      if (this.canInterval) {
+        this.getListData();
+      }
+    }, 30000);
+  },
+  beforeDestroy() {
+    clearInterval(this.Timer);
   },
   methods: {
     init(userType) {
@@ -172,7 +183,7 @@ export default {
     /* 统计数据 */
     getCardData() {
       this.chatLoading = true;
-      this.$axios.get(`/battery_group/count`).then(res => {
+      this.$api.overviewCount().then(res => {
         this.chatLoading = false;
         if (res.data && res.data.code === 0) {
           this.chatLoading = false;
@@ -228,22 +239,25 @@ export default {
     /* 获取客户数据 */
     getCampanyData() {
       this.company = true;
-      this.$axios.get(`/battery_group/sub_companies/count`).then(res => {
-        // console.log("getCampanyData", res);
+      this.$api.overviewCompany().then(res => {
+        console.log("获取客户数据", res);
         this.company = false;
         if (res.data && res.data.code === 0) {
-          if (!res.data.data) return;
-          let resultKey = Object.keys(res.data.data);
-          let resultValue = Object.values(res.data.data);
-          if (resultValue.length > this.stripNum) {
+          let companys = res.data.data;
+          if (!companys || companys.length === 0) return;
+          if (companys.length > this.stripNum) {
             this.companyMoreBtn = true;
           }
-          resultValue.forEach((key, index) => {
-            key.company = resultKey[index];
-            this.allCustormTable.push(key);
+          companys.forEach((item, index) => {
+            let resultKey = Object.keys(item)[0];
+            item.company = resultKey;
+            item.total = item[resultKey].total;
+            item.alarmedTotal = item[resultKey].alarmedTotal;
+            item.activeTotal = item[resultKey].activeTotal;
             if (index < this.stripNum) {
-              this.sortCustormTable.push(key);
+              this.sortCustormTable.push(item);
             }
+            this.allCustormTable.push(item);
           });
           this.custormTable = this.sortCustormTable;
         }
@@ -253,18 +267,21 @@ export default {
     /* 型号数据 */
     getModelData() {
       this.models = true;
-      this.$axios.get(`/battery_group/model/count`).then(res => {
-        // console.log("型号", res);
+      this.$api.overviewModel().then(res => {
+        console.log("型号", res);
         this.models = false;
         if (res.data && res.data.code === 0) {
-          if (!res.data.data) return;
-          let resultKey = Object.keys(res.data.data);
-          let resultValue = Object.values(res.data.data);
-          if (resultValue.length > this.stripNum) {
+          let model = res.data.data;
+          if (!model || model.length === 0) return;
+          if (model.length > this.stripNum) {
             this.modelMoreBtn = true;
           }
-          resultValue.forEach((key, index) => {
-            key.models = resultKey[index];
+          model.forEach((key, index) => {
+            let resultKey = Object.keys(key)[0];
+            key.models = resultKey;
+            key.total = key[resultKey].total;
+            key.alarmedTotal = key[resultKey].alarmedTotal;
+            key.activeTotal = key[resultKey].activeTotal;
             if (index < this.stripNum) {
               this.sortModelTable.push(key);
             }
@@ -278,22 +295,26 @@ export default {
     /* 省份数据 */
     getProvenceData() {
       this.provence = true;
-      this.$axios.get(`/battery_group/province/count`).then(res => {
-        // console.log("型号", res);
+      this.$api.overviewProvence().then(res => {
+        console.log("省份数据", res);
         this.provence = false;
         if (res.data && res.data.code === 0) {
-          if (!res.data.data) return;
-          let resultKey = Object.keys(res.data.data);
-          let resultValue = Object.values(res.data.data);
-          if (resultValue.length > this.stripNum) {
+          let peovence = res.data.data;
+          if (!peovence || peovence.length === 0) return;
+          if (peovence.length > this.stripNum) {
             this.provenceMoreBtn = true;
           }
-          resultValue.forEach((key, index) => {
-            key.address = resultKey[index];
+          peovence.forEach((item, index) => {
+            console.log("item", item);
+            let resultKey = Object.keys(item)[0];
+            item.address = resultKey;
+            item.total = item[resultKey].total;
+            item.alarmedTotal = item[resultKey].alarmedTotal;
+            item.activeTotal = item[resultKey].activeTotal;
             if (index < this.stripNum) {
-              this.sortProvenceTable.push(key);
+              this.sortProvenceTable.push(item);
             }
-            this.allProvenceTable.push(key);
+            this.allProvenceTable.push(item);
           });
           this.provenceTable = this.sortProvenceTable;
         }
@@ -306,9 +327,10 @@ export default {
         pageSize: this.pageSize,
         pageNum: 1
       };
-      this.$axios.get("/battery_group_event", pageObj).then(res => {
+      this.$api.alarmData(pageObj).then(res => {
         // console.log(res);
         this.loading = false;
+        this.canInterval = true;
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
           this.tableData = [];

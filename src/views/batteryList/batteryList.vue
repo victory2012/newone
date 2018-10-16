@@ -22,7 +22,7 @@
             <img id="upers" src="../../../static/img/device_import.png" alt="">
             <p>批量导入</p>
           </div>
-          <div class="items" v-if="AdminRoles.recovery" @click="recovery">
+          <div class="items" v-if="AdminRoles.addblack" @click="recovery">
             <img id="recover" src="../../../static/img/device_recover.png" alt="">
             <p>恢复拉黑电池</p>
           </div>
@@ -89,11 +89,12 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column align="center" width="200" label="操作">
+        <el-table-column align="center" width="220" label="操作">
           <template slot-scope="scope">
+            <el-button @click="details(scope.row)" type="text" size="small">详情</el-button>
             <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind || scope.row.isPlat" type="text" size="small">绑定</el-button>
             <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind || scope.row.isPlat" type="text" size="small">解绑</el-button>
-            <el-button @click="addBlack(scope.row)" :disabled="!AdminRoles.addblack" type="text" size="small">拉黑</el-button>
+            <el-button @click="addBlack(scope.row)" :disabled="!AdminRoles.addblack || scope.row.hasbind" type="text" size="small">拉黑</el-button>
             <el-button @click="deleteBattery(scope.row)" :disabled="!scope.row.canDelete || scope.row.isPlat" type="text" size="small">删除</el-button>
           </template>
         </el-table-column>
@@ -131,6 +132,7 @@
       </div>
     </el-dialog>
     <add-battery @hasCreated="reloadBattery"></add-battery>
+    <battery-detail></battery-detail>
     <!-- <component @hasCreated="reloadBattery" :is="showAdd"></component> -->
   </div>
 </template>
@@ -196,6 +198,7 @@
 <script>
 import permissionFun from "@/utils/valated";
 import addBattery from "@/components/battery/addBattery";
+import batteryDetail from "@/components/battery/details";
 /* eslint-disable */
 import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
@@ -208,7 +211,8 @@ let rABS = false; // 是否将文件读取为二进制字符串
 let mqttClient = {};
 export default {
   components: {
-    "add-battery": addBattery
+    "add-battery": addBattery,
+    batteryDetail
   },
   data() {
     return {
@@ -254,7 +258,8 @@ export default {
       ],
       bindOptions: [],
       value: "",
-      tableData: []
+      tableData: [],
+      detailData: {}
     };
   },
   methods: {
@@ -290,7 +295,7 @@ export default {
         id: row.deviceId,
         status: -1
       };
-      this.$axios.put("device", deviceObj).then(res => {
+      this.$api.betteryBlack(deviceObj).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.$message({
@@ -309,7 +314,20 @@ export default {
         this.getBatteryList();
       }
     },
-    handleSelect() {},
+    /* 查看详情 */
+    details(data) {
+      console.log(data);
+      this.$api.betteryDetails(data.id).then(res => {
+        console.log(res);
+        if (res.data && res.data.code === 0) {
+          let result = res.data.data;
+          result.deviceCode = data.deviceCode;
+          this.$store.commit("SETBATTERYDETAIL", true);
+          this.$store.commit("SETBATTERYDETAILDATA", JSON.stringify(result));
+          // this.detailData = result;
+        }
+      });
+    },
     /* 取消电池绑定 */
     resetBind() {
       this.$refs.deviceModel.resetFields();
@@ -331,7 +349,7 @@ export default {
             hostCode: this.bindRows.code,
             deviceCode: this.deviceModel.code
           };
-          this.$axios.put("host/bind", bindObj).then(res => {
+          this.$api.betteryBind(bindObj).then(res => {
             this.bindings = false;
             if (res.data && res.data.code === 0) {
               this.$message({
@@ -381,7 +399,7 @@ export default {
     },
     /* 获取电池组规格列表 */
     getGroupSpecif() {
-      this.$axios.get("/dic?type=Norm&categoryId=2").then(res => {
+      this.$api.batteryGroupSpecif().then(res => {
         console.log("电池组规格", res);
         if (res.data && res.data.code === 0) {
           this.$store.commit(
@@ -393,7 +411,7 @@ export default {
     },
     /* 获取电池单体型号列表 */
     getSinglBattery() {
-      this.$axios.get("/dic?type=SingleModel&categoryId=2").then(res => {
+      this.$api.batterySingleModel().then(res => {
         console.log("电池单体型号", res);
         if (res.data && res.data.code === 0) {
           this.$store.commit(
@@ -422,7 +440,7 @@ export default {
           if (this.addType === "addSingel") {
             params.type = "SingleModel"; // 单体规格
           }
-          this.$axios.post("/dic", params).then(res => {
+          this.$api.batteryADDALL(params).then(res => {
             console.log(this.addType, res);
             this.addallTypes = false;
             if (res.data && res.data.code === 0) {
@@ -472,6 +490,7 @@ export default {
         }
       });
     },
+    /* 删除 */
     deleteBattery(row) {
       if (!row.id) return;
       this.$messageBox.alert("确定删除此电池组吗？", {
@@ -480,7 +499,7 @@ export default {
         cancelButtonText: "取消",
         callback: action => {
           if (action === "confirm") {
-            this.$axios.delete(`/host/${row.id}`).then(res => {
+            this.$api.batteryDetele(row.id).then(res => {
               if (res.data && res.data.code === 0) {
                 this.$message({
                   type: "success",
@@ -502,7 +521,7 @@ export default {
     },
     /* 解绑按钮 */
     unbindClick(row) {
-      this.$axios.put(`host/unbind/${row.hostId}`).then(res => {
+      this.$api.batteryUnBind(row.hostId).then(res => {
         if (res.data && res.data.code === 0) {
           // console.log(res);
           this.$message({
@@ -653,7 +672,7 @@ export default {
       return o;
     },
     fileUploadTo(data) {
-      this.$axios.post(`/battery_group/batch`, data).then(res => {
+      this.$api.batteryUpLoadAll(data).then(res => {
         console.log(res);
         this.fullscreenLoading = false;
         if (res.data && res.data.code === 0) {
@@ -689,11 +708,12 @@ export default {
       if (this.loginData.type === 1 && this.manufacter) {
         options.parentCompanyId = this.manufacter;
       }
-      this.$axios.get("/battery_group", options).then(res => {
+      this.$api.batteryList(options).then(res => {
         this.tableData = [];
         this.loading = false;
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
+          if (!result) return;
           this.total = result.total;
           // AdminRoles
           result.pageData.forEach(key => {
@@ -724,7 +744,7 @@ export default {
     },
     /* 获取电池型号列表 */
     getBatteryModelList() {
-      this.$axios.get("/dic?type=Model&categoryId=2").then(res => {
+      this.$api.batteryModelList().then(res => {
         console.log("获取电池型号列表", res);
         if (res.data && res.data.code === 0) {
           this.Modeloptions = res.data.data;
@@ -739,7 +759,7 @@ export default {
     },
     /* 获取电池组客户企业表 */
     getCompanyId() {
-      this.$axios.get("/company/purchase_names").then(res => {
+      this.$api.purchaseNames().then(res => {
         console.log("获取电池组客户企业表", res);
         if (res.data && res.data.code === 0) {
           this.batCustomOpts = res.data.data;
@@ -749,14 +769,19 @@ export default {
       });
     },
     getDeviceList() {
-      this.$axios.get("/device/code?status=0&bindingStatus=0").then(res => {
-        console.log("设备编号", res);
-        if (res.data && res.data.code === 0) {
-          this.deviceIdOpts = res.data.data;
-          utils.setStorage("deviceIdOpts", JSON.stringify(res.data.data));
-          this.$store.commit("SETdeviceIdOpts", JSON.stringify(res.data.data));
-        }
-      });
+      this.$api
+        .DeviceList("/device/code?status=0&bindingStatus=0")
+        .then(res => {
+          console.log("设备编号", res);
+          if (res.data && res.data.code === 0) {
+            this.deviceIdOpts = res.data.data;
+            utils.setStorage("deviceIdOpts", JSON.stringify(res.data.data));
+            this.$store.commit(
+              "SETdeviceIdOpts",
+              JSON.stringify(res.data.data)
+            );
+          }
+        });
     },
     /* 用户权限 */
     userRole() {
@@ -772,7 +797,7 @@ export default {
       this.getDeviceList();
     },
     getCompany() {
-      this.$axios.get(`company/manufacturer_names`).then(res => {
+      this.$api.manufacturerNames().then(res => {
         console.log("companyArr", res);
         if (res.data && res.data.code === 0) {
           this.companyArr = res.data.data;
@@ -790,7 +815,6 @@ export default {
     }
   },
   mounted() {
-    console.log("AdminRoles", this.AdminRoles);
     this.$store.state.addBattery = false;
     this.loginData = JSON.parse(utils.getStorage("loginData"));
     this.init();

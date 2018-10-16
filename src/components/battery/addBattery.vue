@@ -223,7 +223,7 @@ export default {
                 params.deviceCode = key.code;
               }
             });
-          this.$axios.post("/battery_group", params).then(res => {
+          this.$api.batteryAddGroup(params).then(res => {
             console.log("添加电池组", res);
             if (res.data && res.data.code === 0) {
               this.$message({

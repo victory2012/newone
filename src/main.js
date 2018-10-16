@@ -11,6 +11,7 @@ import App from './App';
 import router from './router';
 import createStore from "./store/store";
 import axios from './api/http';
+import api from '@/api/index';
 import utils from "./utils/utils";
 import ElementUI from './UI/element';
 import {
@@ -41,6 +42,7 @@ const outputXlsxFile = (data, xlsxName) => {
 ElementUI();
 Vue.prototype.$outputXlsxFile = outputXlsxFile;
 Vue.prototype.$axios = axios;
+Vue.prototype.$api = api;
 Vue.prototype.$message = Message;
 Vue.prototype.$messageBox = MessageBox;
 

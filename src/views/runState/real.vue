@@ -178,14 +178,14 @@ export default {
     getQuantity() {
       if (this.hostObj.deviceCode) {
         this.interval = false;
-        this.$axios
-          .get(`/battery_group/${this.hostObj.deviceCode}/capacity`)
-          .then(res => {
-            if (res.data && res.data.code === 0) {
-              this.interval = true;
+        this.$api.batteryCapacity(this.hostObj.deviceCode).then(res => {
+          if (res.data && res.data.code === 0) {
+            this.interval = true;
+            if (res.data.data != null) {
               this.quantity = `${Math.round(res.data.data * 100)}%`;
             }
-          });
+          }
+        });
       }
     },
     connectMqtt() {
@@ -234,7 +234,7 @@ export default {
         province: data.province ? data.province : data.city,
         city: data.city
       };
-      this.$axios.put(`battery_group/address`, param).then(res => {
+      this.$api.sendAddress(param).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.hasSend = true;
@@ -336,12 +336,8 @@ export default {
       if (!this.hostObj.hostId || !this.hostObj.device) {
         return;
       }
-      this.$axios
-        .get(
-          `/battery_group/${this.hostObj.hostId}/${
-            this.hostObj.device
-          }/data?startTime=${startTime}&endTime=${endTime}`
-        )
+      this.$api
+        .realData(this.hostObj.hostId, this.hostObj.device, startTime, endTime)
         .then(res => {
           console.log(res);
           if (res.data && res.data.code === 0) {

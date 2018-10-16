@@ -1,7 +1,7 @@
 <template>
   <div class="cardWarrp">
     <div class="card ">
-      <div class="pan-item">
+      <div class="pan-item" @click="GotoLink('/battery')">
         <div class="img">
           <i class="iconfont icon-all"></i>
         </div>
@@ -40,7 +40,6 @@
           </div>
         </div>
       </div>
-
     </div>
     <div class="card ">
       <div class="pan-item">
@@ -82,7 +81,11 @@ export default {
   mounted() {
     // this.getCardData();
   },
-  methods: {}
+  methods: {
+    GotoLink(url) {
+      this.$router.push(url);
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>

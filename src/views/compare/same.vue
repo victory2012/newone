@@ -255,121 +255,113 @@ export default {
       let hostId = this.chooseObj.hostId;
       let deviceId = this.chooseObj.deviceId;
       this.chartloading = true;
-      this.$axios
-        .get(
-          `/battery_group/${hostId}/${deviceId}/data2?startTime=${startTime}&endTime=${endTime}`
-        )
-        .then(res => {
-          console.log(res);
-          this.dataObjFirst = {
-            timeArr: [],
-            singleVoltage: [],
-            temperature: [],
-            voltage: [],
-            current: [],
-            capacity: []
-          };
-          if (res.data && res.data.code === 0) {
-            let result = res.data.data;
-            result.list.forEach(key => {
-              let timeArr = utils.TimeSconds(key.time); // 时间
-              let capacity = Math.round(key.capacity * 100);
-              this.dataObjFirst.singleVoltage.push({
-                name: timeArr,
-                value: [timeArr, key.singleVoltage]
-              }); // 单体电压
-              this.dataObjFirst.temperature.push({
-                name: timeArr,
-                value: [timeArr, key.temperature]
-              }); // 温度
-              this.dataObjFirst.voltage.push({
-                name: timeArr,
-                value: [timeArr, key.voltage]
-              }); // 电压
-              this.dataObjFirst.current.push({
-                name: timeArr,
-                value: [timeArr, -key.current]
-              }); // 电流
-              this.dataObjFirst.capacity.push({
-                name: timeArr,
-                value: [timeArr, capacity]
-              }); // 电量
-            });
-            this.now = result.summary || {};
-            this.now_eventSummary =
-              result.eventSummary === null ? {} : result.eventSummary;
-            if (this.compareTime.startTime && this.compareTime.endTime) {
-              this.getDataPrev(
-                this.compareTime.startTime,
-                this.compareTime.endTime,
-                hostId,
-                deviceId
-              );
-            }
+      this.$api.historyData(hostId, deviceId, startTime, endTime).then(res => {
+        console.log(res);
+        this.dataObjFirst = {
+          timeArr: [],
+          singleVoltage: [],
+          temperature: [],
+          voltage: [],
+          current: [],
+          capacity: []
+        };
+        if (res.data && res.data.code === 0) {
+          let result = res.data.data;
+          result.list.forEach(key => {
+            let timeArr = utils.TimeSconds(key.time); // 时间
+            let capacity = Math.round(key.capacity * 100);
+            this.dataObjFirst.singleVoltage.push({
+              name: timeArr,
+              value: [timeArr, key.singleVoltage]
+            }); // 单体电压
+            this.dataObjFirst.temperature.push({
+              name: timeArr,
+              value: [timeArr, key.temperature]
+            }); // 温度
+            this.dataObjFirst.voltage.push({
+              name: timeArr,
+              value: [timeArr, key.voltage]
+            }); // 电压
+            this.dataObjFirst.current.push({
+              name: timeArr,
+              value: [timeArr, -key.current]
+            }); // 电流
+            this.dataObjFirst.capacity.push({
+              name: timeArr,
+              value: [timeArr, capacity]
+            }); // 电量
+          });
+          this.now = result.summary || {};
+          this.now_eventSummary =
+            result.eventSummary === null ? {} : result.eventSummary;
+          if (this.compareTime.startTime && this.compareTime.endTime) {
+            this.getDataPrev(
+              this.compareTime.startTime,
+              this.compareTime.endTime,
+              hostId,
+              deviceId
+            );
           }
-        });
+        }
+      });
     },
     getDataPrev(startTime, endTime, id, deviceId) {
-      this.$axios
-        .get(
-          `/battery_group/${id}/${deviceId}/data2?startTime=${startTime}&endTime=${endTime}`
-        )
-        .then(res => {
-          console.log(res);
-          this.dataObjSecond = {
-            timeArr: [],
-            singleVoltage: [],
-            temperature: [],
-            voltage: [],
-            current: [],
-            capacity: []
+      this.$api.historyData(id, deviceId, startTime, endTime).then(res => {
+        console.log(res);
+        this.dataObjSecond = {
+          timeArr: [],
+          singleVoltage: [],
+          temperature: [],
+          voltage: [],
+          current: [],
+          capacity: []
+        };
+        if (res.data && res.data.code === 0) {
+          let result = res.data.data;
+          result.list.forEach(key => {
+            let timeArr = utils.TimeSconds(key.time) + this.differTime; // 时间
+            let capacity = Math.round(key.capacity * 100);
+            this.dataObjSecond.singleVoltage.push({
+              name: timeArr,
+              value: [timeArr, key.singleVoltage]
+            }); // 单体电压
+            this.dataObjSecond.temperature.push({
+              name: timeArr,
+              value: [timeArr, key.temperature]
+            }); // 温度
+            this.dataObjSecond.voltage.push({
+              name: timeArr,
+              value: [timeArr, key.voltage]
+            }); // 电压
+            this.dataObjSecond.current.push({
+              name: timeArr,
+              value: [timeArr, -key.current]
+            }); // 电流
+            this.dataObjSecond.capacity.push({
+              name: timeArr,
+              value: [timeArr, capacity]
+            }); // 电量
+          });
+          this.chartloading = false;
+          this.last = result.summary || {};
+          this.last_eventSummary =
+            result.eventSummary === null ? {} : result.eventSummary;
+          this.dataArr = {
+            dataObjFirst: this.dataObjFirst,
+            dataObjSecond: this.dataObjSecond,
+            different: this.differTime,
+            batteryCode: this.chooseObj.code,
+            deviceCode: this.chooseObj.deviceCode
           };
-          if (res.data && res.data.code === 0) {
-            let result = res.data.data;
-            result.list.forEach(key => {
-              let timeArr = utils.TimeSconds(key.time) + this.differTime; // 时间
-              let capacity = Math.round(key.capacity * 100);
-              this.dataObjSecond.singleVoltage.push({
-                name: timeArr,
-                value: [timeArr, key.singleVoltage]
-              }); // 单体电压
-              this.dataObjSecond.temperature.push({
-                name: timeArr,
-                value: [timeArr, key.temperature]
-              }); // 温度
-              this.dataObjSecond.voltage.push({
-                name: timeArr,
-                value: [timeArr, key.voltage]
-              }); // 电压
-              this.dataObjSecond.current.push({
-                name: timeArr,
-                value: [timeArr, -key.current]
-              }); // 电流
-              this.dataObjSecond.capacity.push({
-                name: timeArr,
-                value: [timeArr, capacity]
-              }); // 电量
-            });
-            this.chartloading = false;
-            this.last = result.summary || {};
-            this.last_eventSummary =
-              result.eventSummary === null ? {} : result.eventSummary;
-            this.dataArr = {
-              dataObjFirst: this.dataObjFirst,
-              dataObjSecond: this.dataObjSecond,
-              different: this.differTime,
-              batteryCode: this.chooseObj.code,
-              deviceCode: this.chooseObj.deviceCode
-            };
-            this.summary = {
-              now: this.now,
-              last: this.last,
-              now_eventSummary: this.now_eventSummary,
-              last_eventSummary: this.last_eventSummary
-            };
-            console.log(this.summary);
-          }
-        });
+          this.summary = {
+            now: this.now,
+            last: this.last,
+            now_eventSummary: this.now_eventSummary,
+            last_eventSummary: this.last_eventSummary
+          };
+          console.log(this.summary);
+        }
+      });
     },
     remoteMethod() {
       this.batteryGroup = this.searchCont;
@@ -420,7 +412,7 @@ export default {
         modelId: "",
         bindingStatus: 1
       };
-      this.$axios.get("/battery_group", options).then(res => {
+      this.$api.batteryList(options).then(res => {
         console.log(res);
         this.loading = false;
         this.gridData = [];

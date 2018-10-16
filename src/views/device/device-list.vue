@@ -46,8 +46,8 @@
         </el-table-column>
         <el-table-column prop="companyName" align="center" label="企业名称">
         </el-table-column>
-        <!-- <el-table-column prop="registerCode" align="center" label="设备注册状态">
-        </el-table-column> -->
+        <el-table-column prop="subCompanyName" align="center" label="客户企业">
+        </el-table-column>
         <el-table-column prop="bindState" align="center" label="电池绑定状态">
         </el-table-column>
         <el-table-column align="center" label="监测设备">
@@ -462,6 +462,9 @@ export default {
             result.pageData.forEach(key => {
               key.online = key.onlineStatus === 0;
               key.blackStatus = key.status === -1;
+              key.subCompanyName = key.subCompanyName
+                ? key.subCompanyName
+                : "-";
               key.registerCode =
                 key.registerCode === null ? "未注册" : "已注册";
               key.bindStatus = key.hostId === null;

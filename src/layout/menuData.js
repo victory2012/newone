@@ -98,7 +98,7 @@ const menu = [{
     ]
   }
 ];
-
+console.log(menu);
 let listData1 = _.cloneDeep(menu); // 生产企业管理员\
 let listData5 = _.cloneDeep(menu); // 生产企业用户
 let listData2 = _.cloneDeep(menu); // 平台管理员
@@ -118,7 +118,7 @@ export default {
   /* 生产企业用户 */
   getManifactorCus: () => {
     let personRole = {}
-    if (!permissionFun().sameAnalysis && !permissionFun().sameBatch) {
+    if (!permissionFun().sameAnalysis) {
       listData5[1].children[1] = "";
     } else {
       listData5[1].children[1] = {
@@ -126,11 +126,24 @@ export default {
         link: "/battery/compare"
       }
     }
-    if (!permissionFun().runState) {
-      listData5[1].children[0].children[2] = "";
-    }
+    // if (!permissionFun().runState) {
+    //   listData5[1].children[0].children[2] = "";
+    // }
     if (!permissionFun().alarm) {
       listData5[1].children[2] = "";
+    } else {
+      listData5[1].children[2] = {
+        text: "告警数据",
+        link: "/battery/alarm"
+      }
+    }
+    if (!permissionFun().addblack) {
+      listData5[1].children[0].children[1] = "";
+    } else {
+      listData5[1].children[0].children[1] = {
+        text: "恢复拉黑设备",
+        link: "/battery/defriend"
+      };
     }
     listData5[2] = "";
     listData5[4].children[1] = "";
@@ -151,7 +164,7 @@ export default {
   /* 电池采购企业管理员 */
   purchaseAdmin: () => {
     let personRole = {}
-    if (!permissionFun().sameAnalysis && !permissionFun().sameBatch) {
+    if (!permissionFun().sameAnalysis) {
       listData3[1].children[1] = "";
     } else {
       listData3[1].children[1] = {
@@ -161,6 +174,19 @@ export default {
     }
     if (!permissionFun().alarm) {
       listData3[1].children[2] = "";
+    } else {
+      listData3[1].children[2] = {
+        text: "告警数据",
+        link: "/battery/alarm"
+      }
+    }
+    if (!permissionFun().addblack) {
+      listData3[1].children[0].children[1] = "";
+    } else {
+      listData3[1].children[0].children[1] = {
+        text: "恢复拉黑设备",
+        link: "/battery/defriend"
+      };
     }
     listData3[4] = "";
     personRole.data = listData3;
@@ -169,8 +195,9 @@ export default {
   },
   /* 电池采购企业用户 */
   purchaseCus: () => {
+    // console.log(permissionFun());
     let personRole = {}
-    if (!permissionFun().sameAnalysis && !permissionFun().sameBatch) {
+    if (!permissionFun().sameAnalysis) {
       listData4[1].children[1] = "";
     } else {
       listData4[1].children[1] = {
@@ -178,8 +205,21 @@ export default {
         link: "/battery/compare"
       }
     }
+    if (!permissionFun().addblack) {
+      listData4[1].children[0].children[1] = "";
+    } else {
+      listData4[1].children[0].children[1] = {
+        text: "恢复拉黑设备",
+        link: "/battery/defriend"
+      };
+    }
     if (!permissionFun().alarm) {
       listData4[1].children[2] = "";
+    } else {
+      listData4[1].children[2] = {
+        text: "告警数据",
+        link: "/battery/alarm"
+      }
     }
     listData4[2] = "";
     listData4[4] = "";

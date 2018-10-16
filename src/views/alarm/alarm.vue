@@ -131,7 +131,7 @@ export default {
   methods: {
     handleClick(row) {
       this.rowObj = row;
-      this.$axios.get(`/battery_group_event/${row.dataId}`).then(res => {
+      this.$api.allAlarmData(row.dataId).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
@@ -170,7 +170,7 @@ export default {
         pageSize: this.pageSize,
         pageNum: this.currentPage
       };
-      this.$axios.get("/battery_group_event", pageObj).then(res => {
+      this.$api.alarmData(pageObj).then(res => {
         console.log(res);
         this.loading = false;
         if (res.data && res.data.code === 0) {

@@ -32,13 +32,12 @@ export default function permissionFun() {
     addAdmin: true, // 添加管理员
     deleteAdmin: true, // 删除管理员
   };
-  console.log(permissions);
   if (role == null) {
     if (userData.type === 1) {
       permissions.type = "plat";
       permissions.AddBatteries = false;
       permissions.info = false;
-      permissions.runState = false;
+      permissions.runState = true;
       permissions.recovery = false;
       permissions.addblack = false;
       permissions.deleteBattery = false;
@@ -57,8 +56,6 @@ export default function permissionFun() {
       permissions.type = "purchase";
       permissions.AddBatteries = false;
       permissions.alarmSetting = false;
-      permissions.addblack = false;
-      permissions.recovery = false;
       permissions.sameAnalysis = false; // 同一电池单元的数据分析
       permissions.sameBatch = false; // 同批次不同电池单元的数据分析
       permissions.addAdmin = false;
@@ -70,12 +67,12 @@ export default function permissionFun() {
       permissions.historyData = defaultper.historyData;
       permissions.alarm = defaultper.alarm;
       permissions.personalInfo = defaultper.personalInfo;
+      permissions.addblack = defaultper.addblack;
     }
     if (userData.type === 3 && userData.layerName === "生产企业") {
       let defaultper = defaultPermion.productPer();
       permissions.type = "manufacturUser";
       permissions.alarmSetting = false;
-      permissions.addblack = false;
       permissions.notice = false;
       permissions.threshold = false;
       permissions.addCompany = false;
@@ -91,13 +88,13 @@ export default function permissionFun() {
       permissions.alarmDatas = defaultper.alarmDatas;
       permissions.historyData = defaultper.historyData;
       permissions.alarm = defaultper.alarm;
+      permissions.addblack = defaultper.addblack;
     }
     if (userData.type === 3 && userData.layerName === "采购企业") {
       let defaultper = defaultPermion.custormPer();
       permissions.type = "purchaseUser";
       permissions.AddBatteries = false;
       permissions.alarmSetting = false;
-      permissions.addblack = false;
       permissions.sameAnalysis = false; // 同一电池单元的数据分析
       permissions.sameBatch = false; // 同批次不同电池单元的数据分析
       permissions.threshold = false;
@@ -113,6 +110,7 @@ export default function permissionFun() {
       permissions.alarmDatas = defaultper.alarmDatas;
       permissions.historyData = defaultper.historyData;
       permissions.alarm = defaultper.alarm;
+      permissions.addblack = defaultper.addblack;
     }
   } else {
     permissions.AddBatteries = role.AddBatteries;
@@ -125,6 +123,8 @@ export default function permissionFun() {
     permissions.sameBatch = role.sameBatch;
     permissions.personalInfo = role.personalInfo;
     permissions.alarmDatas = role.alarmDatas;
+    permissions.recovery = role.recovery;
+    permissions.addblack = role.addblack;
   }
   return permissions;
 }

@@ -59,7 +59,7 @@
         </el-pagination>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button size="small" @click="tableVisible = false">取 消</el-button>
+        <el-button size="small" @click="cancelHandle">取 消</el-button>
         <el-button size="small" type="primary" @click="sureBtn">确 定</el-button>
       </div>
     </el-dialog>
@@ -169,6 +169,10 @@ export default {
     selectTimeChanges() {
       this.defaultGray = false;
     },
+    cancelHandle() {
+      this.stacks1 = [];
+      this.tableVisible = false;
+    },
     sureBtnSearch() {
       if (this.stacks1.length < 2) {
         this.$message.error("请选择电池组");
@@ -217,11 +221,12 @@ export default {
     getDataNow(startTime, endTime) {
       // console.log(this.stacks1);
       this.chartloading = true;
-      this.$axios
-        .get(
-          `/battery_group/${this.stacks1[0].hostId}/${
-            this.stacks1[0].deviceId
-          }/data2?startTime=${startTime}&endTime=${endTime}`
+      this.$api
+        .historyData(
+          this.stacks1[0].hostId,
+          this.stacks1[0].deviceId,
+          startTime,
+          endTime
         )
         .then(res => {
           console.log(res);
@@ -268,11 +273,12 @@ export default {
         });
     },
     getDataPrev(startTime, endTime) {
-      this.$axios
-        .get(
-          `/battery_group/${this.stacks1[1].hostId}/${
-            this.stacks1[1].deviceId
-          }/data2?startTime=${startTime}&endTime=${endTime}`
+      this.$api
+        .historyData(
+          this.stacks1[1].hostId,
+          this.stacks1[1].deviceId,
+          startTime,
+          endTime
         )
         .then(res => {
           console.log(res);
@@ -369,7 +375,7 @@ export default {
         modelId: "",
         bindingStatus: 1
       };
-      this.$axios.get("/battery_group", options).then(res => {
+      this.$api.batteryList(options).then(res => {
         console.log(res);
         this.loading = false;
         this.gridData = [];

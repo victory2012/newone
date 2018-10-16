@@ -45,20 +45,51 @@ export default {
             radius: "90%", //仪表大小
             startAngle: 200, //开始角度
             endAngle: -20, //结束角度
-            detail: { formatter: "{value}" },
+            detail: { formatter: "{value}%" },
             data: [],
+            splitNumber: 10,
             axisLine: {
-              show: true,
               lineStyle: {
-                // 属性lineStyle控制线条样式
-                color: [
-                  //表盘颜色
-                  [0.2, "#DA462C"], // 0-50%处的颜色
-                  [0.5, "#FF9618"], // 51%-70%处的颜色
-                  // [0.6, "#FFED44"], // 70%-90%处的颜色
-                  [1, "#20AE51"] // 90%-100%处的颜色
-                ],
-                width: 30 //表盘宽度
+                color: [[0.2, "#ff4500"], [0.8, "#48b"], [1, "#228b22"]],
+                width: 10
+              }
+            },
+            axisTick: {
+              splitNumber: 10,
+              length: 12,
+              lineStyle: {
+                color: "auto"
+              }
+            },
+            // axisLabel: {
+
+            //   textStyle: {
+
+            //     color: "auto"
+            //   }
+            // },
+            splitLine: {
+              show: true,
+              length: 30,
+              lineStyle: {
+                color: "auto"
+              }
+            },
+            pointer: {
+              width: 8
+            },
+            title: {
+              show: true,
+              offsetCenter: [0, "-40%"],
+              textStyle: {
+                fontWeight: "bolder"
+              }
+            },
+            detail: {
+              formatter: "{value}%",
+              textStyle: {
+                color: "auto",
+                fontWeight: "bolder"
               }
             }
           }
@@ -90,16 +121,13 @@ export default {
       this.pieChart2 = echarts.init($pieChart2);
       this.dataChange(this.cardData);
     },
-    showLoading(curVal) {
-      if (curVal) {
-        this.pieChart1.showLoading();
-        this.pieChart2.showLoading();
-      } else {
-        this.pieChart1.hideLoading();
-        this.pieChart2.hideLoading();
-      }
-    },
     dataChange(data) {
+      console.log(data);
+      let jiankongshu;
+      let namals;
+      let defrence = Number(data.activeTotal) - Number(data.alarmedTotal); // 运行正常数
+      let runNomal = defrence < 0 ? 0 : defrence;
+
       if (!data.hasData) {
         data = {
           activeTotal: 0,
@@ -107,40 +135,45 @@ export default {
           currentMonthTotal: 0,
           total: 100
         };
+        jiankongshu = 0;
+        namals = 0;
       }
-      this.pieOption.series[0].max = data.total;
-      let defrence = Number(data.activeTotal) - Number(data.alarmedTotal); // 运行正常数
-      let runNomal = defrence < 0 ? 0 : defrence;
-      let effective = Number(data.activeTotal) / Number(data.total); // 有效数
-      let jiankongshu = (effective * 100).toFixed(2);
-
-      let namals = ((runNomal / Number(data.total)) * 100).toFixed(2);
+      if (data.total === 0) {
+        jiankongshu = 0;
+        namals = 0;
+      } else {
+        let effective = Number(data.activeTotal) / Number(data.total); // 有效数
+        jiankongshu = (effective * 100).toFixed(2);
+        namals = ((runNomal / Number(data.total)) * 100).toFixed(2);
+      }
 
       let voltageOptions = deepClone(this.pieOption);
       voltageOptions.tooltip.formatter = p => {
-        let item = `有效监控数：${p.data.value}<br />${jiankongshu}%`;
+        let item = `电池总数：${data.total}<br />有效监控：${p.data.per ||
+          0}<br />${p.data.value}%`;
         return item;
       };
-      voltageOptions.title.text = "有效监控数";
+      voltageOptions.title.text = "有效监控";
       voltageOptions.series[0].data = [
         {
-          value: data.activeTotal
+          per: data.activeTotal,
+          value: jiankongshu || 0
           // name: "有效监控"
         }
       ];
       this.pieChart1.setOption(voltageOptions);
 
       let currentOptions = deepClone(this.pieOption);
-      currentOptions.color = ["#8DED81", "#E36568"];
-      currentOptions.title.text = "正常运行数";
+      currentOptions.title.text = "正常运行";
       currentOptions.tooltip.formatter = p => {
-        let item = `正常运行数：${p.data.value}<br />${namals}%`;
+        let item = `电池总数：${data.total}<br />正常运行：${p.data.per ||
+          0}<br />${p.data.value}%`;
         return item;
       };
       currentOptions.series[0].data = [
         {
-          value: runNomal
-          // name: "运行正常"
+          value: namals || 0,
+          per: runNomal
         }
       ];
       this.pieChart2.setOption(currentOptions);

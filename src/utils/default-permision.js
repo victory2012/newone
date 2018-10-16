@@ -2,40 +2,45 @@ export default {
   /* 采购企业管理员 */
   custormAdmin: () => {
     let permis = {
-      info: true,
       runState: true,
       recovery: true,
       alarmDatas: true,
       historyData: true,
       personalInfo: true,
-      alarm: true
+      sameAnalysis: false,
+      alarm: true,
+      addblack: true
     };
     return permis;
   },
   /* 采购企业用户 */
   custormPer: () => {
-    let permis = {
-      info: true,
+    let custorm = {
       runState: true,
-      recovery: true,
+      recovery: false,
       alarmDatas: true,
       personalInfo: true,
       historyData: true,
-      alarm: true
+      alarm: true,
+      sameAnalysis: false,
+      addblack: false
     };
-    return permis;
+    return custorm;
   },
   /* 生产企业用户 */
   productPer: () => {
-    let permis = {
-      info: true,
+    let product = {
+      AddBatteries: false,
       runState: true,
       recovery: false,
       personalInfo: true,
       alarmDatas: true,
       historyData: true,
-      alarm: true
+      alarm: true,
+      sameAnalysis: true,
+      // sameBatch: false,
+      addblack: false
     };
-    return permis;
+    return product;
   },
 };

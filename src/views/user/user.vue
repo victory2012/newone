@@ -99,7 +99,7 @@ export default {
         },
         {
           label: "拉黑及恢复电池",
-          id: "recovery",
+          id: "addblack",
           value: false
         },
         // {
@@ -107,16 +107,16 @@ export default {
         //   id: "info",
         //   value: false
         // },
-        {
-          label: "运行状况",
-          id: "runState",
-          value: false
-        },
-        {
-          label: "告警数据",
-          id: "alarmDatas",
-          value: false
-        },
+        // {
+        //   label: "运行状况",
+        //   id: "runState",
+        //   value: false
+        // },
+        // {
+        //   label: "告警数据",
+        //   id: "alarmDatas",
+        //   value: false
+        // },
         {
           label: "历史数据",
           id: "historyData",
@@ -128,15 +128,15 @@ export default {
           value: false
         },
         {
-          label: "同一电池单元的数据分析",
+          label: "数据对比",
           id: "sameAnalysis",
           value: false
         },
-        {
-          label: "同批次不同电池单元的数据分析",
-          id: "sameBatch",
-          value: false
-        },
+        // {
+        //   label: "同批次不同电池单元的数据分析",
+        //   id: "sameBatch",
+        //   value: false
+        // },
         {
           label: "个人信息维护",
           id: "personalInfo",
@@ -145,9 +145,6 @@ export default {
       ]
     };
   },
-  // computed: {
-  //   ...mapGetters(["getLayerName"])
-  // },
   mounted() {
     this.$store.state.manfictor = false;
     this.$store.state.custom = false;
@@ -233,20 +230,22 @@ export default {
     },
     /* 修改权限 -- 按钮 */
     changeQuanxian(item) {
-      console.log(item);
+      // console.log(item);
       this.userId = item.id;
       this.$axios.get(`/user/permissions/${item.id}`).then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.data && res.data.code === 0) {
           if (res.data.data !== null) {
             let permis = JSON.parse(res.data.data);
-            console.log(permis);
+            // console.log(permis);
             let keys = Object.keys(permis);
             let values = Object.values(permis);
             this.userRole.forEach((key, index) => {
-              if (key.id === keys[index]) {
-                key.value = values[index];
-              }
+              keys.forEach(i => {
+                if (key.id === i) {
+                  key.value = values[index];
+                }
+              });
             });
           } else {
             let defaus;
@@ -385,6 +384,15 @@ export default {
                 ) {
                   key.userType = true;
                   key.canNotDelete = true;
+                }
+                if (
+                  storge.type === 3 &&
+                  // storge.layerName === "采购企业" &&
+                  key.type === 3 &&
+                  key.layerName === "采购企业"
+                ) {
+                  key.userType = false;
+                  key.canNotDelete = false;
                 }
                 if (storge.type === 3 && (key.type === 2 || key.type === 1)) {
                   key.userType = false;

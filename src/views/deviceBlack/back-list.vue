@@ -39,7 +39,7 @@ export default {
         id: data.id,
         status: 0
       };
-      this.$axios.put("device", deviceObj).then(res => {
+      this.$api.betteryBlack(deviceObj).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.$message({
@@ -67,7 +67,7 @@ export default {
         status: -1,
         bindingStatus: ""
       };
-      this.$axios.get("/device", pageObj).then(res => {
+      this.$api.deviceBlackList(pageObj).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           let result = res.data.data;

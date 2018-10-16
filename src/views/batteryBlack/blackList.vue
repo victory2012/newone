@@ -28,14 +28,7 @@ export default {
   data() {
     return {
       currentPage: 1,
-      tableData: [
-        {
-          deviceId: "1805B598C6E7",
-          enterpriseName: "测试企业001",
-          regState: "已注册",
-          bindState: "已绑定"
-        }
-      ]
+      tableData: []
     };
   },
   methods: {
@@ -47,7 +40,7 @@ export default {
         id: row.deviceId,
         status: 0
       };
-      this.$axios.put("device", deviceObj).then(res => {
+      this.$api.betteryBlack(deviceObj).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.$message({

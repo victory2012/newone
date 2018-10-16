@@ -144,15 +144,11 @@ export default {
   methods: {
     handleClick(row) {
       this.rowObj = row;
-      this.$axios.get(`/battery_group_event/${row.dataId}`).then(res => {
+      this.$api.allAlarmData(row.dataId).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
           if (result) {
-            // let position = new AMap.LngLat(
-            //   result.gcjLongitude,
-            //   result.gcjLatitude
-            // );
             let position = [result.gcjLongitude, result.gcjLatitude];
             lnglatTrabsofor(position, callRes => {
               this.rowObj.fluidLevel =
@@ -184,32 +180,30 @@ export default {
         pageSize: this.pageSize,
         pageNum: this.currentPage
       };
-      this.$axios
-        .get(`/battery_group_event?hostId=${this.hostObj.hostId}`, pageObj)
-        .then(res => {
-          console.log(res);
-          this.loading = false;
-          if (res.data && res.data.code === 0) {
-            let result = res.data.data;
-            if (result) {
-              this.total = result.total;
-              this.tableData = [];
-              if (result.pageData.length > 0) {
-                result.pageData.forEach(key => {
-                  // key.alarmtime = utils.fomats(key.time);
-                  key.levels = utils.level(key.level);
-                  key.hierarchy = key.hierarchy === "Group" ? "整组" : "单体";
-                  key.items = utils.item(key.item);
-                  if (key.item === "Fluid") {
-                    key.thresholdValue = "-";
-                    key.actualValue = "异常";
-                  }
-                  this.tableData.push(key);
-                });
-              }
+      this.$api.singleAlarm(this.hostObj.hostId, pageObj).then(res => {
+        console.log(res);
+        this.loading = false;
+        if (res.data && res.data.code === 0) {
+          let result = res.data.data;
+          if (result) {
+            this.total = result.total;
+            this.tableData = [];
+            if (result.pageData.length > 0) {
+              result.pageData.forEach(key => {
+                // key.alarmtime = utils.fomats(key.time);
+                key.levels = utils.level(key.level);
+                key.hierarchy = key.hierarchy === "Group" ? "整组" : "单体";
+                key.items = utils.item(key.item);
+                if (key.item === "Fluid") {
+                  key.thresholdValue = "-";
+                  key.actualValue = "异常";
+                }
+                this.tableData.push(key);
+              });
             }
           }
-        });
+        }
+      });
     },
     dialogClosed() {
       this.batteryForm = {};

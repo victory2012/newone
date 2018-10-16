@@ -81,23 +81,21 @@ export default {
             account: this.LoginForm.account,
             password: this.LoginForm.password
           };
-          this.$axios.post(`/login`, person).then(res => {
+          this.$api.login(person).then(res => {
             console.log(res);
             this.doLogin = false;
             if (res.data && res.data.code === 0) {
               this.$store.commit("setTokenStorage", res.headers.token);
               this.$store.commit("setStorage", JSON.stringify(res.data.data));
-              this.$axios
-                .get(`/user/permissions/${res.data.data.id}`)
-                .then(opts => {
-                  if (opts.data && opts.data.code === 0) {
-                    this.$store.commit(
-                      "setUserRole",
-                      JSON.stringify(opts.data.data)
-                    );
-                    this.$router.push("/overview");
-                  }
-                });
+              this.$api.permissions(res.data.data.id).then(opts => {
+                if (opts.data && opts.data.code === 0) {
+                  this.$store.commit(
+                    "setUserRole",
+                    JSON.stringify(opts.data.data)
+                  );
+                  this.$router.push("/overview");
+                }
+              });
             }
           });
         } else {
@@ -111,27 +109,25 @@ export default {
         console.log(opts);
         if (opts === "" || opts === undefined || opts === null) {
           let conut = 60;
-          this.$axios
-            .post("/login/sms/send", { phone: this.smsForm.phone })
-            .then(res => {
-              console.log(res);
-              if (res.data && res.data.code === 0) {
-                this.hasGetSms = true;
-                let Timer = setInterval(() => {
-                  conut--;
-                  this.smsMsg = `重新获取${conut}s`;
-                  if (conut < 1) {
-                    this.smsMsg = "获取验证码";
-                    this.hasGetSms = false;
-                    clearInterval(Timer);
-                  }
-                }, 1000);
-                this.$message({
-                  type: "success",
-                  message: "发送成功"
-                });
-              }
-            });
+          this.$api.SMScode({ phone: this.smsForm.phone }).then(res => {
+            console.log(res);
+            if (res.data && res.data.code === 0) {
+              this.hasGetSms = true;
+              let Timer = setInterval(() => {
+                conut--;
+                this.smsMsg = `重新获取${conut}s`;
+                if (conut < 1) {
+                  this.smsMsg = "获取验证码";
+                  this.hasGetSms = false;
+                  clearInterval(Timer);
+                }
+              }, 1000);
+              this.$message({
+                type: "success",
+                message: "发送成功"
+              });
+            }
+          });
         }
       });
     },
@@ -143,23 +139,21 @@ export default {
             phone: this.smsForm.phone,
             code: this.smsForm.smsCode
           };
-          this.$axios.post("/login/sms/verify", phoneObj).then(res => {
+          this.$api.SMSVertify(phoneObj).then(res => {
             console.log(res);
             this.doLogin = false;
             if (res.data && res.data.code === 0) {
               this.$store.commit("setTokenStorage", res.headers.token);
               this.$store.commit("setStorage", JSON.stringify(res.data.data));
-              this.$axios
-                .get(`/user/permissions/${res.data.data.id}`)
-                .then(opts => {
-                  if (opts.data && opts.data.code === 0) {
-                    this.$store.commit(
-                      "setUserRole",
-                      JSON.stringify(opts.data.data)
-                    );
-                    this.$router.push("/overview");
-                  }
-                });
+              this.$api.permissions(res.data.data.id).then(opts => {
+                if (opts.data && opts.data.code === 0) {
+                  this.$store.commit(
+                    "setUserRole",
+                    JSON.stringify(opts.data.data)
+                  );
+                  this.$router.push("/overview");
+                }
+              });
             }
           });
         }
