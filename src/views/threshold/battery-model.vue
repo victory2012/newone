@@ -246,7 +246,7 @@ export default {
     },
     /* 添加 */
     addFunction(data) {
-      this.$axios.post(`battery_group_event_policy`, data).then(res => {
+      this.$api.batteryAddPolicy(data).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.$message({
@@ -258,7 +258,7 @@ export default {
     },
     /* 修改 */
     modifyFunction(data) {
-      this.$axios.put(`battery_group_event_policy`, data).then(res => {
+      this.$api.batteryChangePolicy(data).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.$message({
@@ -270,27 +270,25 @@ export default {
     },
     ChooseBatteryModel() {
       this.batteryForm = {};
-      this.$axios
-        .get(`/battery_group_event_policy?modelId=${this.batteryModelId}`)
-        .then(res => {
-          if (res.data && res.data.code === 0) {
-            let result = res.data;
-            if (result.data === null) {
-              this.$message({
-                message: "此电池型号暂未设置阈值",
-                type: "warning"
-              });
-              this.hasTemp = false;
-            } else {
-              this.hasTemp = true;
-              this.batteryForm = result.data;
-              this.batteryModelTempId = result.data.id;
-            }
+      this.$api.getBatteryPolicy(this.batteryModelId).then(res => {
+        if (res.data && res.data.code === 0) {
+          let result = res.data;
+          if (result.data === null) {
+            this.$message({
+              message: "此电池型号暂未设置阈值",
+              type: "warning"
+            });
+            this.hasTemp = false;
+          } else {
+            this.hasTemp = true;
+            this.batteryForm = result.data;
+            this.batteryModelTempId = result.data.id;
           }
-        });
+        }
+      });
     },
     getBatteryModel() {
-      this.$axios.get("/dic?type=Model&categoryId=2").then(res => {
+      this.$api.batteryModelList().then(res => {
         // console.log("获取电池型号列表", res);
         if (res.data && res.data.code === 0) {
           console.log(res.data);
@@ -306,7 +304,7 @@ export default {
         });
         return;
       }
-      this.$axios.get(`/battery_group_event_policy?modelId=0`).then(res => {
+      this.$api.getTempPolicy().then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           let result = res.data;
@@ -320,12 +318,6 @@ export default {
           }
         }
       });
-      // this.$axios.get("/battery_group_event_policy/template").then(res => {
-      //   console.log(res);
-      //   if (res.data && res.data.code === 0) {
-      //     this.batteryForm = res.data.data;
-      //   }
-      // });
     }
   },
   mounted() {

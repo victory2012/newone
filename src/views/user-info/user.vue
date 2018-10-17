@@ -139,7 +139,7 @@ export default {
       userObj.nickName = this.InfoForm.nickName;
       userObj.email = this.InfoForm.emails;
       if (JSON.stringify(userObj) !== "{}") {
-        this.$axios.put("/user/info", userObj).then(res => {
+        this.$api.changeUserMsg(userObj).then(res => {
           console.log(res);
           if (res.data && res.data.code === 0) {
             this.$message({
@@ -153,7 +153,7 @@ export default {
       }
     },
     init() {
-      this.$axios.get("/user/current").then(res => {
+      this.$api.getUserMsg().then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.userArr = res.data.data;

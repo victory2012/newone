@@ -727,7 +727,7 @@ export default {
               key.hasbind = true;
               key.deviceCode = "无";
             }
-            if (this.loginData.type === 1) {
+            if (this.loginData.type === 1 || this.loginData.type === 3) {
               key.isPlat = true;
             } else {
               key.canDelete = false;

@@ -273,7 +273,7 @@ export default {
       return o;
     },
     fileUploadTo(data) {
-      this.$axios.post(`/device/2/batch`, data).then(res => {
+      this.$api.deviceBatchAdd(data).then(res => {
         console.log(res);
         this.fullscreenLoading = false;
         if (res.data && res.data.code === 0) {
@@ -313,7 +313,7 @@ export default {
             companyName: companyName,
             category: category
           };
-          this.$axios.post("/device", deviceObj).then(res => {
+          this.$api.deviceAdd(deviceObj).then(res => {
             console.log(res);
             this.createDevice = false;
             if (res.data && res.data.code === 0) {
@@ -360,7 +360,7 @@ export default {
         id: data.id,
         status: -1
       };
-      this.$axios.put("device", deviceObj).then(res => {
+      this.$api.deviceAddBlack(deviceObj).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.$message({
@@ -379,7 +379,7 @@ export default {
         cancelButtonText: "取消",
         callback: action => {
           if (action === "confirm") {
-            this.$axios.delete(`/device/${data.id}`).then(res => {
+            this.$api.deviceDetele(data.id).then(res => {
               console.log(res);
               if (res.data && res.data.code === 0) {
                 this.$message({
@@ -403,13 +403,13 @@ export default {
     getCompany() {
       this.categoryArr = [];
       this.companyArr = [];
-      this.$axios.get(`company/manufacturer_names`).then(res => {
+      this.$api.manufacturerNames().then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.companyArr = res.data.data;
         }
       });
-      this.$axios.get("/category").then(res => {
+      this.$api.deviceCategory().then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
@@ -450,7 +450,7 @@ export default {
       if (this.content || this.content === 0) {
         pageObj.code = this.content;
       }
-      this.$axios.get("/device", pageObj).then(res => {
+      this.$api.deviceList(pageObj).then(res => {
         console.log(res);
         this.loading = false;
         if (res.data && res.data.code === 0) {

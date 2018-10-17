@@ -64,13 +64,13 @@
       <el-row :gutter="60">
         <el-col :span="12">
           <el-form-item label="电池组生产日期" prop="productDate">
-            <el-date-picker size="small" style="width: 210px" v-model="batteryForm.productDate" type="date" placeholder="生产日期">
+            <el-date-picker size="small" style="width: 210px" value-format="yyyy-MM-dd" v-model="batteryForm.productDate" type="date" placeholder="生产日期">
             </el-date-picker>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="电池组出厂日期" prop="factoryDate">
-            <el-date-picker size="small" style="width: 210px" v-model="batteryForm.factoryDate" type="date" placeholder="出厂日期">
+            <el-date-picker size="small" style="width: 210px" value-format="yyyy-MM-dd" v-model="batteryForm.factoryDate" type="date" placeholder="出厂日期">
             </el-date-picker>
           </el-form-item>
         </el-col>
@@ -78,7 +78,7 @@
       <el-row :gutter="60">
         <el-col :span="12">
           <el-form-item label="电池组质保期" prop="qualityDate">
-            <el-date-picker size="small" style="width: 210px" v-model="batteryForm.qualityDate" type="date" placeholder="质保期">
+            <el-date-picker size="small" style="width: 210px" value-format="yyyy-MM-dd" v-model="batteryForm.qualityDate" type="date" placeholder="质保期">
             </el-date-picker>
           </el-form-item>
         </el-col>
@@ -178,7 +178,7 @@ export default {
     submitBatteryAdd() {
       this.$refs.batteryForm.validate(valid => {
         if (valid) {
-          console.log("submit!");
+          console.log("submit!", this.batteryForm);
           this.getGroupModelOpts.forEach(key => {
             if (key.id === this.batteryForm.batGroupModel) {
               this.batteryForm.model = key.dicKey;
@@ -211,9 +211,9 @@ export default {
             capacity: this.batteryForm.batteryCapacity,
             singleModelId: this.batteryForm.singleBattery,
             singleModel: this.batteryForm.singleMode,
-            productionDate: utils.dateFomat(this.batteryForm.productDate),
-            manufacturerDate: utils.dateFomat(this.batteryForm.factoryDate),
-            qualityGuaranteeDate: utils.dateFomat(this.batteryForm.qualityDate)
+            productionDate: this.batteryForm.productDate,
+            manufacturerDate: this.batteryForm.factoryDate,
+            qualityGuaranteeDate: this.batteryForm.qualityDate
           };
 
           this.getDeviceIdOpts &&
@@ -223,6 +223,7 @@ export default {
                 params.deviceCode = key.code;
               }
             });
+          console.log(params);
           this.$api.batteryAddGroup(params).then(res => {
             console.log("添加电池组", res);
             if (res.data && res.data.code === 0) {

@@ -20,8 +20,10 @@ const User = () =>
   import( /* webpackChunkName: "User" */ '../views/user/user.vue');
 const Devicelist = () =>
   import( /* webpackChunkName: "device" */ '../views/device/device-list.vue');
-const Blacklist = () =>
+const deviceBlacklist = () =>
   import( /* webpackChunkName: "Black" */ '../views/deviceBlack/back-list.vue');
+const batteryBlacklist = () =>
+  import( /* webpackChunkName: "batteryBlack" */ '../views/batteryBlack/blackList.vue');
 const LevelUp = () =>
   import( /* webpackChunkName: "Level" */ '../views/levelup/upgrading.vue');
 // const batteryBlack = () => import(/* webpackChunkName: "batteryBlack" */ '../views/batteryBlack/blackList.vue');
@@ -93,7 +95,7 @@ export default new Router({
         },
         {
           path: '/device/defriend',
-          component: Blacklist
+          component: deviceBlacklist
         },
         {
           path: '/device/up',
@@ -101,7 +103,7 @@ export default new Router({
         },
         {
           path: '/battery/defriend',
-          component: Blacklist
+          component: batteryBlacklist
         },
         {
           path: '/set/model',

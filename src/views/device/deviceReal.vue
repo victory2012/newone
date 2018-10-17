@@ -190,16 +190,14 @@ export default {
     getQuantity() {
       if (this.hostObj.deviceCode) {
         this.interval = false;
-        this.$axios
-          .get(`/battery_group/${this.hostObj.deviceCode}/capacity`)
-          .then(res => {
-            if (res.data && res.data.code === 0) {
-              this.interval = true;
-              if (res.data.data != null) {
-                this.quantity = `${Math.round(res.data.data * 100)}%`;
-              }
+        this.$api.batteryCapacity(this.hostObj.deviceCode).then(res => {
+          if (res.data && res.data.code === 0) {
+            this.interval = true;
+            if (res.data.data != null) {
+              this.quantity = `${Math.round(res.data.data * 100)}%`;
             }
-          });
+          }
+        });
       }
     },
     connectMqtt() {
@@ -334,24 +332,22 @@ export default {
       }
     },
     getCompanyInfo() {
-      this.$axios
-        .get(`/battery_group/${this.hostObj.hostId}/info`)
-        .then(res => {
-          console.log(res);
-          this.infoData = {};
-          if (res.data && res.data.code === 0 && res.data.data) {
-            let result = res.data.data;
-            this.infoData = result;
-            this.infoData.fluid = result.fluidLevel === 0 ? "正常" : "异常";
-            this.infoData.yyddmm = utils.yyyymmdd(new Date());
-            this.infoData.hhmmss = utils.hhmmss(new Date());
-            let positionData = {
-              gcjLongitude: result.gcjLongitude,
-              gcjLatitude: result.gcjLatitude
-            };
-            this.positionData(positionData);
-          }
-        });
+      this.$api.batteryGroupInfo(this.hostObj.hostId).then(res => {
+        console.log(res);
+        this.infoData = {};
+        if (res.data && res.data.code === 0 && res.data.data) {
+          let result = res.data.data;
+          this.infoData = result;
+          this.infoData.fluid = result.fluidLevel === 0 ? "正常" : "异常";
+          this.infoData.yyddmm = utils.yyyymmdd(new Date());
+          this.infoData.hhmmss = utils.hhmmss(new Date());
+          let positionData = {
+            gcjLongitude: result.gcjLongitude,
+            gcjLatitude: result.gcjLatitude
+          };
+          this.positionData(positionData);
+        }
+      });
     },
     getData() {
       let startTime = utils.getFourHours();
@@ -359,12 +355,8 @@ export default {
       if (!this.hostObj.hostId || !this.hostObj.id) {
         return;
       }
-      this.$axios
-        .get(
-          `/battery_group/${this.hostObj.hostId}/${
-            this.hostObj.id
-          }/data?startTime=${startTime}&endTime=${endTime}`
-        )
+      this.$api
+        .realData(this.hostObj.hostId, this.hostObj.id, startTime, endTime)
         .then(res => {
           console.log(res);
           if (res.data && res.data.code === 0) {

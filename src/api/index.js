@@ -5,6 +5,10 @@ export default {
   login: (data) => {
     return http.post(`/login`, data);
   },
+  /* 登录 */
+  logOut: () => {
+    return http.post(`/login/logout`);
+  },
   /* 获取权限 */
   permissions: (data) => {
     return http.get(`/user/permissions/${data}`);
@@ -26,9 +30,13 @@ export default {
   betteryDetails: (data) => {
     return http.get(`/battery_group/${data}`);
   },
+  /* 修改电池详情 */
+  changeBatteryDetail: (id, options) => {
+    return http.put(`/battery_group/${id}`, options);
+  },
   /* 电池绑定 */
   betteryBind: (data) => {
-    return http.put(`/host/bind`, data);
+    return http.put(`host/bind`, data);
   },
   /* 获取电池组规格列表 */
   batteryGroupSpecif: () => {
@@ -153,5 +161,130 @@ export default {
   /* 创建管理员 */
   createPurchaser: (data) => {
     return http.post("/company/purchaser", data);
+  },
+
+  /* 批量添加设备 */
+  deviceBatchAdd: (data) => {
+    return http.post(`/device/2/batch`, data);
+  },
+
+  /* 添加设备 */
+  deviceAdd: (data) => {
+    return http.post(`/device`, data);
+  },
+
+  /* 添加设备 */
+  deviceAddBlack: (data) => {
+    return http.put(`device`, data);
+  },
+
+  /* 删除设备 */
+  deviceDetele: (id) => {
+    return http.delete(`/device/${id}`);
+  },
+
+  /* 设备类型 -- 电池追踪 || 电池监测 */
+  deviceCategory: () => {
+    return http.get(`/category`);
+  },
+
+  /* 获取设备列表 */
+  deviceList: (data) => {
+    return http.get("/device", data);
+  },
+
+  // /* 删除告警接收人 */
+  // deleteNotice: (id) => {
+  //   return http.delete(`/company_global_internal_notice/${id}`);
+  // },
+
+  /* 取消告警接收人 */
+  cancelNotice: (id) => {
+    return http.delete(`/company_global_internal_notice/${id}`);
+  },
+
+  /* 添加告警接收人 */
+  addNotice: (id) => {
+    return http.post(`/company_global_internal_notice/${id}`);
+  },
+
+  /* 已添加 告警接收人列表 */
+  noticeList: (data) => {
+    return http.get(`/company_global_internal_notice`, data);
+  },
+
+  /* 告警接收人 */
+  noticeUsersList: (data) => {
+    return http.get(`/company_global_internal_notice/users`, data);
+  },
+
+  /* 添加外部告警接收人 */
+  addOuterUsers: (data) => {
+    return http.post(`/company_global_external_notice`, data);
+  },
+
+  /* 取消外部告警接收人 */
+  cancelOuterUsers: (id) => {
+    return http.delete(`/company_global_external_notice/${id}`);
+  },
+
+  /* 外部告警接收人 */
+  outerUsers: (data) => {
+    return http.get(`/company_global_external_notice`, data);
+  },
+
+  /* 添加电池型号阈值 */
+  batteryAddPolicy: (data) => {
+    return http.post('battery_group_event_policy', data);
+  },
+
+  /* 修改电池型号阈值 */
+  batteryChangePolicy: (data) => {
+    return http.put('battery_group_event_policy', data);
+  },
+
+  /* 查询电池组型号 阈值 */
+  getBatteryPolicy: (id) => {
+    return http.get(`/battery_group_event_policy?modelId=${id}`);
+  },
+
+  /* 根据 model id 获取阈值 --模板 */
+  getTempPolicy: () => {
+    return http.get(`/battery_group_event_policy?modelId=0`);
+  },
+
+  /* 获取全局 阈值 --模板 */
+  getSituationTempPolicy: () => {
+    return http.get(`/battery_group_event_policy/template`);
+  },
+
+  /* 修改个人信息 */
+  changeUserMsg: (data) => {
+    return http.put("user/info", data);
+  },
+
+  /* 获取个人信息 */
+  getUserMsg: () => {
+    return http.get("/user/current");
+  },
+
+  /* 删除用户 */
+  deleteUser: (id) => {
+    return http.delete(`/user/${id}`);
+  },
+
+  /* 删除公司 */
+  deleteCompany: (id) => {
+    return http.delete(`/company/${id}`);
+  },
+
+  /* 修改用户权限 */
+  ChangePermissions: (data) => {
+    return http.put(`/user/permissions`, data);
+  },
+
+  /* 获取用户列表 */
+  getUserList: (data) => {
+    return http.get(`/user`, data);
   }
 };

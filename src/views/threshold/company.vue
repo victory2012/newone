@@ -198,7 +198,7 @@ export default {
   },
   methods: {
     getTemplate() {
-      this.$axios.get(`/battery_group_event_policy/template`).then(res => {
+      this.$api.getSituationTempPolicy().then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           let result = res.data;
@@ -207,7 +207,7 @@ export default {
       });
     },
     getCampany() {
-      this.$axios.get(`/battery_group_event_policy?modelId=0`).then(res => {
+      this.$api.getTempPolicy().then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           let result = res.data;
@@ -256,7 +256,7 @@ export default {
     },
     /* 添加 */
     addFunction(data) {
-      this.$axios.post(`battery_group_event_policy`, data).then(res => {
+      this.$api.batteryAddPolicy(data).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           Message({
@@ -269,7 +269,7 @@ export default {
     },
     /* 修改 */
     modifyFunction(data) {
-      this.$axios.put(`battery_group_event_policy`, data).then(res => {
+      this.$api.batteryChangePolicy(data).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           Message({

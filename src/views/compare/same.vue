@@ -10,9 +10,7 @@
           <p v-for="(tag, index) in stacks1" :key="tag.hostId">电池编号{{index+1}}: {{tag.code}}</p>
           <!-- <p>电池编号2: {{stacks1[1].code}}</p> -->
         </div>
-        <div @click="openTable" class="compare-add">
-          添加比较
-        </div>
+        <div @click="openTable" class="compare-add">{{chooseText}}</div>
       </div>
     </div>
     <div class="timeCenter">
@@ -39,8 +37,8 @@
     <el-dialog title="添加比较" width="800px" :visible.sync="tableVisible">
       <div class="TopWrapper">
         <div class="item">最多可选
-          <span style="color:#71bfdb">{{chooseLen}}</span>项 设备ID：
-          <el-tag v-for="tag in stacks1" :key="tag.hostId+new Date()" @close="closeTags(tag)" closable :type="''">
+          <span style="color:#71bfdb">1</span>项 设备ID：
+          <el-tag v-for="tag in stacks1" :key="tag.hostId+new Date()" @close="closeTags(tag)" :type="''">
             {{tag.code}}
           </el-tag>
         </div>
@@ -128,7 +126,7 @@ export default {
         current: []
       },
       batteryGroup: "",
-      chooseLen: 1,
+      chooseText: "添加电池单元",
       searchCont: "",
       tableVisible: false,
       summary: {},
@@ -368,6 +366,14 @@ export default {
       this.getBatteryList();
     },
     sureBtn() {
+      if (this.stacks1.length === 0) {
+        this.$message({
+          type: "warning",
+          message: "需添加1组电池"
+        });
+        return;
+      }
+      this.chooseText = "更换电池单元";
       this.tableVisible = false;
       if (this.actived === "same") {
         this.contrastData = true;
@@ -376,7 +382,10 @@ export default {
         this.contrastDatas = true;
       }
     },
-    handleCurrentChange() {},
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.getBatteryList();
+    },
     openTable() {
       this.stacks1 = [];
       this.tableVisible = true;
@@ -445,7 +454,7 @@ export default {
     .title {
       font-weight: 500;
       font-size: 18px;
-      margin-bottom: 16px;
+      margin: 16px auto;
     }
     .compare-add {
       border: 1px dashed #898989;

@@ -1,5 +1,9 @@
-import _ from "lodash";
+// import _ from "lodash";
+import {
+  deepClone
+} from "@/utils/functions";
 import permissionFun from "../utils/valated";
+
 
 /* eslint-disable */
 const menu = [{
@@ -91,19 +95,19 @@ const menu = [{
         text: "恢复拉黑设备",
         link: "/device/defriend"
       },
-      {
-        text: "设备升级",
-        link: "/device/up"
-      }
+      // {
+      //   text: "设备升级",
+      //   link: "/device/up"
+      // }
     ]
   }
 ];
 console.log(menu);
-let listData1 = _.cloneDeep(menu); // 生产企业管理员\
-let listData5 = _.cloneDeep(menu); // 生产企业用户
-let listData2 = _.cloneDeep(menu); // 平台管理员
-let listData3 = _.cloneDeep(menu); // 电池采购企业管理员
-let listData4 = _.cloneDeep(menu); // 电池采购企业用户
+let listData1 = deepClone(menu); // 生产企业管理员\
+let listData5 = deepClone(menu); // 生产企业用户
+let listData2 = deepClone(menu); // 平台管理员
+let listData3 = deepClone(menu); // 电池采购企业管理员
+let listData4 = deepClone(menu); // 电池采购企业用户
 
 export default {
   getManifactor: () => {

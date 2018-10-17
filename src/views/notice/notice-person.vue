@@ -56,54 +56,48 @@ export default {
     },
     /* 添加 */
     addClick(row) {
-      this.$axios
-        .post(`/company_global_internal_notice/${row.id}`)
-        .then(res => {
-          if (res.data && res.data.code === 0) {
-            this.$message({
-              type: "success",
-              message: res.data.msg
-            });
-            this.getUserList();
-          }
-        });
+      this.$api.addNotice(row.id).then(res => {
+        if (res.data && res.data.code === 0) {
+          this.$message({
+            type: "success",
+            message: res.data.msg
+          });
+          this.getUserList();
+        }
+      });
     },
     /* 取消添加 */
     cancleClick(row) {
       if (row.status === null) return;
-      this.$axios
-        .delete(`/company_global_internal_notice/${row.status}`)
-        .then(res => {
-          if (res.data && res.data.code === 0) {
-            this.$message({
-              type: "success",
-              message: res.data.msg
-            });
-            this.getUserList();
-          }
-        });
+      this.$api.cancelNotice(row.status).then(res => {
+        if (res.data && res.data.code === 0) {
+          this.$message({
+            type: "success",
+            message: res.data.msg
+          });
+          this.getUserList();
+        }
+      });
     },
     getUserList() {
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage
       };
-      this.$axios
-        .get("/company_global_internal_notice/users", pageObj)
-        .then(res => {
-          console.log(res);
-          this.loading = false;
-          if (res.data && res.data.code === 0) {
-            let result = res.data.data;
-            this.total = result.total;
-            this.tableData = [];
-            result.pageData.forEach(key => {
-              key.role = utils.accountType(key.type);
-              key.state = key.status === null ? "未添加" : "已添加";
-              this.tableData.push(key);
-            });
-          }
-        });
+      this.$api.noticeUsersList(pageObj).then(res => {
+        console.log(res);
+        this.loading = false;
+        if (res.data && res.data.code === 0) {
+          let result = res.data.data;
+          this.total = result.total;
+          this.tableData = [];
+          result.pageData.forEach(key => {
+            key.role = utils.accountType(key.type);
+            key.state = key.status === null ? "未添加" : "已添加";
+            this.tableData.push(key);
+          });
+        }
+      });
     }
   },
   mounted() {

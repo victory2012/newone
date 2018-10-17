@@ -38,30 +38,33 @@ export default {
     };
   },
   methods: {
-    handleSizeChange() {},
-    handleCurrentChange() {},
-    handleClick() {},
+    handleSizeChange(val) {
+      this.pageSize = val;
+      this.personList();
+    },
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.personList();
+    },
     /* 取消添加 */
     cancleClick(row) {
       console.log(row);
-      this.$axios
-        .delete(`/company_global_internal_notice/${row.id}`)
-        .then(res => {
-          if (res.data && res.data.code === 0) {
-            this.$message({
-              type: "success",
-              message: res.data.msg
-            });
-            this.personList();
-          }
-        });
+      this.$api.cancelNotice(row.id).then(res => {
+        if (res.data && res.data.code === 0) {
+          this.$message({
+            type: "success",
+            message: res.data.msg
+          });
+          this.personList();
+        }
+      });
     },
     personList() {
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage
       };
-      this.$axios.get("/company_global_internal_notice", pageObj).then(res => {
+      this.$api.noticeList(pageObj).then(res => {
         console.log(res);
         this.loading = false;
         if (res.data && res.data.code === 0) {

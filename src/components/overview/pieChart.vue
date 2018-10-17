@@ -144,9 +144,12 @@ export default {
       } else {
         let effective = Number(data.activeTotal) / Number(data.total); // 有效数
         jiankongshu = (effective * 100).toFixed(2);
-        namals = ((runNomal / Number(data.total)) * 100).toFixed(2);
+        if (defrence > 0) {
+          namals = ((defrence / Number(data.total)) * 100).toFixed(2);
+        } else {
+          namals = 0;
+        }
       }
-
       let voltageOptions = deepClone(this.pieOption);
       voltageOptions.tooltip.formatter = p => {
         let item = `电池总数：${data.total}<br />有效监控：${p.data.per ||

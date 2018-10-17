@@ -70,7 +70,7 @@ export default {
   methods: {
     handleCommand(command) {
       if (command === "loginout") {
-        this.$axios.post("/login/logout").then(res => {
+        this.$api.logOut().then(res => {
           if (res.data && res.data.code === 0) {
             this.$store.commit("removeStorage");
             this.$store.commit("removeTokenStorage");

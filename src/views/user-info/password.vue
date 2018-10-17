@@ -41,7 +41,7 @@ export default {
           let userObj = {
             password: this.ruleForm.password
           };
-          this.$axios.put("user/info", userObj).then(res => {
+          this.$api.changeUserMsg(userObj).then(res => {
             console.log(res);
             if (res.data && res.data.code === 0) {
               this.$message({

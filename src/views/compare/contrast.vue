@@ -2,19 +2,16 @@
   <div>
     <div class="titleTab textAlain">
       <div class="tabInfo">
-        <a @click="showSameData" v-if="permision.sameAnalysis" :class="{'active': actived == 'same'}">同一电池单元</a>
-        <span class="divider" v-if="permision.sameAnalysis && permision.sameBatch"></span>
-        <a @click="showDiffData" v-if="permision.sameBatch" :class="{'active': actived == 'diff'}">不同电池单元</a>
+        <a @click="showSameData" :class="{'active': actived == 'same'}">同一电池单元</a>
+        <span class="divider"></span>
+        <a @click="showDiffData" :class="{'active': actived == 'diff'}">不同电池单元</a>
       </div>
     </div>
     <component :is="activeComponent"></component>
   </div>
 </template>
 <script>
-import permissionFun from "@/utils/valated";
-// import sameCompent from "./same";
-// import diffCompent from "./different";
-// import comChart from "../../components/compare/compare-chart";
+// import permissionFun from "@/utils/valated";
 
 export default {
   components: {
@@ -23,7 +20,6 @@ export default {
   },
   data() {
     return {
-      permision: "",
       actived: "same",
       activeComponent: "sameCompent"
     };
@@ -38,15 +34,7 @@ export default {
       this.actived = "diff";
     }
   },
-  mounted() {
-    let defaultPermission = permissionFun();
-    this.permision = permissionFun();
-    if (defaultPermission.sameAnalysis) {
-      this.showSameData();
-    } else if (defaultPermission.sameBatch && !defaultPermission.sameAnalysis) {
-      this.showDiffData();
-    }
-  }
+  mounted() {}
 };
 </script>
 <style lang="scss" scoped>

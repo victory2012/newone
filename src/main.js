@@ -41,7 +41,7 @@ const outputXlsxFile = (data, xlsxName) => {
 };
 ElementUI();
 Vue.prototype.$outputXlsxFile = outputXlsxFile;
-Vue.prototype.$axios = axios;
+// Vue.prototype.$axios = axios;
 Vue.prototype.$api = api;
 Vue.prototype.$message = Message;
 Vue.prototype.$messageBox = MessageBox;

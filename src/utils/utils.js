@@ -87,7 +87,7 @@ export default {
   setToken: (token) => {
     sessionStorage.setItem('token', token);
   },
-  /* 时间格式化 无分割线 */
+  /* 时间格式化 */
   dateFomats: str => {
     let timeDate = new Date(str);
     let year = timeDate.getFullYear();
@@ -236,7 +236,7 @@ export default {
     }
     return true;
   },
-  yyyymmdd: str => {
+  yyyymmdd: (str) => {
     let timeDate = new Date(str);
     let year = timeDate.getFullYear();
     let mounth = timeDate.getMonth() + 1;
@@ -413,5 +413,21 @@ export default {
     let times = `${year}/${mounth}/${day} 00:00:00`;
     let result = new Date(times).getTime();
     return result;
+  },
+  creatTimeEnd: date => {
+    let endTime = new Date(date).getTime() + 86400000;
+    let timeDate = new Date(endTime);
+    let year = timeDate.getFullYear();
+    let mounth = timeDate.getMonth() + 1;
+    let day = timeDate.getDate();
+    let hours = timeDate.getHours();
+    let minute = timeDate.getMinutes();
+    let second = timeDate.getSeconds();
+    mounth = mounth < 10 ? `0${mounth}` : mounth;
+    day = day < 10 ? `0${day}` : day;
+    hours = hours < 10 ? `0${hours}` : hours;
+    minute = minute < 10 ? `0${minute}` : minute;
+    second = second < 10 ? `0${second}` : second;
+    return `${year}-${mounth}-${day} ${hours}:${minute}:${second}`;
   }
 };

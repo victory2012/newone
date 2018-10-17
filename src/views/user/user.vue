@@ -191,7 +191,7 @@ export default {
           type: "warning"
         })
         .then(() => {
-          this.$axios.delete(`/user/${item.id}`).then(res => {
+          this.$api.deleteUser(item.id).then(res => {
             console.log(res);
             if (res.data && res.data.code === 0) {
               this.$message({
@@ -216,8 +216,7 @@ export default {
           }
         )
         .then(() => {
-          console.log("yes");
-          this.$axios.delete(`/company/${item.id}`).then(res => {
+          this.$api.deleteCompany(item.id).then(res => {
             if (res.data && res.data.code === 0) {
               this.$message({
                 message: "删除成功",
@@ -232,7 +231,7 @@ export default {
     changeQuanxian(item) {
       // console.log(item);
       this.userId = item.id;
-      this.$axios.get(`/user/permissions/${item.id}`).then(res => {
+      this.$api.permissions(item.id).then(res => {
         // console.log(res);
         if (res.data && res.data.code === 0) {
           if (res.data.data !== null) {
@@ -284,7 +283,7 @@ export default {
         userId: this.userId,
         permission: JSON.stringify(permission)
       };
-      this.$axios.put("/user/permissions", roleObj).then(res => {
+      this.$api.ChangePermissions(roleObj).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.$message({
@@ -329,7 +328,7 @@ export default {
         pageSize: this.pageSize,
         pageNum: this.currentPage
       };
-      this.$axios.get("/user", pageObj).then(res => {
+      this.$api.getUserList(pageObj).then(res => {
         console.log(res);
         this.loading = false;
         if (res.data && res.data.code === 0) {

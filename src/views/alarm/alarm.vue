@@ -1,9 +1,42 @@
 <template>
   <div class="alarmTable">
+    <div class="select">
+      <div class="item">
+        <el-button size="small" @click="search" type="primary">确定</el-button>
+        <el-button size="small" @click="clearAll" plain>清空</el-button>
+      </div>
+      <div class="item">
+        <el-select size="small" style="width:100%" v-model="alarm.level" placeholder="告警级别">
+          <el-option v-for="item in levelArr" :key="item.id" :label="item.name" :value="item.id"></el-option>
+        </el-select>
+      </div>
+      <div class="item">
+        <el-select size="small" style="width:100%" v-model="alarm.hierarchy" placeholder="告警层级">
+          <el-option v-for="item in hierarchyArr" :key="item.id" :label="item.name" :value="item.id"></el-option>
+        </el-select>
+      </div>
+      <div class="item">
+        <el-select size="small" style="width:100%" v-model="alarm.item" placeholder="告警项目">
+          <el-option v-for="item in alarmArr" :key="item.id" :label="item.name" :value="item.id"></el-option>
+        </el-select>
+      </div>
+      <div class="item">
+        <el-input size="small" style="width:100%" v-model="alarm.code" placeholder="电池组编号"></el-input>
+      </div>
+      <div class="item">
+        <el-date-picker size="small" style="width: 100%" v-model="alarm.endTime" type="date" placeholder="结束时间">
+        </el-date-picker>
+      </div>
+      <div class="item">
+        <el-date-picker size="small" value-format="yyyy-MM-dd HH:mm:ss" style="width: 100%" v-model="alarm.startTime" type="date" placeholder="开始时间">
+        </el-date-picker>
+      </div>
+
+    </div>
     <el-table v-loading="loading" :data="tableData" style="width: 100%">
       <el-table-column type="index" align="center" label="序号" width="50">
       </el-table-column>
-      <el-table-column prop="createTime" align="center" label="告警发生时间">
+      <el-table-column prop="createTime" align="center" label="告警发生时间" width="180">
       </el-table-column>
       <el-table-column prop="items" align="center" label="告警项目">
       </el-table-column>
@@ -13,7 +46,7 @@
       </el-table-column>
       <el-table-column prop="hostCode" align="center" label="电池组编号">
       </el-table-column>
-      <el-table-column prop="content" align="center" label="告警内容">
+      <el-table-column prop="content" align="center" label="告警内容" width="240">
       </el-table-column>
       <el-table-column prop="hierarchy" align="center" label="告警层级">
       </el-table-column>
@@ -122,7 +155,62 @@ export default {
       total: 0,
       rowObj: {},
       details: false,
-      tableData: []
+      tableData: [],
+      alarm: {},
+      hierarchyArr: [
+        {
+          id: "",
+          name: "全部"
+        },
+        {
+          id: "Group",
+          name: "整组"
+        },
+        {
+          id: "Single",
+          name: "单体"
+        }
+      ],
+      levelArr: [
+        {
+          id: "",
+          name: "全部"
+        },
+        {
+          id: 1,
+          name: "高"
+        },
+        {
+          id: 2,
+          name: "中"
+        },
+        {
+          id: 3,
+          name: "低"
+        }
+      ],
+      alarmArr: [
+        {
+          id: "",
+          name: "全部"
+        },
+        {
+          id: "Voltage",
+          name: "电压"
+        },
+        {
+          id: "Current",
+          name: "电流"
+        },
+        {
+          id: "Temperature",
+          name: "温度"
+        },
+        {
+          id: "Fluid",
+          name: "液位"
+        }
+      ]
     };
   },
   mounted() {
@@ -164,14 +252,41 @@ export default {
       this.currentPage = val;
       this.getListData();
     },
+    search() {
+      this.currentPage = 1;
+      this.getListData();
+    },
+    clearAll() {
+      this.currentPage = 1;
+      this.alarm = {};
+      this.getListData();
+    },
     getListData() {
       this.loading = true;
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage
       };
+      if (this.alarm.startTime) {
+        pageObj.startCreateTime = this.alarm.startTime;
+      }
+      if (this.alarm.endTime) {
+        pageObj.endCreateTime = utils.creatTimeEnd(this.alarm.endTime);
+      }
+      if (this.alarm.item) {
+        pageObj.item = this.alarm.item;
+      }
+      if (this.alarm.code) {
+        pageObj.code = this.alarm.code;
+      }
+
+      if (this.alarm.level) {
+        pageObj.level = this.alarm.level;
+      }
+      if (this.alarm.hierarchy) {
+        pageObj.hierarchy = this.alarm.hierarchy;
+      }
       this.$api.alarmData(pageObj).then(res => {
-        console.log(res);
         this.loading = false;
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
@@ -203,6 +318,16 @@ export default {
   .page {
     padding-top: 20px;
     text-align: right;
+  }
+}
+.select {
+  margin-bottom: 30px;
+  width: 85%;
+  display: flex;
+  flex-direction: row-reverse;
+  .item {
+    flex: 1;
+    padding: 10px 5px;
   }
 }
 .detailCenter {

@@ -50,7 +50,6 @@ export default {
   watch: {
     travelData: {
       handler: function(vals) {
-        console.log("component map", vals);
         if (this.trajectory) {
           this.heatMapFun(vals.heatmap);
         } else {
@@ -94,6 +93,9 @@ export default {
     /* 热力图 方法 */
     heatMapFun(heatData) {
       this.trajectory = true;
+      if (!heatData[0] || !heatData[0].lng) {
+        return;
+      }
       if (this.markerArr.length > 0) {
         // 显示热力图的时候 删除地图上的marker点
         map.remove(this.markerArr);

@@ -65,7 +65,7 @@ export default {
             contactWay: this.validateForm.input,
             type: 0
           };
-          this.$axios.post("/company_global_external_notice", obj).then(res => {
+          this.$api.addOuterUsers(obj).then(res => {
             console.log(res);
             if (res.data && res.data.code === 0) {
               this.$message({
@@ -82,25 +82,23 @@ export default {
     /* 取消接收 */
     cancelReceive(key) {
       console.log(key);
-      this.$axios
-        .delete(`/company_global_external_notice/${key.id}`)
-        .then(res => {
-          console.log(res);
-          if (res.data && res.data.code === 0) {
-            this.$message({
-              type: "success",
-              message: res.data.msg
-            });
-            this.getList();
-          }
-        });
+      this.$api.cancelOuterUsers(key.id).then(res => {
+        console.log(res);
+        if (res.data && res.data.code === 0) {
+          this.$message({
+            type: "success",
+            message: res.data.msg
+          });
+          this.getList();
+        }
+      });
     },
     getList() {
       let pageObj = {
         pageNum: 1,
         pageSize: 10
       };
-      this.$axios.get("/company_global_external_notice", pageObj).then(res => {
+      this.$api.outerUsers(pageObj).then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           let result = res.data.data;

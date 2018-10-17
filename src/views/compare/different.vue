@@ -7,9 +7,7 @@
           <p v-for="(tag, index) in stacks1" :key="tag.hostId">电池编号{{index+1}}: {{tag.code}}</p>
           <!-- <p>电池编号2: {{stacks1[1].code}}</p> -->
         </div>
-        <div @click="openTable" class="compare-add">
-          添加比较
-        </div>
+        <div @click="openTable" class="compare-add">{{chooseText}}</div>
       </div>
     </div>
     <div class="timeCenter">
@@ -33,7 +31,7 @@
       <div class="TopWrapper">
         <div class="item">最多可选
           <span style="color:#71bfdb">2</span>项 设备ID：
-          <el-tag v-for="tag in stacks1" :key="tag.hostId+new Date()" @close="closeTags(tag)" closable :type="''">
+          <el-tag v-for="tag in stacks1" :key="tag.hostId+new Date()" @close="closeTags(tag)" :type="''">
             {{tag.code}}
           </el-tag>
         </div>
@@ -117,7 +115,7 @@ export default {
         current: []
       },
       batteryGroup: "",
-      chooseLen: 1,
+      chooseText: "添加电池单元",
       searchCont: "",
       tableVisible: false,
       summary: {},
@@ -341,6 +339,14 @@ export default {
       this.getBatteryList();
     },
     sureBtn() {
+      if (this.stacks1.length < 2) {
+        this.$message({
+          type: "warning",
+          message: "需添加2组电池"
+        });
+        return;
+      }
+      this.chooseText = "更换电池单元";
       this.contrastDatas = true;
       this.tableVisible = false;
     },
@@ -352,13 +358,24 @@ export default {
       });
     },
     handleSizeChange() {},
-    handleCurrentChange() {},
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.getBatteryList();
+    },
     toggleCheck(data) {
-      this.chooseLen = 2;
-      this.stacks1.push(data);
-      if (this.stacks1.length > 2) {
-        this.stacks1[0].checked = false;
-        this.stacks1.shift();
+      // this.chooseLen = 2;
+      if (!data.checked) {
+        this.stacks1.forEach((key, index) => {
+          if (key.code === data.code) {
+            this.stacks1.splice(index, 1);
+          }
+        });
+      } else {
+        this.stacks1.push(data);
+        if (this.stacks1.length > 2) {
+          this.stacks1[0].checked = false;
+          this.stacks1.shift();
+        }
       }
     },
     closeTags(tag) {
@@ -405,7 +422,7 @@ export default {
     .title {
       font-weight: 500;
       font-size: 18px;
-      margin-bottom: 16px;
+      margin: 16px auto;
     }
     .compare-add {
       border: 1px dashed #898989;
