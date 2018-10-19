@@ -31,6 +31,7 @@ export default function permissionFun() {
     modifyPermissions: true, // 修改权限，
     addAdmin: true, // 添加管理员
     deleteAdmin: true, // 删除管理员
+    allocation: false // 电池调配
   };
   if (role == null) {
     if (userData.type === 1) {
@@ -46,10 +47,28 @@ export default function permissionFun() {
       permissions.addAdmin = false;
       permissions.deleteAdmin = false;
       permissions.notice = false;
+      permissions.allocation = false;
+      permissions.threshold = false;
+    }
+    if (userData.type === 3 && userData.layerName === "平台") {
+      permissions.type = "plat";
+      permissions.AddBatteries = false;
+      permissions.info = false;
+      permissions.runState = true;
+      permissions.recovery = false;
+      permissions.addblack = false;
+      permissions.deleteBattery = false;
+      permissions.addCompany = false;
+      permissions.deleteCompany = false;
+      permissions.addAdmin = false;
+      permissions.deleteAdmin = false;
+      permissions.notice = false;
+      permissions.allocation = false;
       permissions.threshold = false;
     }
     if (userData.type === 2 && userData.layerName === "生产企业") {
       permissions.type = "manufactur";
+      permissions.allocation = true;
     }
     if (userData.type === 2 && userData.layerName === "采购企业") {
       let defaultper = defaultPermion.custormAdmin();
@@ -89,6 +108,7 @@ export default function permissionFun() {
       permissions.historyData = defaultper.historyData;
       permissions.alarm = defaultper.alarm;
       permissions.addblack = defaultper.addblack;
+      permissions.allocation = defaultper.allocation;
     }
     if (userData.type === 3 && userData.layerName === "采购企业") {
       let defaultper = defaultPermion.custormPer();
@@ -111,6 +131,7 @@ export default function permissionFun() {
       permissions.historyData = defaultper.historyData;
       permissions.alarm = defaultper.alarm;
       permissions.addblack = defaultper.addblack;
+      permissions.allocation = false;
     }
   } else {
     permissions.AddBatteries = role.AddBatteries;
@@ -125,6 +146,7 @@ export default function permissionFun() {
     permissions.alarmDatas = role.alarmDatas;
     permissions.recovery = role.recovery;
     permissions.addblack = role.addblack;
+    permissions.allocation = role.allocation;
   }
   return permissions;
 }

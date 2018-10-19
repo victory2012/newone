@@ -38,13 +38,13 @@
             </el-option>
           </el-select>
         </div>
-        <div class="item" v-if="loginData.type === 1">
+        <div v-if="userRole().selectProd" class="item">
           <el-select size="small" v-model="manufacter" placeholder="生产企业名称">
             <el-option v-for="item in companyArr" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </div>
-        <div v-else class="item">
+        <div v-if="userRole().selectCus" class="item">
           <el-select size="small" v-model="batCustom" placeholder="客户企业名称">
             <el-option v-for="item in batCustomOpts" :key="item.id" :label="item.name" :value="item.name">
             </el-option>
@@ -72,9 +72,9 @@
         </el-table-column>
         <el-table-column prop="norm" align="center" label="电池组规格">
         </el-table-column>
-        <el-table-column v-if="loginData.type === 1" prop="parentCompanyName" align="center" label="生产企业名称">
+        <el-table-column v-if="userRole().listProd" prop="parentCompanyName" align="center" label="生产企业名称">
         </el-table-column>
-        <el-table-column v-else prop="companyName" align="center" label="客户企业名称">
+        <el-table-column v-if="userRole().listCus" prop="companyName" align="center" label="客户企业名称">
         </el-table-column>
         <el-table-column prop="deviceCode" align="center" label="监测设备编号">
         </el-table-column>
@@ -132,7 +132,7 @@
       </div>
     </el-dialog>
     <add-battery @hasCreated="reloadBattery"></add-battery>
-    <battery-detail></battery-detail>
+    <battery-detail @hasCreated="reloadBattery"></battery-detail>
     <!-- <component @hasCreated="reloadBattery" :is="showAdd"></component> -->
   </div>
 </template>
@@ -310,9 +310,8 @@ export default {
       this.$router.push("/battery/defriend");
     },
     reloadBattery(data) {
-      if (data.value) {
-        this.getBatteryList();
-      }
+      console.log("emit 收到");
+      this.getBatteryList();
     },
     /* 查看详情 */
     details(data) {
@@ -705,7 +704,11 @@ export default {
         bindingStatus: this.bindStatus,
         status: 0
       };
-      if (this.loginData.type === 1 && this.manufacter) {
+      if (
+        (this.loginData.type === 1 ||
+          (this.loginData.type === 3 && this.loginData.layerName === "平台")) &&
+        this.manufacter
+      ) {
         options.parentCompanyId = this.manufacter;
       }
       this.$api.batteryList(options).then(res => {
@@ -785,16 +788,43 @@ export default {
     },
     /* 用户权限 */
     userRole() {
-      let roles = JSON.parse(utils.getStorage("loginData"));
-      console.log(this.AdminRoles);
+      let userObj = {};
+      if (
+        this.loginData.type === 1 ||
+        (this.loginData.type === 3 && this.loginData.layerName === "平台")
+      ) {
+        userObj.listCus = true;
+        userObj.listProd = true;
+        userObj.selectCus = false;
+        userObj.selectProd = true;
+      }
+      if (
+        this.loginData.type === 2 ||
+        (this.loginData.type === 3 && this.loginData.layerName === "生产企业")
+      ) {
+        userObj.listCus = true;
+        userObj.listProd = false;
+        userObj.selectCus = true;
+        userObj.selectProd = false;
+      }
+      // if (
+      //   this.loginData.type === 3 &&
+      //   this.loginData.layerName === "采购企业"
+      // ) {
+      //   userObj.listCus = true;
+      //   userObj.listProd = false;
+      //   userObj.selectCus = false;
+      //   userObj.selectProd = false;
+      // }
+      return userObj;
     },
     init() {
-      this.getGroupSpecif();
-      this.getSinglBattery();
-      this.getBatteryModelList();
-      this.getCompanyId();
+      this.getGroupSpecif(); // 获取电池规格列表
+      this.getSinglBattery(); // 获取电池单体型号列表
+      this.getBatteryModelList(); // 获取电池型号列表
+      this.getCompanyId(); // 获取客户企业表
 
-      this.getDeviceList();
+      this.getDeviceList(); // 获取设备列表
     },
     getCompany() {
       this.$api.manufacturerNames().then(res => {
@@ -818,9 +848,11 @@ export default {
     this.$store.state.addBattery = false;
     this.loginData = JSON.parse(utils.getStorage("loginData"));
     this.init();
-    // this.userRole();
-    if (this.loginData.type === 1) {
-      this.getCompany();
+    if (
+      this.loginData.type === 1 ||
+      (this.loginData.type === 3 && this.loginData.layerName === "平台")
+    ) {
+      this.getCompany(); // 查询生产企业
     }
     this.getBatteryList();
     this.connectMqtt();

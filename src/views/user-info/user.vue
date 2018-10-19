@@ -120,21 +120,11 @@ export default {
         this.phonesError = "手机号格式有误";
         return;
       }
-      if (!email.test(this.InfoForm.emails)) {
+      if (!email.test(this.InfoForm.emails) && this.InfoForm.emails !== "") {
         this.emailsError = "邮箱格式有误";
         return;
       }
       let userObj = {};
-      // console.log(this.InfoForm);
-      // if (this.InfoForm.phones !== this.userArr.phone) {
-      //   userObj.phone = this.InfoForm.phones;
-      // }
-      // if (this.InfoForm.nickName !== this.userArr.nickName) {
-      //   userObj.nickName = this.InfoForm.nickName;
-      // }
-      // if (this.InfoForm.email !== this.userArr.email) {
-      //   userObj.email = this.InfoForm.email;
-      // }
       userObj.phone = this.InfoForm.phones;
       userObj.nickName = this.InfoForm.nickName;
       userObj.email = this.InfoForm.emails;

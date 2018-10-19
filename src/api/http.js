@@ -1,6 +1,5 @@
 /* eslint-disable */
 import axios from 'axios';
-// import qs from 'qs';
 /* eslint-disable */
 import {
   Message
@@ -12,8 +11,9 @@ const timeout = 30000; // 超时时间
 axios.interceptors.request.use(config => {
   // 这里的config包含每次请求的内容
   // config.headers['Access-Control-Allow-Headers'] = '*';
-  if (sessionStorage.getItem('token')) {
-    config.headers.token = `${sessionStorage.getItem('token')}`;
+  let token = sessionStorage.getItem('token')
+  if (token) {
+    config.headers.token = `${token}`;
   }
   config.withCredentials = true;
   return config;
@@ -29,9 +29,8 @@ axios.interceptors.response.use(response => {
 
 function checkStatus(response) {
   // 如果http状态码正常，则直接返回数据
-  // console.log(response);
+
   if (response && (response.status === 200 || response.status === 304 || response.status === 400)) {
-    // console.log(response);
     if (response.data.code === 1) {
       // code = 1时 登录超时
       return {
@@ -40,12 +39,12 @@ function checkStatus(response) {
       };
     } else if (response.data.code === -1) {
       // code = -1时 请求失败
-      Message.error(response.data.msg);
+      // Message.error(response.data.msg);
       return {
         status: 404,
         msg: response.data.msg
       };
-    } else if (response.data.code === 0) {
+    } else if (response.data.code === 0 || response.data.code === 2) {
       // code = 0时 请求正常，正常返回
       return response;
     }

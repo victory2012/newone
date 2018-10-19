@@ -27,7 +27,8 @@ import {
   Row,
   InputNumber,
   Tag,
-  Slider
+  Slider,
+  Transfer
 } from 'element-ui';
 
 export default function elementui() {
@@ -59,4 +60,5 @@ export default function elementui() {
   Vue.use(InputNumber);
   Vue.use(Tag);
   Vue.use(Slider);
+  Vue.use(Transfer);
 }

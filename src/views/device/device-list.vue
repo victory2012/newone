@@ -2,16 +2,16 @@
   <div class="device">
     <div class="topTab">
       <div class="icons">
-        <div v-if="storge.type === 1" class="items" @click="regDialog">
+        <div v-if="storge.type === 1 || (storge.type === 3 && storge.layerName === '平台')" class="items" @click="regDialog">
           <img src="../../../static/img/device_reg.png" alt="">
           <p>设备注册</p>
         </div>
-        <div v-if="storge.type === 1" class="items" style="position: relative">
+        <div v-if="storge.type === 1 || (storge.type === 3 && storge.layerName === '平台')" class="items" style="position: relative">
           <input class="fileUpload" type="file" @change="fileUpload" v-loading.fullscreen.lock="fullscreenLoading" />
           <img src="../../../static/img/device_import.png" alt="">
           <p>批量导入</p>
         </div>
-        <div v-if="storge.type === 1" class="items">
+        <div v-if="storge.type === 1 || (storge.type === 3 && storge.layerName === '平台')" class="items">
           <router-link to="/device/defriend">
             <img src="../../../static/img/device_recover.png" alt="">
             <p>恢复拉黑设备</p>
@@ -34,7 +34,7 @@
           </el-select>
         </div>
         <div class="item">
-          <el-button @click="getDeviceList" size="small" type="primary">确定</el-button>
+          <el-button @click="searchList" size="small" type="primary">确定</el-button>
           <el-button @click="clearAll" size="small" plain>清空</el-button>
         </div>
       </div>
@@ -341,6 +341,10 @@ export default {
       this.currentPage = val;
       this.getDeviceList();
     },
+    searchList() {
+      this.currentPage = 1;
+      this.getDeviceList();
+    },
     /* 查看 */
     MonitorDevice(data) {
       this.$router.push({
@@ -486,7 +490,10 @@ export default {
   mounted() {
     this.storge = JSON.parse(utils.getStorage("loginData"));
     this.getDeviceList();
-    if (this.storge.type === 1) {
+    if (
+      this.storge.type === 1 ||
+      (this.storge.type === 3 && this.storge.layerName === "平台")
+    ) {
       this.manufacturerName = true;
       this.getCompany();
     }

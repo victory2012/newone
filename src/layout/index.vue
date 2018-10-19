@@ -89,7 +89,10 @@ export default {
       }
     },
     switchMenu(getUserType) {
-      if (getUserType.type === 1) {
+      if (
+        getUserType.type === 1 ||
+        (getUserType.type === 3 && getUserType.layerName === "平台")
+      ) {
         this.menus = menu.getPlat();
       } else if (
         getUserType.type === 2 &&

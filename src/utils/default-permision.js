@@ -9,7 +9,8 @@ export default {
       personalInfo: true,
       sameAnalysis: false,
       alarm: true,
-      addblack: true
+      addblack: true,
+      allocation: false
     };
     return permis;
   },
@@ -23,7 +24,8 @@ export default {
       historyData: true,
       alarm: true,
       sameAnalysis: false,
-      addblack: false
+      addblack: false,
+      allocation: false
     };
     return custorm;
   },
@@ -38,8 +40,8 @@ export default {
       historyData: true,
       alarm: true,
       sameAnalysis: true,
-      // sameBatch: false,
-      addblack: false
+      addblack: false,
+      allocation: false
     };
     return product;
   },

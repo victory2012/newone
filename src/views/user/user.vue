@@ -91,6 +91,7 @@ export default {
       userId: null,
       addType: null, // 添加公司的类型
       tableData: [],
+      storge: "",
       userRole: [
         {
           label: "电池登记",
@@ -102,21 +103,6 @@ export default {
           id: "addblack",
           value: false
         },
-        // {
-        //   label: "基础信息",
-        //   id: "info",
-        //   value: false
-        // },
-        // {
-        //   label: "运行状况",
-        //   id: "runState",
-        //   value: false
-        // },
-        // {
-        //   label: "告警数据",
-        //   id: "alarmDatas",
-        //   value: false
-        // },
         {
           label: "历史数据",
           id: "historyData",
@@ -132,11 +118,6 @@ export default {
           id: "sameAnalysis",
           value: false
         },
-        // {
-        //   label: "同批次不同电池单元的数据分析",
-        //   id: "sameBatch",
-        //   value: false
-        // },
         {
           label: "个人信息维护",
           id: "personalInfo",
@@ -148,6 +129,8 @@ export default {
   mounted() {
     this.$store.state.manfictor = false;
     this.$store.state.custom = false;
+    this.storge = JSON.parse(utils.getStorage("loginData"));
+
     this.getUserList();
     this.userLimit();
   },
@@ -160,7 +143,10 @@ export default {
       }
       let getLayerName = JSON.parse(loginData);
       // console.log(getLayerName);
-      if (getLayerName.layerName === "平台" && getLayerName.type === 1) {
+      if (
+        getLayerName.layerName === "平台" &&
+        (getLayerName.type === 1 || getLayerName.type === 3)
+      ) {
         this.userData = addData.getPlat();
       }
       if (getLayerName.layerName === "生产企业" && getLayerName.type === 2) {
@@ -229,14 +215,28 @@ export default {
     },
     /* 修改权限 -- 按钮 */
     changeQuanxian(item) {
-      // console.log(item);
+      if (
+        (item.type === 2 && item.layerName === "生产企业") ||
+        (item.type === 3 && item.layerName === "生产企业")
+      ) {
+        if (this.userRole.length === 6) {
+          this.userRole.push({
+            label: "电池调配",
+            id: "allocation",
+            value: false
+          });
+        }
+      } else {
+        if (this.userRole.length > 6) {
+          this.userRole.splice(6, 1);
+        }
+      }
       this.userId = item.id;
       this.$api.permissions(item.id).then(res => {
         // console.log(res);
         if (res.data && res.data.code === 0) {
           if (res.data.data !== null) {
             let permis = JSON.parse(res.data.data);
-            // console.log(permis);
             let keys = Object.keys(permis);
             let values = Object.values(permis);
             this.userRole.forEach((key, index) => {
@@ -318,9 +318,7 @@ export default {
       }
     },
     reloadData(data) {
-      if (data.value) {
-        this.getUserList();
-      }
+      this.getUserList();
     },
     getUserList() {
       this.loading = true;
@@ -335,7 +333,7 @@ export default {
           let result = res.data;
           this.tableData = [];
           this.total = result.data.total;
-          let storge = JSON.parse(utils.getStorage("loginData"));
+          // let storge = JSON.parse(utils.getStorage("loginData"));
           if (result.data.pageData.length > 0) {
             // console.log(this.AdminRoles);
             result.data.pageData.forEach(key => {
@@ -343,49 +341,54 @@ export default {
               key.userType = this.AdminRoles.deleteAdmin;
               key.email = key.email || "-";
               if (
-                storge.companyId === key.companyId &&
-                storge.type === key.type
+                this.storge.companyId === key.companyId &&
+                this.storge.type === key.type
               ) {
                 key.canNotDelete = false;
                 key.userType = false;
               } else {
-                if (key.type === 1) {
+                if (
+                  key.type === 1 ||
+                  (key.type === 3 && key.layerName === "平台")
+                ) {
                   // 平台
                   key.userType = false;
                   key.canNotDelete = false;
                 }
                 if (
-                  storge.type === 1 &&
+                  (this.storge.type === 1 ||
+                    (this.storge.type === 3 &&
+                      this.storge.layerName === "平台")) &&
                   key.type === 2 &&
                   key.layerName === "生产企业"
                 ) {
                   key.canNotDelete = true;
                 }
                 if (
-                  storge.type === 2 &&
-                  storge.layerName === "生产企业" &&
+                  this.storge.type === 2 &&
+                  this.storge.layerName === "生产企业" &&
                   key.type === 2 &&
                   key.layerName === "采购企业"
                 ) {
                   key.canNotDelete = true;
                 }
                 if (
-                  storge.type === 2 &&
-                  storge.layerName === "生产企业" &&
+                  this.storge.type === 2 &&
+                  this.storge.layerName === "生产企业" &&
                   key.type === 3
                 ) {
                   key.canNotDelete = true;
                 }
                 if (
-                  storge.type === 2 &&
-                  storge.layerName === "采购企业" &&
+                  this.storge.type === 2 &&
+                  this.storge.layerName === "采购企业" &&
                   key.type === 3
                 ) {
                   key.userType = true;
                   key.canNotDelete = true;
                 }
                 if (
-                  storge.type === 3 &&
+                  this.storge.type === 3 &&
                   // storge.layerName === "采购企业" &&
                   key.type === 3 &&
                   key.layerName === "采购企业"
@@ -393,7 +396,13 @@ export default {
                   key.userType = false;
                   key.canNotDelete = false;
                 }
-                if (storge.type === 3 && (key.type === 2 || key.type === 1)) {
+                if (
+                  this.storge.type === 3 &&
+                  this.storge.layerName !== "平台" &&
+                  (key.type === 2 ||
+                    (key.type === 1 ||
+                      (key.type === 3 && key.layerName === "平台")))
+                ) {
                   key.userType = false;
                   key.canNotDelete = false;
                 }

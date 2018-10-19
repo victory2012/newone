@@ -173,7 +173,12 @@ export default {
       this.getListData();
       this.getModelData();
       this.getProvenceData();
-      if (userType.type !== 3 && userType.layerName !== "采购企业") {
+      if (
+        (userType.type === 3 && userType.layerName === "平台") ||
+        userType.type === 2 ||
+        userType.type === 1
+      ) {
+        // if (userType.type !== 3 && userType.layerName !== "采购企业") {
         this.getCampanyData();
       } else {
         this.isUser = true;

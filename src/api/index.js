@@ -5,18 +5,22 @@ export default {
   login: (data) => {
     return http.post(`/login`, data);
   },
-  /* 登录 */
+
+  /* 登出 */
   logOut: () => {
     return http.post(`/login/logout`);
   },
+
   /* 获取权限 */
   permissions: (data) => {
     return http.get(`/user/permissions/${data}`);
   },
+
   /* 获取短信验证码 */
   SMScode: (data) => {
     return http.post(`/login/sms/send`, data);
   },
+
   /* 验证短信验证的正确性 */
   SMSVertify: (data) => {
     return http.post(`/login/sms/verify`, data);
@@ -26,42 +30,52 @@ export default {
   betteryBlack: (data) => {
     return http.put(`device`, data);
   },
+
   /* 电池详情 */
   betteryDetails: (data) => {
     return http.get(`/battery_group/${data}`);
   },
+
   /* 修改电池详情 */
   changeBatteryDetail: (id, options) => {
     return http.put(`/battery_group/${id}`, options);
   },
+
   /* 电池绑定 */
   betteryBind: (data) => {
     return http.put(`host/bind`, data);
   },
+
   /* 获取电池组规格列表 */
   batteryGroupSpecif: () => {
     return http.get("/dic?type=Norm&categoryId=2");
   },
+
   /* 获取电池单体型号列表 */
   batterySingleModel: () => {
     return http.get("/dic?type=SingleModel&categoryId=2");
   },
+
   /* 添加电池组型号、规格、单体规格 */
   batteryADDALL: (data) => {
     return http.post("/dic", data);
   },
+
   /* 删除电池 */
   batteryDetele: (data) => {
     return http.delete(`/host/${data}`);
   },
+
   /* 电池解绑 */
   batteryUnBind: (data) => {
     return http.put(`host/unbind/${data}`);
   },
+
   /* 电池批量上传 */
   batteryUpLoadAll: (data) => {
     return http.post(`/battery_group/batch`, data);
   },
+
   /* 电池列表 */
   batteryList: (data) => {
     return http.get("/battery_group", data);
@@ -76,14 +90,21 @@ export default {
   batteryModelList: () => {
     return http.get("/dic?type=Model&categoryId=2");
   },
+
   /* 获取电池组客户企业表 */
   purchaseNames: () => {
     return http.get("/company/purchase_names");
+  },
+
+  /* 获取电池组客户企业表 -- 无待定企业 */
+  purchaseNames2: () => {
+    return http.get("/company/purchase_names2");
   },
   /* 获取未绑定设备 */
   DeviceList: () => {
     return http.get("/device/code?status=0&bindingStatus=0");
   },
+
   /* 获取生产企业列表 */
   manufacturerNames: () => {
     return http.get(`company/manufacturer_names`);
@@ -92,12 +113,15 @@ export default {
   overviewCount: () => {
     return http.get(`/battery_group/count`);
   },
+
   overviewCompany: () => {
     return http.get(`/battery_group/sub_companies/count`);
   },
+
   overviewModel: () => {
     return http.get(`/battery_group/model/count`);
   },
+
   overviewProvence: () => {
     return http.get(`/battery_group/province/count`);
   },
@@ -106,43 +130,53 @@ export default {
   alarmData: (data) => {
     return http.get(`/battery_group_event`, data);
   },
+
   /* 获取设备的告警 详情 */
   allAlarmData: (data) => {
     return http.get(`/battery_group_event/${data}`);
   },
+
   /* 黑名单（设备 && 电池） */
   deviceBlackList: (data) => {
     return http.get("device", data);
   },
+
   /* 运行状况 */
   /* 获取电池 info 信息 */
   batteryGroupInfo: (data) => {
     return http.get(`/battery_group/${data}/info`);
   },
+
   /* 获取电量 */
   batteryCapacity: (data) => {
     return http.get(`/battery_group/${data}/capacity`);
   },
+
   /* 发送设备地址 到后台 */
   sendAddress: (data) => {
     return http.put(`battery_group/address`, data);
   },
+
   /* 实时页面 获取过去四个小时的数据 */
   realData: (hostId, device, startTime, endTime) => {
     return http.get(`/battery_group/${hostId}/${device}/data?startTime=${startTime}&endTime=${endTime}`);
   },
+
   /* 获取历史数据 */
   historyData: (hostId, device, startTime, endTime) => {
     return http.get(`/battery_group/${hostId}/${device}/data2?startTime=${startTime}&endTime=${endTime}`);
   },
+
   /* 历史告警 */
   historyAlarm: (hostId, startTime, endTime, data) => {
     return http.get(`/battery_group_event?hostId=${hostId}&startTime=${startTime}000000&endTime=${endTime}235959`, data);
   },
+
   /* 历史补水 */
   historyFluid: (hostId, device, data) => {
     return http.get(`/battery_group/${hostId}/${device}/fluid`, data);
   },
+
   /* 单个设备 告警数据 */
   singleAlarm: (hostId, pageData) => {
     return http.get(`/battery_group_event?hostId=${hostId}`, pageData);
@@ -192,11 +226,6 @@ export default {
   deviceList: (data) => {
     return http.get("/device", data);
   },
-
-  // /* 删除告警接收人 */
-  // deleteNotice: (id) => {
-  //   return http.delete(`/company_global_internal_notice/${id}`);
-  // },
 
   /* 取消告警接收人 */
   cancelNotice: (id) => {
@@ -286,5 +315,24 @@ export default {
   /* 获取用户列表 */
   getUserList: (data) => {
     return http.get(`/user`, data);
+  },
+
+
+  companyPair: (companyId) => {
+    return http.get(`/battery_group/${companyId}/id_name_pair`);
+  },
+
+  inventoryPair: () => {
+    return http.get(`/battery_group/inventory/id_name_pair`);
+  },
+
+  /* 电池回收 */
+  recoverBattery: (data) => {
+    return http.post(`/battery_group/recycle`, data);
+  },
+
+  /* 电池分配 */
+  distributeBattery: (data) => {
+    return http.post(`/battery_group/distribute`, data);
   }
 };

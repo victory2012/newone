@@ -58,7 +58,7 @@ export default {
           {
             type: "pie",
             radius: ["30%", "50%"],
-            center: ["50%", "60%"],
+            center: ["50%", "40%"],
             data: [],
             itemStyle: {
               emphasis: {
@@ -127,9 +127,9 @@ export default {
         return item;
       };
       voltageOptions.series[0].data = [
-        { value: peiData.summary.chargeDuration, name: "充电时间" },
-        { value: peiData.summary.dischargeDuration, name: "放电时间" },
-        { value: peiData.summary.idleDuration, name: "空载时间" }
+        { value: peiData.summary.chargeDuration || 0, name: "充电时间" },
+        { value: peiData.summary.dischargeDuration || 0, name: "放电时间" },
+        { value: peiData.summary.idleDuration || 0, name: "空载时间" }
       ];
       voltageOptions.series[0].label.normal.formatter = "{c}h";
       this.peiEcharts1.setOption(voltageOptions);
@@ -141,11 +141,15 @@ export default {
         Number(peiData.eventSummary.current);
       let currentOptions = deepClone(this.pieOption);
       currentOptions.legend.data = ["温度", "液位", "电压", "电流"];
+      currentOptions.tooltip.formatter = p => {
+        let item = `${p.percent}%<br />${p.data.name}-告警: ${p.data.value}次`;
+        return item;
+      };
       currentOptions.series[0].data = [
-        { value: peiData.eventSummary.temperature, name: "温度" },
-        { value: peiData.eventSummary.fluidLevel, name: "液位" },
-        { value: peiData.eventSummary.voltage, name: "电压" },
-        { value: peiData.eventSummary.current, name: "电流" }
+        { value: peiData.eventSummary.temperature || 0, name: "温度" },
+        { value: peiData.eventSummary.fluidLevel || 0, name: "液位" },
+        { value: peiData.eventSummary.voltage || 0, name: "电压" },
+        { value: peiData.eventSummary.current || 0, name: "电流" }
       ];
       this.peiEcharts2.setOption(currentOptions);
     }
@@ -166,9 +170,9 @@ export default {
     }
     .item-history_alarm_divider {
       box-sizing: border-box;
-      height: 200px;
+      height: 260px;
       border-left: 1px solid #d7d7d7;
-      margin: 163px auto 0;
+      margin: 70px auto 0;
       margin-left: 140px;
       padding-left: 70px;
       padding-top: 74px;

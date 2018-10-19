@@ -45,6 +45,8 @@ const deviceRealData = () =>
   import( /* webpackChunkName: "deviceRealData" */ '../views/device/deviceReal.vue');
 const overviewComponent = () =>
   import( /* webpackChunkName: "overviewComponent" */ '../views/overview/overview.vue')
+const StockComponent = () =>
+  import( /* webpackChunkName: "StockComponent" */ '../views/Stock/stock.vue')
 
 /* eslint-disable */
 export default new Router({
@@ -136,6 +138,10 @@ export default new Router({
         {
           path: '/device-real',
           component: deviceRealData
+        },
+        {
+          path: '/battery/stock',
+          component: StockComponent
         }
       ]
     },

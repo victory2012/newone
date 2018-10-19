@@ -29,7 +29,7 @@ const menu = [{
           {
             text: "运行状况",
             link: "/battery/run"
-          }
+          },
         ]
       },
       {
@@ -115,6 +115,10 @@ export default {
     // listData1[3] = "";
     listData1[4].children[1] = "";
     listData1[4].children[2] = "";
+    listData1[1].children[0].children[3] = {
+      text: "电池调配",
+      link: "/battery/stock",
+    };
     personRole.data = listData1;
     personRole.permissions = permissionFun();
     return personRole;
@@ -130,9 +134,14 @@ export default {
         link: "/battery/compare"
       }
     }
-    // if (!permissionFun().runState) {
-    //   listData5[1].children[0].children[2] = "";
-    // }
+    if (!permissionFun().allocation) {
+      listData5[1].children[0].children[3] = "";
+    } else {
+      listData5[1].children[0].children[3] = {
+        text: "电池调配",
+        link: "/battery/stock",
+      };
+    }
     if (!permissionFun().alarm) {
       listData5[1].children[2] = "";
     } else {

@@ -135,10 +135,10 @@ export default {
     },
     /* 保存 */
     saveDetails() {
-      console.log("电池组型号", this.editObj);
-      console.log("电池组型号", this.getGroupModelOpts);
-      console.log("电池规格", this.getBatGroupSpecifOpts);
-      console.log("单体电压", this.getSingleBatteryOpts);
+      // console.log("电池组型号", this.editObj);
+      // console.log("电池组型号", this.getGroupModelOpts);
+      // console.log("电池规格", this.getBatGroupSpecifOpts);
+      // console.log("单体电压", this.getSingleBatteryOpts);
       if (!this.AdminRoles.AddBatteries) {
         return;
       }
