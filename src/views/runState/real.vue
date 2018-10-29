@@ -137,6 +137,7 @@ export default {
         this.getQuantity();
       }
     }, 25000);
+    // console.log("经纬度", this.gcj_encrypt(31.135837, 121.320255));
   },
   destroyed() {
     if (
@@ -232,7 +233,7 @@ export default {
       let param = {
         id: this.hostObj.id,
         province: data.province ? data.province : data.city,
-        city: data.city
+        city: data.city ? data.city : data.province
       };
       this.$api.sendAddress(param).then(res => {
         console.log(res);
@@ -272,7 +273,12 @@ export default {
       this.infoData.fluid = dataObj.liquid === 0 ? "正常" : "异常";
       this.infoData.voltage = dataObj.voltage;
       this.infoData.singleVoltage = dataObj.singleVoltage;
-      this.infoData.current = dataObj.current;
+      if (Number(dataObj.current) < 0 && Number(dataObj.current) < -300) {
+        dataObj.current = 0;
+        this.infoData.current = 0;
+      } else {
+        this.infoData.current = -Number(dataObj.current);
+      }
       this.infoData.hhmmss = utils.hhmmss(dataObj.times);
       this.infoData.yyddmm = utils.yyyymmdd(dataObj.times);
       this.infoData.gcjLongitude = posData.lon;
@@ -442,7 +448,6 @@ export default {
     /* 入口 */
     gcj_encrypt(wgsLat, wgsLon) {
       if (this.outOfChina(wgsLat, wgsLon)) return { lat: wgsLat, lon: wgsLon };
-
       var d = this.delta(wgsLat, wgsLon);
       return { lat: wgsLat + d.lat, lon: wgsLon + d.lon };
     },

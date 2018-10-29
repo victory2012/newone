@@ -6,31 +6,31 @@
     <div class="item">
       <div class="form">
         <el-tabs v-model="activeName" :stretch="true">
-          <el-tab-pane label="账户密码登录" name="accPwd">
+          <el-tab-pane :label="$t('loginMsg.labelAccPass')" name="accPwd">
             <el-form label-position="top" :rules="LoginRules" ref="LoginForm" label-width="80px" :model="LoginForm">
-              <el-form-item label="账号" prop="account">
+              <el-form-item :label="$t('loginMsg.accountPlace')" prop="account">
                 <el-input v-model="LoginForm.account"></el-input>
               </el-form-item>
-              <el-form-item label="密码" prop="password">
+              <el-form-item :label="$t('loginMsg.passwordPlace')" prop="password">
                 <el-input type="password" v-model="LoginForm.password" @keyup.enter.native="accountLogin('LoginForm')"></el-input>
               </el-form-item>
               <el-form-item>
                 <!-- <button @click.stop.prevent="accountLogin('LoginForm')" class="accpwsBtn">登录</button> -->
-                <el-button :loading="doLogin" type="primary" class="accpwsBtn" @click="accountLogin('LoginForm')" round>登录</el-button>
+                <el-button :loading="doLogin" type="primary" class="accpwsBtn" @click="accountLogin('LoginForm')" round>{{$t('loginMsg.loginBtn')}}</el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane label="验证码登录" name="SMScode">
+          <el-tab-pane :label="$t('loginMsg.labelSmsCode')" name="SMScode">
             <el-form label-position="top" :rules="phoneRules" ref="smsPhone" label-width="80px" :model="smsForm">
-              <el-form-item label="手机号" prop="phone">
+              <el-form-item :label="$t('loginMsg.phone')" prop="phone">
                 <el-input v-model="smsForm.phone"></el-input>
               </el-form-item>
-              <el-form-item label="短信验证码" class="smsCode" prop="smsCode">
+              <el-form-item :label="$t('loginMsg.smsCode')" class="smsCode" prop="smsCode">
                 <el-input v-model="smsForm.smsCode" @keyup.enter.native="getSmsCode"></el-input>
                 <el-button class="getSms" @click="getSmsCode" :disabled="hasGetSms" type="primary" plain>{{smsMsg}}</el-button>
               </el-form-item>
               <el-form-item>
-                <el-button :loading="doLogin" type="primary" class="accpwsBtn" @click="checkSmsCode" round>登录</el-button>
+                <el-button :loading="doLogin" type="primary" class="accpwsBtn" @click="checkSmsCode" round>{{$t('loginMsg.loginBtn')}}</el-button>
                 <!-- <button @click.stop.prevent="checkSmsCode" class="accpwsBtn">登录</button> -->
               </el-form-item>
             </el-form>
@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       hasGetSms: false,
-      smsMsg: "获取验证码",
+      smsMsg: this.$t("loginMsg.getSmsCode"),
       activeName: "accPwd",
       smsForm: {
         phone: "",
@@ -54,21 +54,41 @@ export default {
       doLogin: false,
       phoneRules: {
         phone: [
-          { required: true, message: "请输入手机号", trigger: "change" },
+          {
+            required: true,
+            message: this.$t("loginMsg.errorMsg.phoneNub"),
+            trigger: "change"
+          },
           {
             pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
-            message: "手机号格式错误",
+            message: this.$t("loginMsg.errorMsg.checkPhone"),
             trigger: "change"
           }
         ],
         smsCode: [
-          { required: true, message: "请输入短信验证码", trigger: "blur" }
+          {
+            required: true,
+            message: this.$t("loginMsg.errorMsg.smsCodeErr"),
+            trigger: "blur"
+          }
         ]
       },
       LoginForm: {},
       LoginRules: {
-        account: [{ required: true, message: "请输入账号", trigger: "blur" }],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" }]
+        account: [
+          {
+            required: true,
+            message: this.$t("loginMsg.errorMsg.account"),
+            trigger: "blur"
+          }
+        ],
+        password: [
+          {
+            required: true,
+            message: this.$t("loginMsg.errorMsg.password"),
+            trigger: "blur"
+          }
+        ]
       }
     };
   },
@@ -115,16 +135,16 @@ export default {
               this.hasGetSms = true;
               let Timer = setInterval(() => {
                 conut--;
-                this.smsMsg = `重新获取${conut}s`;
+                this.smsMsg = `${conut}s`;
                 if (conut < 1) {
-                  this.smsMsg = "获取验证码";
+                  this.smsMsg = this.$t("loginMsg.getSmsCode");
                   this.hasGetSms = false;
                   clearInterval(Timer);
                 }
               }, 1000);
               this.$message({
                 type: "success",
-                message: "发送成功"
+                message: this.$t("loginMsg.smsSuccess")
               });
             }
           });

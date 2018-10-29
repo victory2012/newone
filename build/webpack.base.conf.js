@@ -28,7 +28,8 @@ module.exports = {
     path: config.build.assetsRoot,
     filename: '[name].[hash].js',
     chunkFilename: '[name].chunk[hash].js',
-    publicPath: "/pc/"
+    publicPath: config.build.assetsPublicPath
+    // publicPath: "/pc/"
   },
   resolve: {
     extensions: ['.js', '.vue', '.json'],

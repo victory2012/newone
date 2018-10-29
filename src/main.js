@@ -11,6 +11,7 @@ import App from './App';
 import router from './router';
 import createStore from "./store/store";
 import api from '@/api/index';
+import i18n from "@/i18n";
 import utils from "./utils/utils";
 import ElementUI from './UI/element';
 import {
@@ -51,6 +52,7 @@ new Vue({
   el: '#app',
   router,
   store,
+  i18n,
   components: {
     App
   },
