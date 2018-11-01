@@ -7,6 +7,7 @@ export default {
   addBattery: false,
   batteryModel: null,
   userRoles: null,
+  cardData: '', // 概览 统计数据
   batteryDetailsShow: false, // 是否显示电池详情框
   batteryDetailsData: "", // 电池详情 数据
   addUserText: "",

@@ -64,8 +64,7 @@ export default {
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage,
-        // registerStatus: "",
-        // code: "",
+        time: new Date().getTime(),
         status: -1,
         bindingStatus: "1"
       };

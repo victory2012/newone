@@ -8,7 +8,7 @@
         <div class="account">
           <div class="datas">
             <p class="title">电池总数</p>
-            <p class="info">{{tatolData.total || 0}}</p>
+            <p class="info">{{GETCARDDATA.total || 0}}</p>
           </div>
         </div>
       </div>
@@ -22,7 +22,7 @@
         <div class="account">
           <div class="datas">
             <p class="title">本月新增电池数</p>
-            <p class="info">{{tatolData.currentMonthTotal || 0}}</p>
+            <p class="info">{{GETCARDDATA.currentMonthTotal || 0}}</p>
           </div>
         </div>
       </div>
@@ -36,7 +36,7 @@
         <div class="account">
           <div class="datas">
             <p class="title">有效监控数</p>
-            <p class="info">{{tatolData.activeTotal || 0}}</p>
+            <p class="info">{{GETCARDDATA.activeTotal || 0}}</p>
           </div>
         </div>
       </div>
@@ -49,7 +49,7 @@
         <div class="account">
           <div class="datas">
             <p class="title">告警电池数</p>
-            <p class="info">{{tatolData.alarmedTotal || 0}}</p>
+            <p class="info">{{GETCARDDATA.alarmedTotal || 0}}</p>
           </div>
         </div>
       </div>
@@ -58,6 +58,9 @@
   </div>
 </template>
 <script>
+/* eslint-disable */
+import { mapGetters } from "vuex";
+
 export default {
   props: {
     cardData: {
@@ -70,16 +73,8 @@ export default {
       tatolData: this.cardData
     };
   },
-  watch: {
-    cardData: {
-      handler: function(val) {
-        this.tatolData = val;
-      },
-      deep: true
-    }
-  },
-  mounted() {
-    // this.getCardData();
+  computed: {
+    ...mapGetters(["GETCARDDATA"])
   },
   methods: {
     GotoLink(url) {
@@ -95,7 +90,7 @@ export default {
   flex-wrap: nowrap;
   .card {
     box-sizing: border-box;
-    flex: 0 0 25%;
+    flex: 1;
     // text-align: center;
     padding: 0 10px;
     height: 108px;

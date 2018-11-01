@@ -73,5 +73,9 @@ export default {
   /* 电池详情 */
   SETBATTERYDETAILDATA(state, data) {
     state.batteryDetailsData = data;
+  },
+  /* 概览 统计数据 */
+  SETCARDDATA(state, data) {
+    state.cardData = data;
   }
 };

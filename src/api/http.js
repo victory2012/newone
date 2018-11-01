@@ -4,6 +4,9 @@ import axios from 'axios';
 import {
   Message
 } from 'element-ui';
+import router from "../router";
+
+// console.log('router ===>>>', router);
 
 const baseURL = process.env.API_HOST;
 
@@ -15,7 +18,7 @@ axios.interceptors.request.use(config => {
   if (token) {
     config.headers.token = `${token}`;
   }
-  config.withCredentials = true;
+  // config.withCredentials = true;
   return config;
 }, err => {
   return Promise.reject(err);
@@ -29,7 +32,7 @@ axios.interceptors.response.use(response => {
 
 function checkStatus(response) {
   // 如果http状态码正常，则直接返回数据
-
+  // console.log('response', response);
   if (response && (response.status === 200 || response.status === 304 || response.status === 400)) {
     if (response.data.code === 1) {
       // code = 1时 登录超时
@@ -66,9 +69,10 @@ function checkCode(res) {
   if (res.status === 300) {
     Message.warning(res.msg);
     setTimeout(() => {
-      window.location.href = '#/login';
+      router.push('/login')
+      // window.location.href = '#/login';
       sessionStorage.clear();
-    }, 1000);
+    }, 1200);
   }
   return res;
 }

@@ -138,7 +138,7 @@ export default {
             mode: "dragMarker",
             map: map,
             iconStyle: {
-              url: "http://pfsm46mq4.bkt.clouddn.com/iocna.png",
+              // url: "http://pfsm46mq4.bkt.clouddn.com/iocna.png",
               size: [1, 1],
               ancher: [1, 1]
             }
@@ -201,6 +201,10 @@ export default {
           let distance = Number(this.alldistance) / 1000; // 米转成千米
           let times = Number(this.timeSeconds) / 3600; // 秒转成小时
           let speeds = Math.ceil(distance / times); // 最终得到的速度是 km/h
+          let carUrl =
+            process.env.pack_ENV === "test" || process.env.pack_ENV === "prod"
+              ? "../../static/img/car.png"
+              : "../../pc/static/img/car.png";
           navg = pathSimplifierIns.createPathNavigator(0, {
             loop: true,
             speed: speeds,
@@ -210,9 +214,7 @@ export default {
               strokeStyle: null,
               fillStyle: null,
               // 使用图片
-              content: PathSimplifier.Render.Canvas.getImageContent(
-                "http://pfsm46mq4.bkt.clouddn.com/car.png"
-              )
+              content: PathSimplifier.Render.Canvas.getImageContent(carUrl)
             }
           });
         });

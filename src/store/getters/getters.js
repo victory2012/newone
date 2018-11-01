@@ -67,5 +67,8 @@ export default {
       return JSON.parse(state.batteryDetailsData);
     }
     return {};
+  },
+  GETCARDDATA(state) {
+    return state.cardData;
   }
 };

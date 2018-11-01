@@ -2,10 +2,11 @@
 import AMap from "AMap";
 
 export default function (lnglat, cb) {
-  let geocoder;
-  geocoder = new AMap.Geocoder({
+  let geocoder = new AMap.Geocoder({
+    lang: 'en',
     radius: 1000 // 范围，默认：500
   });
+  // console.log(geocoder);
   geocoder.getAddress(lnglat, (status, result) => {
     // console.log(result);
     if (status === 'complete' && result.regeocode) {

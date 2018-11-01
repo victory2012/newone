@@ -1,6 +1,7 @@
 <template>
   <div>
-    <edit-card :cardData="cardData"></edit-card>
+    <!-- :cardData="cardData" -->
+    <edit-card></edit-card>
     <div class="warper">
       <el-row :gutter="10">
         <el-col :span="14">
@@ -106,6 +107,7 @@
 </template>
 <script>
 import utils from "@/utils/utils";
+// import langlat from "@/utils/longlatTransfor";
 import editCard from "@/components/overview/card";
 import pieChart from "@/components/overview/pieChart";
 
@@ -163,6 +165,9 @@ export default {
         this.getListData();
       }
     }, 30000);
+    // langlat(["121.540279", "31.212035"], result => {
+    //   console.log(result);
+    // });
   },
   beforeDestroy() {
     clearInterval(this.Timer);
@@ -204,6 +209,7 @@ export default {
               hasData: false
             };
           }
+          this.$store.commit("SETCARDDATA", this.cardData);
         }
       });
     },

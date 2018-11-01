@@ -137,7 +137,6 @@ export default {
         this.getQuantity();
       }
     }, 25000);
-    // console.log("经纬度", this.gcj_encrypt(31.135837, 121.320255));
   },
   destroyed() {
     if (

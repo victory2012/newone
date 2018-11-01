@@ -78,12 +78,12 @@
 /* eslint-disable */
 import AMap from "AMap";
 import utils from "@/utils/utils";
-import echartMap from "../../components/historyChart";
-import iEchart from "../../components/echart";
-import iAlarm from "../../components/alarm-data";
-import travelMap from "../../components/travel";
-import chartPie from "../../components/echartPie";
-import liquid from "../../components/alarm-liquid";
+import echartMap from "@/components/historyChart";
+import iEchart from "@/components/echart";
+import iAlarm from "@/components/alarm-data";
+import travelMap from "@/components/travel";
+import chartPie from "@/components/echartPie";
+import liquid from "@/components/alarm-liquid";
 
 let map;
 let pathSimplifierIns;

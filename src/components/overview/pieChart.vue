@@ -187,6 +187,7 @@ export default {
 <style lang="scss" scoped>
 .pieWarper {
   display: flex;
+  overflow: hidden;
   justify-content: space-between;
   .pieItme {
     box-sizing: border-box;

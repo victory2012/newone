@@ -3,6 +3,7 @@
 /* eslint-disable */
 import Vue from 'vue';
 import Vuex from 'vuex';
+import promise from 'es6-promise';
 import 'element-ui/lib/theme-chalk/index.css';
 import XLSX from 'xlsx';
 import '../static/icon/iconfont.css';
@@ -18,7 +19,10 @@ import {
   Message,
   MessageBox
 } from "element-ui";
+import createScript from "./config/addScripts";
 
+promise.polyfill()
+createScript(); // 引入phao。mqtt.js
 const isDebug_mode = process.env.NODE_ENV !== 'production'
 Vue.config.debug = isDebug_mode
 Vue.config.devtools = isDebug_mode
@@ -46,6 +50,7 @@ Vue.prototype.$message = Message;
 Vue.prototype.$messageBox = MessageBox;
 
 Vue.use(Vuex);
+
 const store = createStore();
 /* eslint-disable no-new */
 new Vue({
