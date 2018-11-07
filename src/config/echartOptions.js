@@ -1,7 +1,7 @@
 export default {
   title: {
     text: "",
-    subtext: "监测数据变化",
+    subtext: "",
     textStyle: {
       color: "#484848"
     },

@@ -18,7 +18,7 @@
 <script>
 /* eslint-disable */
 import echarts from "echarts"; /* eslint-disable */
-// import _ from "lodash";
+import t from "@/utils/translate";
 import utils from "@/utils/utils";
 import options from "@/config/echartOptions";
 import { deepClone } from "@/utils/functions";
@@ -94,54 +94,60 @@ export default {
     },
     dataChange(datas) {
       let voltageOptions = deepClone(options);
-      voltageOptions.title.text = "电压";
+      voltageOptions.title.text = t("realTime.voltage");
       voltageOptions.yAxis.axisLabel.formatter = "{value} v";
       voltageOptions.series[0].data = datas.voltage;
       voltageOptions.tooltip.formatter = p => {
         let item = "";
         p.forEach(v => {
-          item += `${utils.dateFomat(v.value[0])}<br/>电压:${v.value[1]}V<br/>`;
+          item += `${utils.dateFomat(v.value[0])}<br/>${t(
+            "realTime.voltage"
+          )}:${v.value[1]}V<br/>`;
         });
         return item;
       };
       this.myEcharts1.setOption(voltageOptions);
 
       let singleVoltageOptions = deepClone(options);
-      singleVoltageOptions.title.text = "单体电压";
+      singleVoltageOptions.title.text = t("realTime.singleVoltage");
       singleVoltageOptions.yAxis.axisLabel.formatter = "{value} v";
       singleVoltageOptions.series[0].data = datas.singleVoltage;
       singleVoltageOptions.tooltip.formatter = p => {
         let item = "";
         p.forEach(v => {
-          item += `${utils.dateFomat(v.value[0])}<br/>单体电压:${
-            v.value[1]
-          }V<br/>`;
+          item += `${utils.dateFomat(v.value[0])}<br/>${t(
+            "realTime.singleVoltage"
+          )}:${v.value[1]}V<br/>`;
         });
         return item;
       };
       this.myEcharts2.setOption(singleVoltageOptions);
 
       let currentOptions = deepClone(options);
-      currentOptions.title.text = "电流";
+      currentOptions.title.text = t("realTime.current");
       currentOptions.yAxis.axisLabel.formatter = "{value} A";
       currentOptions.series[0].data = datas.current;
       currentOptions.tooltip.formatter = p => {
         let item = "";
         p.forEach(v => {
-          item += `${utils.dateFomat(v.value[0])}<br/>电流:${v.value[1]}A<br/>`;
+          item += `${utils.dateFomat(v.value[0])}<br/>${t(
+            "realTime.current"
+          )}:${v.value[1]}A<br/>`;
         });
         return item;
       };
       this.myEcharts3.setOption(currentOptions);
 
       let temperatureOptions = deepClone(options);
-      temperatureOptions.title.text = "温度";
+      temperatureOptions.title.text = t("realTime.temperature");
       temperatureOptions.yAxis.axisLabel.formatter = "{value} ℃";
       temperatureOptions.series[0].data = datas.temperature;
       temperatureOptions.tooltip.formatter = p => {
         let item = "";
         p.forEach(v => {
-          item += `${utils.dateFomat(v.value[0])}<br/>温度:${v.value[1]}℃<br/>`;
+          item += `${utils.dateFomat(v.value[0])}<br/>${t(
+            "realTime.temperature"
+          )}:${v.value[1]}℃<br/>`;
         });
         return item;
       };

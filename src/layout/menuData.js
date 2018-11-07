@@ -7,71 +7,71 @@ import permissionFun from "../utils/valated";
 
 /* eslint-disable */
 const menu = [{
-    text: "概览",
+    text: "overview", // 概览
     link: "/overview",
     icon: "iconfont icon-allnormal",
   },
   {
-    text: "电池管理",
+    text: "batteryManage", // 电池管理
     link: "1",
     icon: "iconfont icon-dashboard",
     children: [{
-        text: "电池信息",
+        text: "batteryInfo", // 电池信息
         link: "11",
         children: [{
-            text: "电池列表",
+            text: "batteryList", // 电池列表
             link: "/battery"
           },
           {
-            text: "恢复拉黑设备",
+            text: "defriend", // 恢复拉黑设备
             link: "/battery/defriend"
           },
           {
-            text: "运行状况",
+            text: "runStatus", // 运行状况
             link: "/battery/run"
           },
         ]
       },
       {
-        text: "数据对比",
+        text: "compare", // 数据对比
         link: "/battery/compare"
       },
       {
-        text: "告警数据",
+        text: "alarm", // 告警数据
         link: "/battery/alarm"
       }
     ]
   },
   {
-    text: "配置管理",
+    text: "setting", // 配置管理
     link: "2",
     icon: "iconfont icon-seting",
     children: [{
-        text: "报警阈值",
+        text: "threshold", // 报警阈值
         link: "22",
         children: [{
-            text: "按电池型号分类",
+            text: "sortByModel", // 按电池型号分类
             link: "/set/model"
           },
           {
-            text: "按企业全局分类",
+            text: "sortByCompany", // 按企业全局分类
             link: "/set/company"
           }
         ]
       },
       {
-        text: "告警通知",
+        text: "WarningNotice", // 告警通知
         link: "23",
         children: [{
-            text: "告警接收人",
+            text: "receiveList", // 告警接收人
             link: "/set/receive"
           },
           {
-            text: "已添加接收人",
+            text: "addReceive", // 已添加接收人
             link: "/set/user"
           },
           {
-            text: "外部告警接收人",
+            text: "OuterReceive", // 外部告警接收人
             link: "/set/outer"
           }
         ]
@@ -79,20 +79,20 @@ const menu = [{
     ],
   },
   {
-    text: "用户管理",
+    text: "userManage", // 用户管理
     link: "/user",
     icon: "iconfont icon-user"
   },
   {
-    text: "设备管理",
+    text: "device", // 设备管理
     link: "3",
     icon: "iconfont icon-device",
     children: [{
-        text: "设备列表",
+        text: "deviceList", // 设备列表
         link: "/device/list"
       },
       {
-        text: "恢复拉黑设备",
+        text: "deviceDefriend", // 恢复拉黑设备
         link: "/device/defriend"
       },
       // {
@@ -109,16 +109,33 @@ let listData2 = deepClone(menu); // 平台管理员
 let listData3 = deepClone(menu); // 电池采购企业管理员
 let listData4 = deepClone(menu); // 电池采购企业用户
 
+const Allocation = {
+  text: "Allocation", // 电池调配
+  link: "/battery/stock",
+}
+/* 数据对比 */
+const dataContrast = {
+  text: "compare", // 数据对比
+  link: "/battery/compare"
+}
+/* 告警数据 */
+const alarmData = {
+  text: "alarmData", // 告警数据
+  link: "/battery/alarm"
+}
+
+/* 告警数据 */
+const BatteryDefriend = {
+  text: "deviceDefriend", // 恢复拉黑设备
+  link: "/battery/defriend"
+}
 export default {
   getManifactor: () => {
     let personRole = {}
     // listData1[3] = "";
     listData1[4].children[1] = "";
     listData1[4].children[2] = "";
-    listData1[1].children[0].children[3] = {
-      text: "电池调配",
-      link: "/battery/stock",
-    };
+    listData1[1].children[0].children[3] = Allocation;
     personRole.data = listData1;
     personRole.permissions = permissionFun();
     return personRole;
@@ -129,34 +146,22 @@ export default {
     if (!permissionFun().sameAnalysis) {
       listData5[1].children[1] = "";
     } else {
-      listData5[1].children[1] = {
-        text: "数据对比",
-        link: "/battery/compare"
-      }
+      listData5[1].children[1] = dataContrast
     }
     if (!permissionFun().allocation) {
       listData5[1].children[0].children[3] = "";
     } else {
-      listData5[1].children[0].children[3] = {
-        text: "电池调配",
-        link: "/battery/stock",
-      };
+      listData5[1].children[0].children[3] = Allocation;
     }
     if (!permissionFun().alarm) {
       listData5[1].children[2] = "";
     } else {
-      listData5[1].children[2] = {
-        text: "告警数据",
-        link: "/battery/alarm"
-      }
+      listData5[1].children[2] = alarmData
     }
     if (!permissionFun().addblack) {
       listData5[1].children[0].children[1] = "";
     } else {
-      listData5[1].children[0].children[1] = {
-        text: "恢复拉黑设备",
-        link: "/battery/defriend"
-      };
+      listData5[1].children[0].children[1] = BatteryDefriend;
     }
     listData5[2] = "";
     listData5[4].children[1] = "";
@@ -180,26 +185,17 @@ export default {
     if (!permissionFun().sameAnalysis) {
       listData3[1].children[1] = "";
     } else {
-      listData3[1].children[1] = {
-        text: "数据对比",
-        link: "/battery/compare"
-      }
+      listData3[1].children[1] = dataContrast
     }
     if (!permissionFun().alarm) {
       listData3[1].children[2] = "";
     } else {
-      listData3[1].children[2] = {
-        text: "告警数据",
-        link: "/battery/alarm"
-      }
+      listData3[1].children[2] = alarmData
     }
     if (!permissionFun().addblack) {
       listData3[1].children[0].children[1] = "";
     } else {
-      listData3[1].children[0].children[1] = {
-        text: "恢复拉黑设备",
-        link: "/battery/defriend"
-      };
+      listData3[1].children[0].children[1] = BatteryDefriend;
     }
     listData3[4] = "";
     personRole.data = listData3;
@@ -213,26 +209,17 @@ export default {
     if (!permissionFun().sameAnalysis) {
       listData4[1].children[1] = "";
     } else {
-      listData4[1].children[1] = {
-        text: "数据对比",
-        link: "/battery/compare"
-      }
+      listData4[1].children[1] = dataContrast
     }
     if (!permissionFun().addblack) {
       listData4[1].children[0].children[1] = "";
     } else {
-      listData4[1].children[0].children[1] = {
-        text: "恢复拉黑设备",
-        link: "/battery/defriend"
-      };
+      listData4[1].children[0].children[1] = BatteryDefriend;
     }
     if (!permissionFun().alarm) {
       listData4[1].children[2] = "";
     } else {
-      listData4[1].children[2] = {
-        text: "告警数据",
-        link: "/battery/alarm"
-      }
+      listData4[1].children[2] = alarmData
     }
     listData4[2] = "";
     listData4[4] = "";

@@ -44,6 +44,21 @@ module.exports = {
     getSmsCode: '获取验证码',
     smsSuccess: "发送成功"
   },
+  successTips: {
+    addSuccess: "添加成功",
+    delSuccess: "Deleted Successfully.",
+    unbindSuccess: '解绑成功',
+    bindSuccess: '绑定成功',
+    batchSuccess: '批量添加成功'
+  },
+  batch: {
+    formatErr: '请导入xls格式或者xlsx格式',
+    volumeErr: '导入的表格文件不能大于1M',
+    nodata: '上传的文件内容为空，请检查文件',
+    complete: '请文件填写完整',
+    betteryCodeRepeat: '电池编号不能重复，请检查文件',
+    timeFormatErr: '时间格式不支持，请选择文本形式'
+  },
   userInfo: {
     userMsg: 'User Profile',
     pasword: 'Change Password',
@@ -58,13 +73,33 @@ module.exports = {
     batteryList: 'Battery Profiles',
     alarm: 'Battery Alarms',
     userManage: "User Management",
-    device: 'Device Management'
+    device: 'Device Management',
+
+    deviceList: 'Device Profiles',
+    deviceDefriend: '恢复拉黑设备',
+    batteryInfo: '电池信息',
+    defriend: '恢复拉黑设备',
+    runStatus: '运行状况',
+    compare: '数据对比',
+    setting: '配置管理',
+    threshold: '报警阈值',
+    sortByModel: '按电池型号分类',
+    sortByCompany: '按企业全局分类',
+    WarningNotice: '告警通知',
+    receiveList: '告警接收人',
+    addReceive: '已添加接收人',
+    OuterReceive: '外部告警接收人',
+    Allocation: '电池调配',
+    alarmData: '告警数据'
   },
   overview: {
     total: 'All',
-    online: 'This Month',
-    offLine: 'Valid',
-    invalid: 'Invalid'
+    newAdd: 'This Month',
+    valid: 'Valid',
+    alarmed: '告警电池数',
+    RunNormal: 'Run Normal',
+    batteryModel: 'Model',
+    provence: 'Province'
   },
   positions: {
     title1: 'Device Profiles',
@@ -129,7 +164,7 @@ module.exports = {
     offline: 'Offline',
     noBind: 'Unbound',
     hasBind: 'Bound',
-    batteryDetail: 'Battery Detail',
+    batteryDetail: 'Detail',
     batteryNumber: 'Battery Id',
     model: 'Model',
     specif: 'Specification',
@@ -156,10 +191,50 @@ module.exports = {
       createDate: 'Date of production',
       manufactureDate: 'Date of manufacture',
       warrantyDate: 'Warranty',
-      deviceId: 'Please enter device id.'
+      deviceId: 'Please enter device id.',
+      content: '内容不能为空'
     },
-    success: "Created Successfully.",
-    delSuccess: "Deleted Successfully."
+    batteries: '电池',
+    batchImport: '批量导入',
+    defriend: '恢复拉黑设备',
+    runStatus: '运行状态',
+    handle: '操作',
+    unBind: '解绑',
+    bind: '绑定',
+    black: '拉黑',
+    detele: '删除',
+    batteryBindDevice: '电池与检测设备绑定',
+    addModel: '添加型号',
+    addSpecif: '添加规格',
+    addSinggleSpecif: '添加单体规格',
+    singgleSpecif: '添加单体规格',
+    deleteTip: '确定删除此电池组吗？',
+    search: '查询',
+    clear: '清空',
+    searchContent: '电池/设备编号',
+    name: '企业名称',
+    recovery: "恢复"
+  },
+  runState: {
+    realData: '实时数据',
+    historyData: '历史数据',
+    alarmData: '告警数据',
+    batteryCode: 'Please enter battery id.',
+    selectBattery: '请先选择一个电池组！'
+  },
+  realTime: {
+    temperature: 'Temperature',
+    fluid: '液位',
+    voltage: 'Voltage',
+    singleVoltage: '单体电压',
+    current: 'Current',
+    quantity: '电量',
+    fourHour: '过去4小时监测数据',
+    update: '是否自动更新数据',
+    query: '主动查询',
+    normal: 'Normal',
+    abnormal: 'Abnormal',
+    refresh: "s刷新时间"
   },
   alarmList: {
     serial: 'No.',
@@ -175,7 +250,13 @@ module.exports = {
     deviceCode: 'Device Id',
     grid: 'Coordinate Position',
     position: 'Location',
-    location: 'View'
+    location: 'View',
+
+    alarmItem: '告警项目',
+    alarmHierarchy: '告警层级',
+    alarmLevel: '告警级别',
+    more: 'More',
+    batteries: '电池数'
   },
   useMsg: {
     serial: 'No.',

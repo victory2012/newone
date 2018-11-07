@@ -4,32 +4,32 @@
       <div>
         <img src="../../assets/img/temp.png" alt="">
         <p class="info">{{infoData.temperature}}℃</p>
-        <p>温度</p>
+        <p>{{$t('realTime.temperature')}}</p>
       </div>
       <div>
         <img src="../../assets/img/level.png" alt="">
         <p class="info">{{infoData.fluid}}</p>
-        <p>液位</p>
+        <p>{{$t('realTime.fluid')}}</p>
       </div>
       <div>
         <img src="../../assets/img/voltage_total.png" alt="">
         <p class="info">{{infoData.voltage}}V</p>
-        <p>电压</p>
+        <p>{{$t('realTime.voltage')}}</p>
       </div>
       <div>
         <img src="../../assets/img/voltage.png" alt="">
         <p class="info">{{infoData.singleVoltage}}V</p>
-        <p>单体电压</p>
+        <p>{{$t('realTime.singleVoltage')}}</p>
       </div>
       <div>
         <img src="../../assets/img/current.png" alt="">
         <p class="info">{{infoData.current}}A</p>
-        <p>电流</p>
+        <p>{{$t('realTime.current')}}</p>
       </div>
       <div>
         <img src="../../assets/img/capacity.png" alt="">
         <p class="info">{{quantity}}</p>
-        <p>电量</p>
+        <p>{{$t('realTime.quantity')}}</p>
       </div>
     </div>
     <div class="warrp">
@@ -40,7 +40,7 @@
         <div class="timeCenter">
           <p class="map-time">{{infoData.hhmmss}}</p>
           <p class="map-date">{{infoData.yyddmm}}</p>
-          <p class="map-des">刷新时间</p>
+          <p class="map-des">{{$t('realTime.refresh')}}</p>
           <p @click="activeQuery" :class="{'active': queryData}" class="map-line">{{btnTip}}</p>
         </div>
       </div>
@@ -72,8 +72,8 @@
       </div>
     </div>
     <div class="my-map-divider">
-      <span>过去4小时监测数据</span>
-      <el-checkbox v-model="checked">是否自动更新数据</el-checkbox>
+      <span>{{$t('realTime.fourHour')}}</span>
+      <el-checkbox v-model="checked">{{$t('realTime.update')}}</el-checkbox>
     </div>
     <echart-map :chartData="dataObj" :mqttData="ReceiveObj"></echart-map>
   </div>
@@ -84,9 +84,10 @@ import AMap from "AMap";
 import AMapUI from "AMapUI";
 import Paho from "Paho";
 import utils from "@/utils/utils";
-import echartMap from "../../components/realTime";
+import echartMap from "@/components/realTime";
 import mqttConfig from "@/api/mqtt.config";
 import lnglatTrabsofor from "@/utils/longlatTransfor";
+import t from "@/utils/translate";
 
 let mqttClient = {};
 let map;
@@ -104,7 +105,7 @@ export default {
       sendBack: "",
       timer: null,
       quantity: "",
-      btnTip: "主动查询",
+      btnTip: t("realTime.query"),
       CCID: "",
       address: "",
       interval: false,
@@ -203,10 +204,6 @@ export default {
       });
       mqttClient.onFailure = res => {
         console.log(res);
-        // this.$message({
-        //   type: "error",
-        //   message: "链接断开，请刷新网页"
-        // });
       };
       mqttClient.onConnectionLost = responseObject => {
         console.log("mqtt-closed:", responseObject);
@@ -269,7 +266,8 @@ export default {
       this.version = dataObj.version;
       let posData = this.gcj_encrypt(dataObj.latitude, dataObj.longitude);
       this.infoData.temperature = dataObj.temperature;
-      this.infoData.fluid = dataObj.liquid === 0 ? "正常" : "异常";
+      this.infoData.fluid =
+        dataObj.liquid === 0 ? t("realTime.normal") : t("realTime.abnormal");
       this.infoData.voltage = dataObj.voltage;
       this.infoData.singleVoltage = dataObj.singleVoltage;
       if (Number(dataObj.current) < 0 && Number(dataObj.current) < -300) {
@@ -385,15 +383,15 @@ export default {
         this.decriseTime = setInterval(() => {
           if (this.queryData) {
             index--;
-            this.btnTip = `主动查询(${index}s)`;
+            this.btnTip = `${t("realTime.query")}(${index}s)`;
             if (index === 0) {
               clearInterval(this.decriseTime);
-              this.btnTip = `主动查询`;
+              this.btnTip = `${t("realTime.query")}`;
               this.queryData = false;
             }
           } else {
             clearInterval(this.decriseTime);
-            this.btnTip = `主动查询`;
+            this.btnTip = `${t("realTime.query")}`;
           }
         }, 1000);
         let message = new Paho.MQTT.Message("c:get");

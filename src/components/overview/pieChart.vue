@@ -152,11 +152,12 @@ export default {
       }
       let voltageOptions = deepClone(this.pieOption);
       voltageOptions.tooltip.formatter = p => {
-        let item = `电池总数：${data.total}<br />有效监控：${p.data.per ||
-          0}<br />${p.data.value}%`;
+        let item = `${this.$t("overview.total")}：${data.total}<br />${this.$t(
+          "overview.valid"
+        )}：${p.data.per || 0}<br />${p.data.value}%`;
         return item;
       };
-      voltageOptions.title.text = "有效监控";
+      voltageOptions.title.text = `${this.$t("overview.valid")}`;
       voltageOptions.series[0].data = [
         {
           per: data.activeTotal,
@@ -167,10 +168,11 @@ export default {
       this.pieChart1.setOption(voltageOptions);
 
       let currentOptions = deepClone(this.pieOption);
-      currentOptions.title.text = "正常运行";
+      currentOptions.title.text = `${this.$t("overview.RunNormal")}`;
       currentOptions.tooltip.formatter = p => {
-        let item = `电池总数：${data.total}<br />正常运行：${p.data.per ||
-          0}<br />${p.data.value}%`;
+        let item = `${this.$t("overview.total")}：${data.total}<br />${this.$t(
+          "overview.RunNormal"
+        )}：${p.data.per || 0}<br />${p.data.value}%`;
         return item;
       };
       currentOptions.series[0].data = [

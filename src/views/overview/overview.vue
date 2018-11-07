@@ -12,22 +12,23 @@
                 <el-table v-loading="loading" :data="tableData" style="width: 100%;">
                   <!-- <el-table-column type="index" align="center" label="序号" width="50">
               </el-table-column> -->
-                  <el-table-column prop="createTime" align="center" label="告警发生时间" width="170">
+                  <!-- 告警发生时间 -->
+                  <el-table-column prop="createTime" align="center" :label="$t('alarmList.time')" width="170">
                   </el-table-column>
-                  <el-table-column prop="hostCode" align="center" label="电池组编号">
+                  <!-- 电池编号 -->
+                  <el-table-column prop="hostCode" align="center" :label="$t('alarmList.batteryCode')">
                   </el-table-column>
-                  <el-table-column prop="items" align="center" label="告警项目">
+                  <!-- 告警项目 -->
+                  <el-table-column prop="items" align="center" :label="$t('alarmList.alarmItem')">
                   </el-table-column>
-                  <!-- <el-table-column prop="thresholdValue" align="center" label="告警阈值">
-              </el-table-column> -->
-                  <!-- <el-table-column prop="actualValue" align="center" label="实际值">
-              </el-table-column> -->
-
-                  <el-table-column prop="content" align="center" label="告警内容" width="220">
+                  <!-- 告警内容 -->
+                  <el-table-column prop="content" align="center" :label="$t('alarmList.content')" width="260">
                   </el-table-column>
-                  <el-table-column prop="hierarchy" align="center" label="告警层级">
+                  <!-- 告警层级 -->
+                  <el-table-column prop="hierarchy" align="center" :label="$t('alarmList.alarmHierarchy')" width="110">
                   </el-table-column>
-                  <el-table-column prop="levels" align="center" label="告警级别">
+                  <!-- 告警级别 -->
+                  <el-table-column prop="levels" align="center" :label="$t('alarmList.alarmLevel')">
                   </el-table-column>
                   <!-- <el-table-column prop="address" align="center" label="详情" width="120">
                 <template slot-scope="scope">
@@ -37,7 +38,7 @@
                 </template>
               </el-table-column> -->
                 </el-table>
-                <p v-show="!isNoAlarmData" class="more"><a @click="ToMore">更多</a><i class="iconfont icon-more"></i></p>
+                <p v-show="!isNoAlarmData" class="more"><a @click="ToMore">{{$t('alarmList.more')}}</a><i class="iconfont icon-more"></i></p>
               </div>
             </div>
           </div>
@@ -46,13 +47,16 @@
           <div class="list">
             <div v-if="!isUser" class="listItme shadow">
               <el-table v-loading="company" :data="custormTable">
-                <el-table-column prop="company" align="center" label="客户" width="180">
+                <el-table-column prop="company" align="center" :label="$t('alarmList.customer')" width="180">
                 </el-table-column>
-                <el-table-column prop="total" align="center" label="电池数">
+                <!-- 电池数 -->
+                <el-table-column prop="total" align="center" :label="$t('alarmList.batteries')">
                 </el-table-column>
-                <el-table-column prop="activeTotal" align="center" label="有效监控数">
+                <!-- 有效监控数 -->
+                <el-table-column prop="activeTotal" align="center" :label="$t('overview.valid')">
                 </el-table-column>
-                <el-table-column prop="alarmedTotal" align="center" label="告警电池数">
+                <!-- 告警电池数 -->
+                <el-table-column prop="alarmedTotal" align="center" :label="$t('overview.alarmed')">
                 </el-table-column>
               </el-table>
               <div v-if="companyMoreBtn" class="showMore">
@@ -64,13 +68,13 @@
             </div>
             <div class="listItme shadow" :style="{minHeight: minHeight + 'px'}">
               <el-table v-loading="provence" :data="provenceTable">
-                <el-table-column prop="address" align="center" label="省份" width="180">
+                <el-table-column prop="address" align="center" :label="$t('overview.provence')" width="180">
                 </el-table-column>
-                <el-table-column prop="total" align="center" label="电池数">
+                <el-table-column prop="total" align="center" :label="$t('alarmList.batteries')">
                 </el-table-column>
-                <el-table-column prop="activeTotal" align="center" label="有效监控数">
+                <el-table-column prop="activeTotal" align="center" :label="$t('overview.valid')">
                 </el-table-column>
-                <el-table-column prop="alarmedTotal" align="center" label="告警电池数">
+                <el-table-column prop="alarmedTotal" align="center" :label="$t('overview.alarmed')">
                 </el-table-column>
               </el-table>
               <!-- provenceMoreBtn -->
@@ -83,13 +87,13 @@
             </div>
             <div class="listItme shadow" :style="{minHeight: minHeight + 'px'}">
               <el-table v-loading="models" :data="modelTable">
-                <el-table-column prop="models" align="center" label="型号" width="180">
+                <el-table-column prop="models" align="center" :label="$t('overview.batteryModel')" width="180">
                 </el-table-column>
-                <el-table-column prop="total" align="center" label="电池数">
+                <el-table-column prop="total" align="center" :label="$t('alarmList.batteries')">
                 </el-table-column>
-                <el-table-column prop="activeTotal" align="center" label="有效监控数">
+                <el-table-column prop="activeTotal" align="center" :label="$t('overview.valid')">
                 </el-table-column>
-                <el-table-column prop="alarmedTotal" align="center" label="告警电池数">
+                <el-table-column prop="alarmedTotal" align="center" :label="$t('overview.alarmed')">
                 </el-table-column>
               </el-table>
               <div v-if="modelMoreBtn" class="showMore">

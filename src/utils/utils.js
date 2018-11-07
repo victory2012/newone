@@ -14,6 +14,7 @@ const daysInMonth = [
   [31]
 ];
 
+// console.log('i18n in utils', i18n);
 export default {
   accountType: type => {
     let str = type.toString();

@@ -47,7 +47,7 @@ export default {
     return {
       AdminRoles: {},
       isCollapse: false,
-      menus: "",
+      menus: {},
       roles: "",
       getUserLoginData: ""
     };
@@ -75,8 +75,6 @@ export default {
             this.$store.commit("removeStorage");
             this.$store.commit("removeTokenStorage");
             this.$router.push("/login");
-            // this.$store.state.loginData = null;
-            // this.menus = "";
             utils.removeStorageAll();
           }
         });
@@ -115,8 +113,18 @@ export default {
       ) {
         this.menus = menu.purchaseCus();
       }
-      console.log(this.menus);
+      this.eachMenus(this.menus.data);
       utils.setStorage("permissions", JSON.stringify(this.menus.permissions));
+    },
+    eachMenus(data) {
+      data.forEach(key => {
+        if (typeof key === "object") {
+          key.text = this.$t(`menu.${key.text}`);
+          if (key.children) {
+            this.eachMenus(key.children);
+          }
+        }
+      });
     }
   },
   beforeDestroy() {

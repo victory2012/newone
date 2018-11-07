@@ -203,14 +203,14 @@ export default {
           let speeds = Math.ceil(distance / times); // 最终得到的速度是 km/h
           let carUrl =
             process.env.pack_ENV === "test" || process.env.pack_ENV === "prod"
-              ? "../../static/img/car.png"
-              : "../../pc/static/img/car.png";
+              ? "../../static/img/0181102120349.png"
+              : "../../pc/static/img/0181102120349.png";
           navg = pathSimplifierIns.createPathNavigator(0, {
             loop: true,
             speed: speeds,
             pathNavigatorStyle: {
-              width: 12,
-              height: 18,
+              width: 30,
+              height: 30,
               strokeStyle: null,
               fillStyle: null,
               // 使用图片

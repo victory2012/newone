@@ -2,15 +2,15 @@
   <div class="runCenter">
     <div class="title">
       <div class="titleCenter">
-        <a @click="showRealData" :class="{'active': actived == 'real'}">实时数据</a>
+        <a @click="showRealData" :class="{'active': actived == 'real'}">{{$t('runState.realData')}}</a>
         <span v-if="permision.historyData" class="divider"></span>
-        <a v-if="permision.historyData" @click="showHistoryData" :class="{'active': actived == 'history'}">历史数据</a>
+        <a v-if="permision.historyData" @click="showHistoryData" :class="{'active': actived == 'history'}">{{$t('runState.historyData')}}</a>
         <span class="divider"></span>
-        <a @click="showAlarmData" :class="{'active': actived == 'alarm'}">告警数据</a>
+        <a @click="showAlarmData" :class="{'active': actived == 'alarm'}">{{$t('runState.alarmData')}}</a>
       </div>
       <div class="search">
         <!-- <el-autocomplete v-show="actived === 'real'" size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入电池编号" @select="handleSelect"></el-autocomplete> -->
-        <el-select v-show="actived === 'real'" v-model="state" filterable placeholder="请输入电池编号" clearable @change="changeBatteryCode">
+        <el-select v-show="actived === 'real'" v-model="state" filterable :placeholder="$t('runState.batteryCode')" clearable @change="changeBatteryCode">
           <el-option v-for="item in tableData" :key="item.value" :label="item.value" :value="item">
           </el-option>
         </el-select>
@@ -21,7 +21,7 @@
       </div>
     </div>
     <div v-show="hasHostId" class="tips">
-      请先选择一个电池组！
+      {{$t('runState.selectBattery')}}
     </div>
     <component :is="showCompontent" :hostObj="IdObj" :deviceId="deviceId" :propData="companyInfo"></component>
   </div>

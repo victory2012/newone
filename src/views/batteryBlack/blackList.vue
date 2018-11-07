@@ -1,20 +1,20 @@
 <template>
   <div class="alarmTable">
     <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="hostCode" align="center" label="电池编号">
+      <el-table-column prop="hostCode" align="center" :label="$t('batteryList.batteryCode')">
       </el-table-column>
-      <el-table-column prop="code" align="center" label="设备编号">
+      <el-table-column prop="code" align="center" :label="$t('batteryList.deviceCode')">
       </el-table-column>
-      <el-table-column prop="companyName" align="center" label="企业名称">
+      <el-table-column prop="companyName" align="center" :label="$t('batteryList.name')">
       </el-table-column>
       <!-- <el-table-column prop="regstate" align="center" label="设备注册状态">
       </el-table-column> -->
-      <el-table-column prop="bindState" align="center" label="电池绑定状态">
+      <el-table-column prop="bindState" align="center" :label="$t('batteryList.binding')">
       </el-table-column>
-      <el-table-column align="center" label="操作" width="120">
+      <el-table-column align="center" :label="$t('batteryList.handle')" width="120">
         <template slot-scope="scope">
           <el-button size="small" @click.native.prevent="recovery(scope.row)" type="text">
-            恢复
+            {{$t('batteryList.recovery')}}
           </el-button>
         </template>
       </el-table-column>
@@ -26,6 +26,8 @@
   </div>
 </template>
 <script>
+import t from "@/utils/translate";
+
 export default {
   data() {
     return {
@@ -46,7 +48,7 @@ export default {
         if (res.data && res.data.code === 0) {
           this.$message({
             type: "success",
-            message: res.data.msg
+            message: t("successTips.recoverySuccess")
           });
           this.getDeviceList();
         }
@@ -81,7 +83,10 @@ export default {
               // key.batteryCode = key.hostCode ? key.hostCode : "-";
               key.blackStatus = key.status === -1;
               key.bindStatus = key.hostId === null;
-              key.bindState = key.hostId === null ? "未绑定" : "已绑定";
+              key.bindState =
+                key.hostId === null
+                  ? t("batteryList.noBind")
+                  : t("batteryList.hasBind");
               this.tableData.push(key);
             });
           }

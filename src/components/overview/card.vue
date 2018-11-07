@@ -7,7 +7,8 @@
         </div>
         <div class="account">
           <div class="datas">
-            <p class="title">电池总数</p>
+            <!-- 电池总数 -->
+            <p class="title">{{$t('overview.total')}}</p>
             <p class="info">{{GETCARDDATA.total || 0}}</p>
           </div>
         </div>
@@ -21,7 +22,8 @@
         </div>
         <div class="account">
           <div class="datas">
-            <p class="title">本月新增电池数</p>
+            <!-- 本月新增电池数 -->
+            <p class="title">{{$t('overview.newAdd')}}</p>
             <p class="info">{{GETCARDDATA.currentMonthTotal || 0}}</p>
           </div>
         </div>
@@ -35,7 +37,8 @@
         </div>
         <div class="account">
           <div class="datas">
-            <p class="title">有效监控数</p>
+            <!-- 有效监控数 -->
+            <p class="title">{{$t('overview.valid')}}</p>
             <p class="info">{{GETCARDDATA.activeTotal || 0}}</p>
           </div>
         </div>
@@ -48,7 +51,8 @@
         </div>
         <div class="account">
           <div class="datas">
-            <p class="title">告警电池数</p>
+            <!-- 告警电池数 -->
+            <p class="title">{{$t('overview.alarmed')}}</p>
             <p class="info">{{GETCARDDATA.alarmedTotal || 0}}</p>
           </div>
         </div>

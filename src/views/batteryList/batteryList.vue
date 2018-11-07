@@ -2,100 +2,89 @@
   <div class="batteryList">
     <div class="topTab">
       <div class="icons">
-        <div>
-          <div class="items" v-if="AdminRoles.AddBatteries">
-            <el-dropdown trigger="click" placement="bottom" @command="handleCommand">
-              <span>
-                <img src="../../../static/img/device_reg.png" alt=""><br />
-                <span class="el-dropdown-link">电池</span>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="addBattery">添加电池</el-dropdown-item>
-                <el-dropdown-item command="addModel">添加型号</el-dropdown-item>
-                <el-dropdown-item command="addSpfic">添加规格</el-dropdown-item>
-                <el-dropdown-item command="addSingel">添加单体规格</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </div>
-          <div class="items" v-if="AdminRoles.AddBatteries" style="position: relative">
-            <input class="fileUpload" type="file" @change="fileUpload" v-loading.fullscreen.lock="fullscreenLoading" />
-            <img id="upers" src="../../../static/img/device_import.png" alt="">
-            <p>批量导入</p>
-          </div>
-          <div class="items" v-if="AdminRoles.addblack" @click="recovery">
-            <img id="recover" src="../../../static/img/device_recover.png" alt="">
-            <p>恢复拉黑电池</p>
-          </div>
-        </div>
+        <add-btns></add-btns>
       </div>
       <div class="select">
         <div class="item">
-          <el-input size="small" v-model="batteryId" placeholder="电池/设备编号"></el-input>
+          <el-input size="small" v-model="batteryId" :placeholder="$t('batteryList.searchContent')"></el-input>
         </div>
         <div class="item">
-          <el-select size="small" v-model="batteryModel" placeholder="电池型号">
+          <el-select size="small" v-model="batteryModel" :placeholder="$t('batteryList.model')">
             <el-option v-for="item in Modeloptions" :key="item.id" :label="item.dicKey" :value="item.id">
             </el-option>
           </el-select>
         </div>
         <div v-if="userRole().selectProd" class="item">
-          <el-select size="small" v-model="manufacter" placeholder="生产企业名称">
+          <el-select size="small" v-model="manufacter" :placeholder="$t('batteryList.enterprise')">
             <el-option v-for="item in companyArr" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </div>
         <div v-if="userRole().selectCus" class="item">
-          <el-select size="small" v-model="batCustom" placeholder="客户企业名称">
+          <el-select size="small" v-model="batCustom" :placeholder="$t('batteryList.customer')">
             <el-option v-for="item in batCustomOpts" :key="item.id" :label="item.name" :value="item.name">
             </el-option>
           </el-select>
         </div>
 
         <div class="item">
-          <el-select size="small" v-model="bindStatus" placeholder="绑定状态">
+          <el-select size="small" v-model="bindStatus" :placeholder="$t('batteryList.binding')">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </div>
         <div class="item">
-          <el-button @click="getBatteryList" size="mini" type="primary">查询</el-button>
-          <el-button @click="clearOptions" size="small" plain>清空</el-button>
+          <el-button @click="getBatteryList" size="mini" type="primary">{{$t('batteryList.search')}}</el-button>
+          <el-button @click="clearOptions" size="small" plain>{{$t('batteryList.clear')}}</el-button>
         </div>
       </div>
     </div>
     <div class="tables">
       <el-table v-loading="loading" :data="tableData" style="width: 100%" :highlight-current-row="true">
-        <el-table-column type="index" width="50" align="center" label="序号"></el-table-column>
-        <el-table-column prop="code" align="center" label="电池编号">
+        <!-- 序号 -->
+        <el-table-column type="index" width="50" align="center" :label="$t('batteryList.serial')"></el-table-column>
+        <!-- 电池编号 -->
+        <el-table-column prop="code" align="center" :label="$t('batteryList.batteryCode')">
         </el-table-column>
-        <el-table-column prop="model" align="center" label="电池型号">
+        <!-- 电池型号 -->
+        <el-table-column prop="model" align="center" :label="$t('batteryList.model')">
         </el-table-column>
-        <el-table-column prop="norm" align="center" label="电池组规格">
+        <!-- 电池组规格 -->
+        <el-table-column prop="norm" align="center" :label="$t('batteryList.specif')">
         </el-table-column>
-        <el-table-column v-if="userRole().listProd" prop="parentCompanyName" align="center" label="生产企业名称">
+        <!-- 生产企业名称 -->
+        <el-table-column v-if="userRole().listProd" prop="parentCompanyName" align="center" :label="$t('batteryList.enterprise')">
         </el-table-column>
-        <el-table-column v-if="userRole().listCus" prop="companyName" align="center" label="客户企业名称">
+        <!-- 客户企业名称 -->
+        <el-table-column v-if="userRole().listCus" prop="companyName" align="center" :label="$t('batteryList.customer')">
         </el-table-column>
-        <el-table-column prop="deviceCode" align="center" label="监测设备编号">
+        <!-- 监测设备编号 -->
+        <el-table-column prop="deviceCode" align="center" :label="$t('batteryList.deviceCode')">
         </el-table-column>
-        <el-table-column prop="bindingName" align="center" label="绑定状态">
+        <!-- 绑定状态 -->
+        <el-table-column prop="bindingName" align="center" :label="$t('batteryList.bindStatus')">
         </el-table-column>
-        <!-- <el-table-column prop="online" align="center" label="在线状态">
-        </el-table-column> -->
-        <el-table-column align="center" label="运行状态">
+        <!-- 运行状态 -->
+        <el-table-column align="center" :label="$t('batteryList.runStatus')">
           <template slot-scope="scope">
             <el-button @click.native.prevent="lookFor(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">
-              查看
+              {{$t('batteryList.view')}}
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column align="center" width="220" label="操作">
+        <!-- 操作 -->
+        <el-table-column align="center" width="220" :label="$t('batteryList.handle')">
           <template slot-scope="scope">
-            <el-button @click="details(scope.row)" type="text" size="small">详情</el-button>
-            <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind || scope.row.isPlat" type="text" size="small">绑定</el-button>
-            <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind || scope.row.isPlat" type="text" size="small">解绑</el-button>
-            <el-button @click="addBlack(scope.row)" :disabled="!AdminRoles.addblack || scope.row.hasbind" type="text" size="small">拉黑</el-button>
-            <el-button @click="deleteBattery(scope.row)" :disabled="!scope.row.canDelete || scope.row.isPlat" type="text" size="small">删除</el-button>
+            <!-- 详情 -->
+            <el-button @click="details(scope.row)" type="text" size="small">{{$t('batteryList.batteryDetail')}}</el-button>
+            <!-- 绑定 -->
+            <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind || scope.row.isPlat" type="text" size="small">{{$t('batteryList.bind')}}</el-button>
+            <!-- 解绑 -->
+            <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind || scope.row.isPlat" type="text" size="small">{{$t('batteryList.unBind')}}</el-button>
+            <!-- 拉黑 -->
+            <el-button @click="addBlack(scope.row)" :disabled="!AdminRoles.addblack || scope.row.hasbind" type="text" size="small">{{$t('batteryList.black')}}</el-button>
+            <!-- 删除 -->
+            <el-button @click="deleteBattery(scope.row)" :disabled="!scope.row.canDelete || scope.row.isPlat" type="text" size="small">{{$t('batteryList.detele')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -104,31 +93,19 @@
       <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout="sizes, prev, pager, next" :total="total">
       </el-pagination>
     </div>
-    <!-- 添加电池组型号、规格、单体规格 -->
-    <el-dialog width="600px" :title="titles" :visible.sync="addModel">
-      <el-form :model="modelForm" label-position="right" :rules="modelFormRules" ref="modelForm">
-        <el-form-item :label="labels" prop="dicValue">
-          <el-input size="small" v-model="modelForm.dicValue" auto-complete="off"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="small" @click="resetModelAdd">重 置</el-button>
-        <el-button :loading="addallTypes" size="small" @click="submitModelAdd" type="primary">确 认</el-button>
-      </div>
-    </el-dialog>
     <!-- 电池绑定 -->
-    <el-dialog width="600px" title="电池与检测设备绑定" :visible.sync="bindDevice">
+    <el-dialog width="600px" :title="$t('batteryList.batteryBindDevice')" :visible.sync="bindDevice">
       <el-form :model="deviceModel" label-width="150px" label-position="right" ref="deviceModel" style="margin-top:20px;">
-        <el-form-item label="监测设备编号" prop="deviceId" :rules="[{ required: true, message: '请输入内容', trigger: 'change' }]">
-          <el-select size="small" style="width:210px" v-model="deviceModel.deviceId" placeholder="设备编号">
+        <el-form-item :title="$t('batteryList.deviceCode')" prop="deviceId" :rules="[{ required: true, message: this.$t('batteryList.warn.deviceId'), trigger: 'change' }]">
+          <el-select size="small" style="width:210px" v-model="deviceModel.deviceId" :placeholder="$t('batteryList.deviceCode')">
             <el-option v-for="item in deviceIdOpts" :key="item.id" :label="item.code" :value="item.id" :disabled="item.disabled">
             </el-option>
           </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button size="small" @click="resetBind">重 置</el-button>
-        <el-button :loading="bindings" size="small" @click="submitBind" type="primary">确 认</el-button>
+        <el-button size="small" @click="resetBind">{{$t('batteryList.cancel')}}</el-button>
+        <el-button :loading="bindings" size="small" @click="submitBind" type="primary">{{$t('batteryList.sure')}}</el-button>
       </div>
     </el-dialog>
     <add-battery @hasCreated="reloadBattery"></add-battery>
@@ -202,42 +179,35 @@ import batteryDetail from "@/components/battery/details";
 /* eslint-disable */
 import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
-import XLSX from "xlsx";
 import mqttConfig from "@/api/mqtt.config";
 import Paho from "Paho";
+import t from "@/utils/translate";
+import addBtns from "./buttons";
 
-let wb; // 读取完成的数据
-let rABS = false; // 是否将文件读取为二进制字符串
+// let wb; // 读取完成的数据
+// let rABS = false; // 是否将文件读取为二进制字符串
 let mqttClient = {};
 export default {
   components: {
     "add-battery": addBattery,
-    batteryDetail
+    batteryDetail,
+    addBtns
   },
   data() {
     return {
       AdminRoles: permissionFun(),
       companyArr: [], // 生产企业公司名称
       manufacter: "", // 选中的生产企业
-      fullscreenLoading: false,
-      addallTypes: false,
       bindings: false,
       deviceModel: {},
       loginData: "",
       bindDevice: false,
       addType: "",
-      labels: "",
-      titles: "",
-      addModel: false,
       batteryId: "",
       loading: true,
       currentPage: 1,
       pageSize: 10,
       total: 0,
-      modelForm: {},
-      modelFormRules: {
-        dicValue: [{ required: true, message: "请输入内容", trigger: "change" }]
-      },
       batteryForm: {},
       batteryFormRules: {},
       Modeloptions: [],
@@ -249,11 +219,11 @@ export default {
       options: [
         {
           value: 1,
-          label: "已绑定"
+          label: t("batteryList.hasBind")
         },
         {
           value: 0,
-          label: "未绑定"
+          label: t("batteryList.noBind")
         }
       ],
       bindOptions: [],
@@ -306,11 +276,8 @@ export default {
         }
       });
     },
-    recovery() {
-      this.$router.push("/battery/defriend");
-    },
-    reloadBattery(data) {
-      console.log("emit 收到");
+
+    reloadBattery() {
       this.getBatteryList();
     },
     /* 查看详情 */
@@ -353,7 +320,7 @@ export default {
             if (res.data && res.data.code === 0) {
               this.$message({
                 type: "success",
-                message: res.data.msg
+                message: t("successTips.bindSuccess")
               });
               this.resetBind();
               this.bindDevice = false;
@@ -366,103 +333,6 @@ export default {
               this.getBatteryList();
             }
           });
-        }
-      });
-    },
-    handleCommand(command) {
-      this.addType = command;
-      // this.modelForm.value = "";
-      if (command === "addBattery") {
-        this.$store.commit("triggerAddBattery");
-        // this.showAdd = "add-battery";
-      }
-      if (command === "addModel") {
-        this.addModel = true;
-        this.titles = "添加型号";
-        this.labels = "电池组型号";
-      }
-      if (command === "addSpfic") {
-        this.addModel = true;
-        this.titles = "添加规格";
-        this.labels = "电池组规格";
-      }
-      if (command === "addSingel") {
-        this.addModel = true;
-        this.titles = "添加单体规格";
-        this.labels = "电池组单体规格";
-      }
-    },
-    resetModelAdd() {
-      this.$refs.modelForm.resetFields();
-      this.modelForm = {};
-    },
-    /* 获取电池组规格列表 */
-    getGroupSpecif() {
-      this.$api.batteryGroupSpecif().then(res => {
-        console.log("电池组规格", res);
-        if (res.data && res.data.code === 0) {
-          this.$store.commit(
-            "SETbatGroupSpecifOpts",
-            JSON.stringify(res.data.data)
-          );
-        }
-      });
-    },
-    /* 获取电池单体型号列表 */
-    getSinglBattery() {
-      this.$api.batterySingleModel().then(res => {
-        console.log("电池单体型号", res);
-        if (res.data && res.data.code === 0) {
-          this.$store.commit(
-            "SETsingleBatteryOpts",
-            JSON.stringify(res.data.data)
-          );
-        }
-      });
-    },
-    /* 添加电池组型号、规格、单体规格 */
-    submitModelAdd() {
-      console.log(this.batteryForm);
-      this.$refs.modelForm.validate(valid => {
-        if (valid) {
-          this.addallTypes = true;
-          let params = {
-            dicKey: this.modelForm.dicValue,
-            categoryId: 2
-          };
-          if (this.addType === "addModel") {
-            params.type = "Model"; // 电池组型号
-          }
-          if (this.addType === "addSpfic") {
-            params.type = "Norm"; // 电池组规格
-          }
-          if (this.addType === "addSingel") {
-            params.type = "SingleModel"; // 单体规格
-          }
-          this.$api.batteryADDALL(params).then(res => {
-            console.log(this.addType, res);
-            this.addallTypes = false;
-            if (res.data && res.data.code === 0) {
-              this.$message({
-                type: "success",
-                message: res.data.msg
-              });
-              this.addModel = false;
-              this.modelForm = {};
-              if (params.type === "Model") {
-                this.getBatteryModelList();
-              }
-              if (params.type === "Norm") {
-                this.getGroupSpecif();
-              }
-              if (params.type === "SingleModel") {
-                this.getSinglBattery();
-              }
-            }
-          });
-        } else {
-          console.log("error submit!!");
-          return false;
         }
       });
     },
@@ -492,17 +362,17 @@ export default {
     /* 删除 */
     deleteBattery(row) {
       if (!row.id) return;
-      this.$messageBox.alert("确定删除此电池组吗？", {
+      this.$messageBox.alert(`${t("batteryList.deleteTip")}`, {
         showCancelButton: true,
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
+        confirmButtonText: t("batteryList.sure"),
+        cancelButtonText: t("batteryList.cancel"),
         callback: action => {
           if (action === "confirm") {
             this.$api.batteryDetele(row.id).then(res => {
               if (res.data && res.data.code === 0) {
                 this.$message({
                   type: "success",
-                  message: res.data.msg
+                  message: t("successTips.delSuccess")
                 });
                 this.getBatteryList();
               }
@@ -525,166 +395,13 @@ export default {
           // console.log(res);
           this.$message({
             type: "success",
-            message: res.data.msg
+            message: t("successTips.unbindSuccess")
           });
           this.getBatteryList();
         }
       });
     },
-    fileUpload(event) {
-      console.log(event);
-      this.fullscreenLoading = true;
-      this.eventUpload = event.target;
-      let obj = event.target;
-      if (!obj.files) {
-        this.fullscreenLoading = false;
-        return;
-      }
-      const IMPORTFILE_MAXSIZE = 1 * 1024; // 这里可以自定义控制导入文件大小
-      let suffix;
-      if (obj.files[0].name) {
-        suffix = obj.files[0].name.split(".")[1];
-      }
 
-      if (suffix !== "xls" && suffix !== "xlsx") {
-        this.$message({
-          type: "error",
-          message: "请导入xls格式或者xlsx格式"
-        });
-        this.eventUpload.value = "";
-        this.fullscreenLoading = false;
-        return;
-      }
-      if (obj.files[0].size / 1024 > IMPORTFILE_MAXSIZE) {
-        this.$message({
-          type: "error",
-          message: "导入的表格文件不能大于1M"
-        });
-        this.eventUpload.value = "";
-        this.fullscreenLoading = false;
-        return;
-      }
-      let f = obj.files[0];
-      let reader = new FileReader();
-      reader.onload = e => {
-        let data = e.target.result;
-        if (rABS) {
-          wb = XLSX.read(btoa(this.fixdata(data)), {
-            // 手动转化
-            type: "base64"
-          });
-        } else {
-          wb = XLSX.read(data, {
-            type: "binary"
-          });
-        }
-        // wb.SheetNames[0]是获取Sheets中第一个Sheet的名字
-        // wb.Sheets[Sheet名]获取第一个Sheet的数据
-        // document.getElementById("demo").innerHTML = JSON.stringify(
-        //   XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
-        // );
-        let valuesObj = [];
-        let resultObj = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-        console.log(resultObj);
-        if (resultObj.length < 1) {
-          this.$message.error("上传的文件内容为空，请检查文件");
-          this.fullscreenLoading = false;
-        } else {
-          for (let i = 0; i < resultObj.length; i++) {
-            let results = resultObj[i];
-            if (
-              !results["电池组编号"] ||
-              !results["电池组型号"] ||
-              !results["电池组规格"] ||
-              !results["电池组额定电压"] ||
-              !results["电池组额定容量"] ||
-              !results["电池单体型号"] ||
-              !results["采购企业"] ||
-              !results["生产日期"] ||
-              !results["出产日期"] ||
-              !results["质保期"]
-            ) {
-              this.$message.error("请文件填写完整");
-              this.eventUpload.value = "";
-              this.fullscreenLoading = false;
-              return;
-            }
-            if (
-              resultObj[i + 1] &&
-              results["电池组编号"] === resultObj[i + 1]["电池组编号"]
-            ) {
-              this.$message.error("电池组编号不能重复，请检查文件");
-              this.eventUpload.value = "";
-              this.fullscreenLoading = false;
-              return;
-            }
-            if (
-              !utils.checkDate(results["生产日期"]) ||
-              !utils.checkDate(results["出产日期"]) ||
-              !utils.checkDate(results["质保期"])
-            ) {
-              this.$message.warning("时间格式不支持，请选择文本形式");
-              this.eventUpload.value = "";
-              this.fullscreenLoading = false;
-              return;
-            }
-            let ItemObj = {
-              code: results["电池组编号"],
-              model: results["电池组型号"],
-              norm: results["电池组规格"],
-              voltage: results["电池组额定电压"],
-              capacity: results["电池组额定容量"],
-              singleModel: results["电池单体型号"],
-              subCompanyName: results["采购企业"],
-              productionDate: utils.yyyymmdd(results["生产日期"]),
-              manufacturerDate: utils.yyyymmdd(results["出产日期"]),
-              qualityGuaranteeDate: utils.yyyymmdd(results["质保期"]),
-              deviceCode: results["监测设备编号"] || ""
-            };
-            // ItemObj.companyName = results["生产企业"];
-            // ItemObj.deviceCodes.push(results["编号"]);
-            valuesObj.push(ItemObj);
-          }
-          console.log(valuesObj);
-          this.fileUploadTo(valuesObj);
-        }
-      };
-      if (rABS) {
-        reader.readAsArrayBuffer(f);
-      } else {
-        reader.readAsBinaryString(f);
-      }
-    },
-    fixdata(data) {
-      // 文件流转BinaryString
-      let o = "";
-      let l = 0;
-      let w = 10240;
-      for (; l < data.byteLength / w; l++) {
-        o += String.fromCharCode.apply(
-          null,
-          /* eslint-disable */
-          new Uint8Array(data.slice(l * w, l * w + w))
-        );
-      }
-      o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
-      return o;
-    },
-    fileUploadTo(data) {
-      this.$api.batteryUpLoadAll(data).then(res => {
-        console.log(res);
-        this.fullscreenLoading = false;
-        if (res.data && res.data.code === 0) {
-          this.$message.success("批量添加成功");
-          this.eventUpload.value = "";
-          this.getBatteryList();
-        } else {
-          if (this.eventUpload) {
-            this.eventUpload.value = "";
-          }
-        }
-      });
-    },
     /* 清空 */
     clearOptions() {
       this.batCustom = "";
@@ -724,11 +441,11 @@ export default {
             if (key.deviceId) {
               key.hasbind = false;
               key.deviceCode = key.deviceCode;
-              key.bindingName = "已绑定";
+              key.bindingName = t("batteryList.hasBind");
             } else {
-              key.bindingName = "未绑定";
+              key.bindingName = t("batteryList.noBind");
               key.hasbind = true;
-              key.deviceCode = "无";
+              key.deviceCode = "";
             }
             if (this.loginData.type === 1 || this.loginData.type === 3) {
               key.isPlat = true;
@@ -745,21 +462,7 @@ export default {
         }
       });
     },
-    /* 获取电池型号列表 */
-    getBatteryModelList() {
-      this.$api.batteryModelList().then(res => {
-        console.log("获取电池型号列表", res);
-        if (res.data && res.data.code === 0) {
-          this.Modeloptions = res.data.data;
-          // console.log(utils);
-          utils.setStorage("Modeloptions", JSON.stringify(res.data.data));
-          this.$store.commit(
-            "SETGroupModelOpts",
-            JSON.stringify(res.data.data)
-          );
-        }
-      });
-    },
+
     /* 获取电池组客户企业表 */
     getCompanyId() {
       this.$api.purchaseNames().then(res => {
@@ -819,9 +522,6 @@ export default {
       return userObj;
     },
     init() {
-      this.getGroupSpecif(); // 获取电池规格列表
-      this.getSinglBattery(); // 获取电池单体型号列表
-      this.getBatteryModelList(); // 获取电池型号列表
       this.getCompanyId(); // 获取客户企业表
 
       this.getDeviceList(); // 获取设备列表
@@ -845,6 +545,7 @@ export default {
     }
   },
   mounted() {
+    console.log("translate t", t);
     this.$store.state.addBattery = false;
     this.loginData = JSON.parse(utils.getStorage("loginData"));
     this.init();
