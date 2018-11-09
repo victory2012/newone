@@ -1,43 +1,67 @@
 <template>
-  <el-dialog width="600px" :title="userText" @close="closedIt" :visible.sync="manfictor">
-    <el-form :model="adminForm" :rules="customerRules" ref="adminForm">
+  <el-dialog width="600px"
+    :title="userText"
+    @close="closedIt"
+    :visible.sync="manfictor">
+    <el-form :model="adminForm"
+      :rules="customerRules"
+      ref="adminForm">
       <el-row :gutter="40">
         <el-col :span="12">
-          <el-form-item label="用户名" prop="account">
-            <el-input size="small" v-model="adminForm.account" auto-complete="off"></el-input>
+          <el-form-item :label="$t('useMsg.name')"
+            prop="account">
+            <el-input size="small"
+              v-model="adminForm.account"
+              auto-complete="off"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="登陆密码" prop="password">
-            <el-input size="small" v-model="adminForm.password" type="password" auto-complete="off"></el-input>
+          <el-form-item :label="$t('useMsg.loginPwd')"
+            prop="password">
+            <el-input size="small"
+              v-model="adminForm.password"
+              type="password"
+              auto-complete="off"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="40">
         <el-col :span="12">
-          <el-form-item label="手机号码" prop="phone">
-            <el-input size="small" v-model="adminForm.phone" auto-complete="off"></el-input>
+          <el-form-item :label="$t('useMsg.phone')"
+            prop="phone">
+            <el-input size="small"
+              v-model="adminForm.phone"
+              auto-complete="off"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="邮箱（选填）" prop="email">
-            <el-input size="small" v-model="adminForm.email" auto-complete="off"></el-input>
+          <el-form-item :label="$t('useMsg.email')"
+            prop="email">
+            <el-input size="small"
+              v-model="adminForm.email"
+              auto-complete="off"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="40">
         <el-col :span="12">
-          <el-form-item label="企业名称" prop="companyName">
-            <el-input size="small" v-model="adminForm.companyName" auto-complete="off"></el-input>
+          <el-form-item :label="$t('useMsg.enterpriseName')"
+            prop="companyName">
+            <el-input size="small"
+              v-model="adminForm.companyName"
+              auto-complete="off"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
     <div>
     </div>
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="resetAdmin('adminForm')">重 置</el-button>
-      <el-button :loading="addadmin" @click="submitAdmin('adminForm')" type="primary">确 认</el-button>
+    <div slot="footer"
+      class="dialog-footer">
+      <el-button @click="resetAdmin('adminForm')">{{$t('timeBtn.reset')}}</el-button>
+      <el-button :loading="addadmin"
+        @click="submitAdmin('adminForm')"
+        type="primary">{{$t('timeBtn.sure')}}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -45,6 +69,7 @@
 <script>
 /* eslint-disable */
 import { mapGetters } from "vuex";
+import t from "@/utils/translate";
 
 export default {
   props: {
@@ -52,7 +77,7 @@ export default {
       required: true
     }
   },
-  data() {
+  data () {
     return {
       addadmin: false,
       creatAdmin: true,
@@ -60,36 +85,36 @@ export default {
       // manfictor: true,
       natureOptions: [
         {
-          label: "国内",
+          label: t('useMsg.add.china'),
           value: "0"
         },
         {
-          label: "国际",
+          label: t('useMsg.add.international'),
           value: "1"
         }
       ],
       customerRules: {
         account: [
-          { required: true, message: "请输入用户名", trigger: "change" },
-          { min: 4, message: "用户名至少4位", trigger: "change" }
+          { required: true, message: t('useMsg.warn.userName'), trigger: "change" },
+          { min: 4, message: t('useMsg.warn.nameLimit'), trigger: "change" }
         ],
         password: [
-          { required: true, message: "请输入密码", trigger: "change" },
-          { min: 3, message: "密码至少3位", trigger: "change" }
+          { required: true, message: t('useMsg.warn.password'), trigger: "change" },
+          { min: 3, max: 10, message: t('password.passwordLimit'), trigger: "change" }
         ],
         phone: [
-          { required: true, message: "请输入手机号码", trigger: "change" },
+          { required: true, message: t('useMsg.warn.phone'), trigger: "change" },
           {
             pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
-            message: "手机号格式错误",
+            message: t('useMsg.warn.phoneCheck'),
             trigger: "change"
           }
         ],
         companyName: [
-          { required: true, message: "请输入企业名称", trigger: "change" }
+          { required: true, message: t('useMsg.warn.enterprise'), trigger: "change" }
         ],
         nature: [
-          { required: true, message: "请选择企业性质", trigger: "change" }
+          { required: true, message: t('useMsg.warn.nature'), trigger: "change" }
         ]
       }
     };
@@ -97,27 +122,27 @@ export default {
   computed: {
     ...mapGetters(["userText"]),
     manfictor: {
-      get: function() {
+      get: function () {
         return this.$store.state.manfictor;
       },
-      set: function() {}
+      set: function () { }
     },
     typeId: {
-      get: function() {
+      get: function () {
         return this.type;
       },
-      set: function() {}
+      set: function () { }
     }
   },
-  mounted() {
+  mounted () {
     // this.userText = sessionStorage.getItem("useItem");
   },
   methods: {
-    resetAdmin(formName) {
+    resetAdmin (formName) {
       this.$refs[formName].resetFields();
       this.adminForm = {};
     },
-    submitAdmin(formName) {
+    submitAdmin (formName) {
       console.log(this.typeId);
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -137,7 +162,7 @@ export default {
               if (res.data && res.data.code === 0) {
                 this.$message({
                   type: "success",
-                  message: "创建成功"
+                  message: t('successTips.addSuccess') //"创建成功"
                 });
                 this.$emit("hasCreated", { value: true });
                 this.$store.state.manfictor = false;
@@ -160,7 +185,7 @@ export default {
               if (res.data && res.data.code === 0) {
                 this.$message({
                   type: "success",
-                  message: "创建成功"
+                  message: t('successTips.addSuccess') //"创建成功"
                 });
                 this.$emit("hasCreated", { value: true });
                 this.$store.state.manfictor = false;
@@ -174,7 +199,7 @@ export default {
         }
       });
     },
-    closedIt() {
+    closedIt () {
       console.log("it closed");
       this.$store.state.manfictor = false;
       this.addadmin = false;

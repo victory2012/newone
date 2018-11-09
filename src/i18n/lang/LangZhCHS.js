@@ -374,6 +374,7 @@ module.exports = {
     enterpriseName: '企业名称',
     phone: '手机号',
     email: '邮箱',
+    loginPwd: '登陆密码',
     add: {
       china: '国内',
       international: '国际',

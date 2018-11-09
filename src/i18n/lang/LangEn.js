@@ -373,6 +373,7 @@ module.exports = {
     enterpriseName: 'Company Name',
     phone: 'Mobile',
     email: 'Email',
+    loginPwd: '登陆密码',
     add: {
       china: 'In China',
       international: 'Abroad',

@@ -1,36 +1,57 @@
 <template>
-  <el-dialog width="600px" :title="userText" @close="closedIt" :visible.sync="custom">
-    <el-form :model="adminForm" :rules="customerRules" ref="adminForm">
+  <el-dialog width="600px"
+    :title="userText"
+    @close="closedIt"
+    :visible.sync="custom">
+    <el-form :model="adminForm"
+      :rules="customerRules"
+      ref="adminForm">
       <el-row :gutter="40">
         <el-col :span="12">
-          <el-form-item label="用户名" prop="account">
-            <el-input v-model="adminForm.account" auto-complete="off"></el-input>
+          <!-- 用户名 -->
+          <el-form-item :label="$t('useMsg.name')"
+            prop="account">
+            <el-input v-model="adminForm.account"
+              auto-complete="off"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="登陆密码" prop="password">
-            <el-input v-model="adminForm.password" type="password" auto-complete="off"></el-input>
+          <!-- 登陆密码 -->
+          <el-form-item :label="$t('useMsg.loginPwd')"
+            prop="password">
+            <el-input v-model="adminForm.password"
+              type="password"
+              auto-complete="off"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row :gutter="40">
         <el-col :span="12">
-          <el-form-item label="手机号码" prop="phone">
-            <el-input v-model="adminForm.phone" auto-complete="off"></el-input>
+          <el-form-item :label="$t('useMsg.phone')"
+            prop="phone">
+            <el-input v-model="adminForm.phone"
+              auto-complete="off"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="邮箱（选填）" prop="email">
-            <el-input v-model="adminForm.email" auto-complete="off"></el-input>
+          <el-form-item :label="$t('useMsg.email')"
+            prop="email">
+            <el-input v-model="adminForm.email"
+              auto-complete="off"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
     <div>
     </div>
-    <div slot="footer" class="dialog-footer">
-      <el-button @click="resetAdmin('adminForm')">重 置</el-button>
-      <el-button :loading="addcustorm" @click="submitAdmin('adminForm')" type="primary">确 认</el-button>
+    <div slot="footer"
+      class="dialog-footer">
+      <!-- 重置 -->
+      <el-button @click="resetAdmin('adminForm')">{{$t('timeBtn.reset')}}</el-button>
+      <!-- 确 认 -->
+      <el-button :loading="addcustorm"
+        @click="submitAdmin('adminForm')"
+        type="primary">{{$t('timeBtn.sure')}}</el-button>
     </div>
   </el-dialog>
 </template>
@@ -38,6 +59,7 @@
 <script>
 /* eslint-disable */
 import { mapGetters } from "vuex";
+import t from "@/utils/translate";
 
 export default {
   props: {
@@ -45,25 +67,25 @@ export default {
       required: true
     }
   },
-  data() {
+  data () {
     return {
       creatAdmin: true,
       addcustorm: false,
       adminForm: {},
       customerRules: {
         account: [
-          { required: true, message: "请输入用户名", trigger: "change" },
-          { min: 4, message: "用户名至少4位", trigger: "change" }
+          { required: true, message: t('useMsg.warn.userName'), trigger: "change" },
+          { min: 4, message: t('useMsg.warn.nameLimit'), trigger: "change" }
         ],
         password: [
-          { required: true, message: "请输入密码", trigger: "change" },
-          { min: 3, message: "密码至少3位", trigger: "change" }
+          { required: true, message: t('useMsg.warn.password'), trigger: "change" },
+          { min: 3, max: 10, message: t('password.passwordLimit'), trigger: "change" }
         ],
         phone: [
-          { required: true, message: "请输入手机号码", trigger: "change" },
+          { required: true, message: t('useMsg.warn.phone'), trigger: "change" },
           {
             pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
-            message: "手机号格式错误",
+            message: t('useMsg.warn.phoneCheck'),
             trigger: "change"
           }
         ]
@@ -73,24 +95,24 @@ export default {
   computed: {
     ...mapGetters(["userText"]),
     custom: {
-      get: function() {
+      get: function () {
         return this.$store.state.custom;
       },
-      set: function() {}
+      set: function () { }
     },
     typeId: {
-      get: function() {
+      get: function () {
         return this.type;
       },
-      set: function() {}
+      set: function () { }
     }
   },
   methods: {
-    resetAdmin(formName) {
+    resetAdmin (formName) {
       this.$refs[formName].resetFields();
       this.adminForm = {};
     },
-    submitAdmin(formName) {
+    submitAdmin (formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           console.log("yes");
@@ -109,7 +131,7 @@ export default {
               if (res.data && res.data.code === 0) {
                 this.$message({
                   type: "success",
-                  message: "创建成功"
+                  message: t('successTips.addSuccess') //"创建成功"
                 });
                 this.$emit("hasCreatedCustorm", { value: true });
                 this.$store.state.custom = false;
@@ -130,7 +152,7 @@ export default {
               if (res.data && res.data.code === 0) {
                 this.$message({
                   type: "success",
-                  message: "创建成功"
+                  message: t('successTips.addSuccess') //"创建成功"
                 });
                 this.$emit("hasCreated", { value: true });
                 this.$store.state.custom = false;
@@ -142,7 +164,7 @@ export default {
         }
       });
     },
-    closedIt() {
+    closedIt () {
       this.resetAdmin("adminForm");
       this.$store.state.custom = false;
     }

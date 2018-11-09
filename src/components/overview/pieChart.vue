@@ -1,7 +1,9 @@
 <template>
   <div class="pieWarper">
-    <div class="pieItme shadow" id="pieChart1"></div>
-    <div class="pieItme shadow" id="pieChart2"></div>
+    <div class="pieItme shadow"
+      id="pieChart1"></div>
+    <div class="pieItme shadow"
+      id="pieChart2"></div>
   </div>
 </template>
 <script>
@@ -16,10 +18,10 @@ export default {
   props: {
     cardData: {
       type: Object,
-      default: () => {}
+      default: () => { }
     }
   },
-  data() {
+  data () {
     return {
       pieChart1: "",
       pieChart2: "",
@@ -99,13 +101,13 @@ export default {
   },
   watch: {
     cardData: {
-      handler: function(val) {
+      handler: function (val) {
         this.dataChange(val);
       },
       deep: true
     }
   },
-  mounted() {
+  mounted () {
     this.init();
     this._resizeHanlder = debounce(() => {
       this.pieChart1.resize();
@@ -114,14 +116,14 @@ export default {
     window.addEventListener("resize", this._resizeHanlder);
   },
   methods: {
-    init() {
+    init () {
       let $pieChart1 = document.getElementById("pieChart1");
       let $pieChart2 = document.getElementById("pieChart2");
       this.pieChart1 = echarts.init($pieChart1);
       this.pieChart2 = echarts.init($pieChart2);
       this.dataChange(this.cardData);
     },
-    dataChange(data) {
+    dataChange (data) {
       console.log(data);
       let jiankongshu;
       let namals;
