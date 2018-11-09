@@ -1,64 +1,122 @@
 <template>
   <div class="different">
     <div class="top">
-      <h2 class="textAlain title">比较数据</h2>
+      <!-- 比较数据 -->
+      <h2 class="textAlain title">{{$t('comparison.comparData')}}</h2>
       <div class="textAlain">
-        <div class="compare-add addone" v-show="contrastDatas">
-          <p v-for="(tag, index) in stacks1" :key="tag.hostId">电池编号{{index+1}}: {{tag.code}}</p>
+        <div class="compare-add addone"
+          v-show="contrastDatas">
+          <p v-for="(tag, index) in stacks1"
+            :key="tag.hostId">{{$t('comparison.batteryCode')}}{{index+1}}: {{tag.code}}</p>
           <!-- <p>电池编号2: {{stacks1[1].code}}</p> -->
         </div>
-        <div @click="openTable" class="compare-add">{{chooseText}}</div>
+        <div @click="openTable"
+          class="compare-add">{{chooseText}}</div>
       </div>
     </div>
     <div class="timeCenter">
       <div class="timeBar">
-        <span class="lables">从</span>
-        <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="start" type="date" placeholder="选择日期"></el-date-picker>
-        <span class="lable">至</span>
-        <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="end" type="date" placeholder="选择日期"></el-date-picker>
-        <el-select class="queryTime" :class="{'timeSelect': defaultGray}" @focus="selectTimeChanges" @change="changeTime" size="small" v-model="timevalue" placeholder="请选择时间范围">
-          <el-option v-for="item in weekOption" :key="item.value" :label="item.label" :value="item.value">
+        <span class="lables">{{$t('history.from')}}</span>
+        <el-date-picker class="queryTime"
+          :class="{'timeSelect': !defaultGray}"
+          @focus="timeChanges"
+          size="small"
+          v-model="start"
+          type="date"
+          :placeholder="$t('history.startTime')"></el-date-picker>
+        <span class="lable">{{$t('history.to')}}</span>
+        <el-date-picker class="queryTime"
+          :class="{'timeSelect': !defaultGray}"
+          @focus="timeChanges"
+          size="small"
+          v-model="end"
+          type="date"
+          :placeholder="$t('history.endTime')"></el-date-picker>
+        <el-select class="queryTime"
+          :class="{'timeSelect': defaultGray}"
+          @focus="selectTimeChanges"
+          @change="changeTime"
+          size="small"
+          v-model="timevalue"
+          :placeholder="$t('comparison.timeRange')">
+          <el-option v-for="item in weekOption"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
           </el-option>
         </el-select>
-        <el-button @click="sureBtnSearch" class="queryBtn" size="small" type="primary">确定</el-button>
+        <el-button @click="sureBtnSearch"
+          class="queryBtn"
+          size="small"
+          type="primary">{{$t('timeBtn.sure')}}</el-button>
       </div>
     </div>
     <div class="chart">
-      <com-chart :loading="chartloading" :chartData="dataArr" :chartBarData="summary"></com-chart>
+      <com-chart :loading="chartloading"
+        :chartData="dataArr"
+        :chartBarData="summary"></com-chart>
     </div>
 
-    <el-dialog title="添加比较" width="800px" :visible.sync="tableVisible">
+    <el-dialog title="添加比较"
+      width="800px"
+      :visible.sync="tableVisible">
       <div class="TopWrapper">
-        <div class="item">最多可选
-          <span style="color:#71bfdb">2</span>项 设备ID：
-          <el-tag v-for="tag in stacks1" :key="tag.hostId+new Date()" @close="closeTags(tag)" :type="''">
+        <div class="item">{{$t('comparison.most')}}
+          <span style="color:#71bfdb">2</span>{{$t('comparison.item')}}&nbsp;&nbsp;{{$t('comparison.deviceId')}}：
+          <el-tag v-for="tag in stacks1"
+            :key="tag.hostId+new Date()"
+            @close="closeTags(tag)"
+            :type="''">
             {{tag.code}}
           </el-tag>
         </div>
 
         <div class="item2">
-          <el-input size="small" @change="remoteMethod" placeholder="请输入内容" suffix-icon="el-icon-search" v-model="searchCont">
+          <el-input size="small"
+            @change="remoteMethod"
+            :placeholder="$t('batteryList.searchContent')"
+            suffix-icon="el-icon-search"
+            v-model="searchCont">
           </el-input>
         </div>
       </div>
-      <el-table :data="gridData" v-loading="loading">
-        <el-table-column property="code" label="电池编号"></el-table-column>
-        <el-table-column property="model" label="电池型号"></el-table-column>
-        <el-table-column property="norm" label="电池组规格"></el-table-column>
-        <el-table-column property="deviceCode" label="监测设备编号"></el-table-column>
-        <el-table-column label="操作" width="55">
+      <el-table :data="gridData"
+        v-loading="loading">
+        <!-- 电池编号 -->
+        <el-table-column property="code"
+          :label="$t('batteryList.batteryCode')"></el-table-column>
+        <!-- 电池型号 -->
+        <el-table-column property="model"
+          :label="$t('batteryList.model')"></el-table-column>
+        <!-- 电池组规格 -->
+        <el-table-column property="norm"
+          :label="$t('batteryList.specif')"></el-table-column>
+        <!-- 监测设备编号 -->
+        <el-table-column property="deviceCode"
+          :label="$t('batteryList.deviceCode')"></el-table-column>
+        <el-table-column :label="$t('alarmList.handle')"
+          width="55">
           <template slot-scope="scope">
-            <el-checkbox @change="toggleCheck(scope.row)" v-model="scope.row.checked"></el-checkbox>
+            <el-checkbox @change="toggleCheck(scope.row)"
+              v-model="scope.row.checked"></el-checkbox>
           </template>
         </el-table-column>
       </el-table>
       <div class="page">
-        <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="8" layout="prev, pager, next" :total="total">
+        <el-pagination @current-change="handleCurrentChange"
+          :current-page.sync="currentPage"
+          :page-size="8"
+          layout="prev, pager, next"
+          :total="total">
         </el-pagination>
       </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="small" @click="cancelHandle">取 消</el-button>
-        <el-button size="small" type="primary" @click="sureBtn">确 定</el-button>
+      <div slot="footer"
+        class="dialog-footer">
+        <el-button size="small"
+          @click="cancelHandle">{{$t('timeBtn.cancle')}}</el-button>
+        <el-button size="small"
+          type="primary"
+          @click="sureBtn">{{$t('timeBtn.sure')}}</el-button>
       </div>
     </el-dialog>
 
@@ -66,14 +124,14 @@
 </template>
 <script>
 import utils from "@/utils/utils";
-// import _ from "lodash";
+import t from "@/utils/translate";
 import comChart from "@/components/compare/compare-chart";
 
 export default {
   components: {
     comChart
   },
-  data() {
+  data () {
     return {
       defaultGray: true,
       contrastDatas: false,
@@ -100,22 +158,10 @@ export default {
         }
       },
       chooseObj: {},
-      dataObjFirst: {
-        timeArr: [],
-        singleVoltage: [],
-        temperature: [],
-        voltage: [],
-        current: []
-      },
-      dataObjSecond: {
-        timeArr: [],
-        singleVoltage: [],
-        temperature: [],
-        voltage: [],
-        current: []
-      },
+      dataObjFirst: {},
+      dataObjSecond: {},
       batteryGroup: "",
-      chooseText: "添加电池单元",
+      chooseText: t('comparison.addCompar'),
       searchCont: "",
       tableVisible: false,
       summary: {},
@@ -129,28 +175,28 @@ export default {
       timevalue: "week",
       weekOption: [
         {
-          label: "最近一周",
-          value: "week"
+          value: "week",
+          label: t('history.week')
         },
         {
-          label: "最近一月",
-          value: "mounth"
+          value: "mounth",
+          label: t('history.mounth')
         },
         {
-          label: "最近三个月",
-          value: "threemonth"
+          value: "threemonth",
+          label: t('history.threemonth')
         },
         {
-          label: "最近六个月",
-          value: "sixmounth"
+          value: "sixmounth",
+          label: t('history.sixmounth')
         },
         {
-          label: "最近一年",
-          value: "year"
+          value: "year",
+          label: t('history.year')
         },
         {
-          label: "全生命周期",
-          value: "all"
+          value: "all",
+          label: t('history.all')
         }
       ],
       searchList: [],
@@ -161,31 +207,31 @@ export default {
     };
   },
   methods: {
-    timeChanges() {
+    timeChanges () {
       this.defaultGray = true;
     },
-    selectTimeChanges() {
+    selectTimeChanges () {
       this.defaultGray = false;
     },
-    cancelHandle() {
+    cancelHandle () {
       this.stacks1 = [];
       this.tableVisible = false;
     },
-    sureBtnSearch() {
+    sureBtnSearch () {
       if (this.stacks1.length < 2) {
-        this.$message.error("请选择电池组");
+        this.$message.error(t('comparison.selectBattery'));
         return;
       }
       if (this.stacks1.length !== 2) {
-        this.$message.error("请选择电池组");
+        this.$message.error(t('comparison.selectBattery'));
         return;
       }
       if (!this.start) {
-        this.$message.error("请选择开始时间");
+        this.$message.error(t('history.startTime'));
         return;
       }
       if (!this.end) {
-        this.$message.error("请选择结束时间");
+        this.$message.error(t('history.endTime'));
         return;
       }
 
@@ -196,7 +242,7 @@ export default {
 
       this.getDataNow(nowStart, nowEnd);
     },
-    changeTime() {
+    changeTime () {
       if (this.timevalue === "week") {
         this.start = utils.getWeek();
       }
@@ -216,7 +262,7 @@ export default {
         this.start = "2000-01-01";
       }
     },
-    getDataNow(startTime, endTime) {
+    getDataNow (startTime, endTime) {
       // console.log(this.stacks1);
       this.chartloading = true;
       this.$api
@@ -270,7 +316,7 @@ export default {
           }
         });
     },
-    getDataPrev(startTime, endTime) {
+    getDataPrev (startTime, endTime) {
       this.$api
         .historyData(
           this.stacks1[1].hostId,
@@ -334,35 +380,35 @@ export default {
           }
         });
     },
-    remoteMethod() {
+    remoteMethod () {
       this.batteryGroup = this.searchCont;
       this.getBatteryList();
     },
-    sureBtn() {
+    sureBtn () {
       if (this.stacks1.length < 2) {
         this.$message({
           type: "warning",
-          message: "需添加2组电池"
+          message: t('comparison.addTwoBattery')
         });
         return;
       }
-      this.chooseText = "更换电池单元";
+      this.chooseText = t('comparison.changeBattery');
       this.contrastDatas = true;
       this.tableVisible = false;
     },
-    openTable() {
+    openTable () {
       this.stacks1 = [];
       this.tableVisible = true;
       this.gridData.forEach(key => {
         key.checked = false;
       });
     },
-    handleSizeChange() {},
-    handleCurrentChange(val) {
+    handleSizeChange () { },
+    handleCurrentChange (val) {
       this.currentPage = val;
       this.getBatteryList();
     },
-    toggleCheck(data) {
+    toggleCheck (data) {
       // this.chooseLen = 2;
       if (!data.checked) {
         this.stacks1.forEach((key, index) => {
@@ -378,11 +424,11 @@ export default {
         }
       }
     },
-    closeTags(tag) {
+    closeTags (tag) {
       this.stacks1.splice(this.stacks1.indexOf(tag), 1);
     },
     /* 获取电池列表 */
-    getBatteryList() {
+    getBatteryList () {
       this.loading = true;
       let options = {
         pageSize: 8,
@@ -407,7 +453,7 @@ export default {
       });
     }
   },
-  mounted() {
+  mounted () {
     this.getBatteryList();
   }
 };

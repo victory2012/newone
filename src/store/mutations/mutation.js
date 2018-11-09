@@ -77,5 +77,10 @@ export default {
   /* 概览 统计数据 */
   SETCARDDATA(state, data) {
     state.cardData = data;
+  },
+
+  /* 获取公司列表 */
+  SETCOMPANY(state, data) {
+    state.companyArr = data;
   }
 };

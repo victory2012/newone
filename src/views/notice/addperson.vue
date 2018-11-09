@@ -1,34 +1,62 @@
 <template>
   <div class="container">
-    <p class="tips">（最多添加128人）</p>
-    <el-table v-loading="loading" :data="tableData" style="width: 100%" :highlight-current-row="true">
-      <el-table-column prop="account" align="center" label="用户名">
+    <!-- （最多添加128人） -->
+    <p class="tips">{{$t('notice.atMost')}}</p>
+    <el-table v-loading="loading"
+      :data="tableData"
+      style="width: 100%"
+      :highlight-current-row="true">
+      <!-- 用户名 -->
+      <el-table-column prop="account"
+        align="center"
+        :label="$t('useMsg.name')">
       </el-table-column>
-      <el-table-column prop="role" align="center" label="账户身份">
+      <!-- 账户身份 -->
+      <el-table-column prop="role"
+        align="center"
+        :label="$t('useMsg.accountRole')">
       </el-table-column>
-      <el-table-column prop="createTime" align="center" label="创建时间">
+      <!-- 创建时间 -->
+      <el-table-column prop="createTime"
+        align="center"
+        :label="$t('device.createTime')">
       </el-table-column>
-      <el-table-column prop="state" align="center" label="状态">
+      <!-- 状态 -->
+      <el-table-column prop="state"
+        align="center"
+        :label="$t('notice.status')">
       </el-table-column>
-      <el-table-column align="center" label="操作">
+      <!-- 操作 -->
+      <el-table-column align="center"
+        :label="$t('batteryList.handle')">
         <template slot-scope="scope">
-          <el-button @click.native.prevent="cancleClick(scope.row)" type="text" size="small">
-            取消
+          <!-- 取消 已添加的接收人-->
+          <el-button @click.native.prevent="cancleClick(scope.row)"
+            type="text"
+            size="small">
+            {{$t('timeBtn.del')}}
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <div class="page">
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout="sizes, prev, pager, next" :total="total">
+      <el-pagination @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage"
+        :page-sizes="[10, 20, 30, 50]"
+        :page-size="pageSize"
+        layout="sizes, prev, pager, next"
+        :total="total">
       </el-pagination>
     </div>
   </div>
 </template>
 <script>
 import utils from "@/utils/utils";
+import t from "@/utils/translate";
 
 export default {
-  data() {
+  data () {
     return {
       currentPage: 1,
       pageSize: 10,
@@ -38,28 +66,28 @@ export default {
     };
   },
   methods: {
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.pageSize = val;
       this.personList();
     },
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.currentPage = val;
       this.personList();
     },
     /* 取消添加 */
-    cancleClick(row) {
+    cancleClick (row) {
       console.log(row);
       this.$api.cancelNotice(row.id).then(res => {
         if (res.data && res.data.code === 0) {
           this.$message({
             type: "success",
-            message: res.data.msg
+            message: t('successTips.delSuccess')
           });
           this.personList();
         }
       });
     },
-    personList() {
+    personList () {
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage
@@ -73,14 +101,14 @@ export default {
           this.tableData = [];
           result.pageData.forEach(key => {
             key.role = utils.accountType(key.type);
-            key.state = "已添加";
+            key.state = t('notice.hasAdd'); // "已添加";
             this.tableData.push(key);
           });
         }
       });
     }
   },
-  mounted() {
+  mounted () {
     this.personList();
   }
 };

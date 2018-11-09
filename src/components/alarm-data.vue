@@ -1,31 +1,58 @@
 <template>
   <div>
-    <el-table :data="tableData" style="width: 100%">
-      <el-table-column type="index" align="center" label="序号" width="50">
+    <el-table :data="tableData"
+      style="width: 100%">
+      <!-- 序号 -->
+      <el-table-column type="index"
+        align="center"
+        :label="$t('alarmList.serial')"
+        width="50">
       </el-table-column>
-      <el-table-column prop="createTime" align="center" label="告警发生时间">
+      <!-- 告警发生时间 -->
+      <el-table-column prop="createTime"
+        align="center"
+        :label="$t('alarmList.time')">
       </el-table-column>
-      <el-table-column prop="items" align="center" label="告警项目">
+      <!-- 告警项目 -->
+      <el-table-column prop="items"
+        align="center"
+        :label="$t('alarmList.alarmItem')">
       </el-table-column>
-      <el-table-column prop="thresholdValue" align="center" label="告警阈值">
+      <!-- 告警阈值 -->
+      <el-table-column prop="thresholdValue"
+        align="center"
+        :label="$t('alarmList.thride')">
       </el-table-column>
-      <el-table-column prop="actualValue" align="center" label="实际值">
+      <!-- 实际值 -->
+      <el-table-column prop="actualValue"
+        align="center"
+        :label="$t('alarmList.realDate')">
       </el-table-column>
-      <el-table-column prop="hostCode" align="center" label="电池组编号">
+      <!-- 电池组编号 -->
+      <el-table-column prop="hostCode"
+        align="center"
+        :label="$t('alarmList.batteryCode')">
       </el-table-column>
-      <el-table-column prop="content" align="center" label="告警内容">
+      <!-- 告警内容 -->
+      <el-table-column prop="content"
+        align="center"
+        :label="$t('alarmList.content')">
       </el-table-column>
-      <el-table-column prop="hierarchy" align="center" label="告警层级">
+      <!-- 告警层级 -->
+      <el-table-column prop="hierarchy"
+        align="center"
+        :label="$t('alarmList.alarmHierarchy')">
       </el-table-column>
-      <el-table-column prop="levels" align="center" label="告警级别">
+      <!-- 告警级别 -->
+      <el-table-column prop="levels"
+        align="center"
+        :label="$t('alarmList.alarmLevel')">
       </el-table-column>
     </el-table>
   </div>
 </template>
 
 <script>
-// import utils from "@/utils/utils";
-
 export default {
   props: {
     alarmData: {
@@ -33,7 +60,7 @@ export default {
       default: () => []
     }
   },
-  data() {
+  data () {
     return {
       currentPage: 1,
       total: 0,
@@ -42,13 +69,13 @@ export default {
   },
   watch: {
     alarmData: {
-      handler: function(vals) {
+      handler: function (vals) {
         this.tableData = vals;
       },
       deep: true
     }
   },
-  mounted() {},
+  mounted () { },
   methods: {}
 };
 </script>

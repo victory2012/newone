@@ -1,16 +1,22 @@
 <template>
   <div class="bgFFF">
     <div class="chartWarrp">
-      <div class="chartInfo" id="echart1"></div>
-      <div class="chartInfo" id="echart2"></div>
+      <div class="chartInfo"
+        id="echart1"></div>
+      <div class="chartInfo"
+        id="echart2"></div>
     </div>
     <div class="chartWarrp">
-      <div class="chartInfo" id="echart3"></div>
-      <div class="chartInfo" id="echart5"></div>
+      <div class="chartInfo"
+        id="echart3"></div>
+      <div class="chartInfo"
+        id="echart5"></div>
     </div>
     <div class="chartWarrp">
-      <div class="chartInfo" id="echart4"></div>
-      <div class="chartInfo" id="echartasdad4"></div>
+      <div class="chartInfo"
+        id="echart4"></div>
+      <div class="chartInfo"
+        id="echartasdad4"></div>
     </div>
   </div>
 </template>
@@ -18,8 +24,8 @@
 <script>
 /* eslint-disable */
 import echarts from "echarts";
-// import _ from "lodash";
 import utils from "@/utils/utils";
+import t from "@/utils/translate";
 import options from "@/config/echartOptions";
 import { deepClone } from "@/utils/functions";
 
@@ -27,18 +33,18 @@ export default {
   props: {
     chartData: {
       type: Object,
-      default() {
+      default () {
         return {};
       }
     },
     loading: {
       type: Boolean,
-      default() {
+      default () {
         return false;
       }
     }
   },
-  data() {
+  data () {
     return {
       myEcharts: null,
       isOptionAbnormal: false
@@ -46,24 +52,24 @@ export default {
   },
   watch: {
     loading: {
-      handler: function(curVal) {
+      handler: function (curVal) {
         // console.log(curVal);
         this.showLoading(curVal);
       },
       deep: true
     },
     chartData: {
-      handler: function(curVal) {
+      handler: function (curVal) {
         this.dataChange(curVal);
       },
       deep: true
     }
   },
-  mounted() {
+  mounted () {
     this.init();
   },
   methods: {
-    init() {
+    init () {
       let $echartsDOM1 = document.getElementById("echart1");
       let $echartsDOM2 = document.getElementById("echart2");
       let $echartsDOM3 = document.getElementById("echart3");
@@ -117,7 +123,7 @@ export default {
       this.showLoading();
       this.dataChange(this.chartData);
     },
-    showLoading(curVal) {
+    showLoading (curVal) {
       if (curVal) {
         this.myEcharts1.showLoading();
         this.myEcharts2.showLoading();
@@ -132,17 +138,23 @@ export default {
         this.myEcharts5.hideLoading();
       }
     },
-    dataChange(datas) {
+    dataChange (datas) {
       let voltageOptions = deepClone(options);
-      voltageOptions.title.text = "电压";
+      voltageOptions.title.text = t('realTime.voltage'); // 电压
       voltageOptions.yAxis.axisLabel.formatter = "{value} v";
       voltageOptions.series[0].data = datas.voltage;
       // voltageOptions.series[0].seriesName = "电压";
-      voltageOptions.tooltip.formatter = this.formatter;
+      voltageOptions.tooltip.formatter = p => {
+        let item = "";
+        p.forEach(v => {
+          item += `${utils.dateFomat(v.value[0])}<br/>${t('realTime.voltage')}:${v.value[1]}V<br/>`;
+        });
+        return item;
+      };
       this.myEcharts1.setOption(voltageOptions);
 
       let singleVoltageOptions = deepClone(options);
-      singleVoltageOptions.title.text = "单体电压";
+      singleVoltageOptions.title.text = t('realTime.singleVoltage'); // 单体电压
       singleVoltageOptions.yAxis.axisLabel.formatter = "{value} V";
       singleVoltageOptions.series[0].data = datas.singleVoltage;
       singleVoltageOptions.tooltip.formatter = p => {
@@ -151,7 +163,7 @@ export default {
           item +=
             utils.dateFomat(v.value[0]) +
             "<br/>" +
-            "单体电压" +
+            `${t('realTime.singleVoltage')}` +
             " : " +
             v.value[1] +
             "V<br/>";
@@ -160,7 +172,7 @@ export default {
       };
       this.myEcharts2.setOption(singleVoltageOptions);
       let currentOptions = deepClone(options);
-      currentOptions.title.text = "电流";
+      currentOptions.title.text = t('realTime.current'); // 电流
       currentOptions.yAxis.axisLabel.formatter = "{value} A";
       currentOptions.series[0].data = datas.current;
       currentOptions.tooltip.formatter = p => {
@@ -169,7 +181,7 @@ export default {
           item +=
             utils.dateFomat(v.value[0]) +
             "<br/>" +
-            "电流" +
+            `${t('realTime.current')}` +
             " : " +
             v.value[1] +
             "A<br/>";
@@ -179,7 +191,7 @@ export default {
       this.myEcharts3.setOption(currentOptions);
 
       let temperatureOptions = deepClone(options);
-      temperatureOptions.title.text = "温度";
+      temperatureOptions.title.text = t('realTime.temperature'); // 温度
       temperatureOptions.yAxis.axisLabel.formatter = "{value} ℃";
       temperatureOptions.series[0].data = datas.temperature;
       temperatureOptions.tooltip.formatter = p => {
@@ -188,7 +200,7 @@ export default {
           item +=
             utils.dateFomat(v.value[0]) +
             "<br/>" +
-            "温度" +
+            `${t('realTime.temperature')}` +
             " : " +
             v.value[1] +
             "℃<br/>";
@@ -198,7 +210,7 @@ export default {
       this.myEcharts4.setOption(temperatureOptions);
 
       let capacity = deepClone(options);
-      capacity.title.text = "电量";
+      capacity.title.text = t('realTime.quantity'); // "电量";
       capacity.yAxis.axisLabel.formatter = "{value} %";
       capacity.series[0].data = datas.capacity;
       capacity.tooltip.formatter = p => {
@@ -207,7 +219,7 @@ export default {
           item +=
             utils.dateFomat(v.value[0]) +
             "<br/>" +
-            "电量" +
+            `${t('realTime.quantity')}` +
             " : " +
             v.value[1] +
             "%<br/>";
@@ -215,14 +227,6 @@ export default {
         return item;
       };
       this.myEcharts5.setOption(capacity);
-    },
-    formatter(p, str) {
-      // console.log(p);
-      let item = "";
-      p.forEach(v => {
-        item += `${utils.dateFomat(v.value[0])}<br/>电压:${v.value[1]}V<br/>`;
-      });
-      return item;
     }
   }
 };

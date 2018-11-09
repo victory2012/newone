@@ -1,49 +1,100 @@
 <template>
   <div class="login">
     <div class="img">
-      <img src="../assets/img/login-bg.svg" alt="">
+      <img src="../assets/img/login-bg.svg"
+        alt="">
     </div>
     <div class="item">
       <div class="form">
-        <el-tabs v-model="activeName" :stretch="true">
-          <el-tab-pane :label="$t('loginMsg.labelAccPass')" name="accPwd">
-            <el-form label-position="top" :rules="LoginRules" ref="LoginForm" label-width="80px" :model="LoginForm">
-              <el-form-item :label="$t('loginMsg.accountPlace')" prop="account">
+        <el-tabs v-model="activeName"
+          :stretch="true">
+          <el-tab-pane :label="$t('loginMsg.labelAccPass')"
+            name="accPwd">
+            <el-form label-position="top"
+              :rules="LoginRules"
+              ref="LoginForm"
+              label-width="80px"
+              :model="LoginForm">
+              <el-form-item :label="$t('loginMsg.accountPlace')"
+                prop="account">
                 <el-input v-model="LoginForm.account"></el-input>
               </el-form-item>
-              <el-form-item :label="$t('loginMsg.passwordPlace')" prop="password">
-                <el-input type="password" v-model="LoginForm.password" @keyup.enter.native="accountLogin('LoginForm')"></el-input>
+              <el-form-item :label="$t('loginMsg.passwordPlace')"
+                prop="password">
+                <!-- @keyup.enter.native="accountLogin('LoginForm')" -->
+                <el-input type="password"
+                  v-model="LoginForm.password"
+                  @keyup.enter.native="accountLogin('LoginForm')"></el-input>
               </el-form-item>
               <el-form-item>
                 <!-- <button @click.stop.prevent="accountLogin('LoginForm')" class="accpwsBtn">登录</button> -->
-                <el-button :loading="doLogin" type="primary" class="accpwsBtn" @click="accountLogin('LoginForm')" round>{{$t('loginMsg.loginBtn')}}</el-button>
+                <el-button :loading="doLogin"
+                  type="primary"
+                  class="accpwsBtn"
+                  @click="accountLogin('LoginForm')"
+                  round>{{$t('loginMsg.loginBtn')}}</el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane :label="$t('loginMsg.labelSmsCode')" name="SMScode">
-            <el-form label-position="top" :rules="phoneRules" ref="smsPhone" label-width="80px" :model="smsForm">
-              <el-form-item :label="$t('loginMsg.phone')" prop="phone">
+          <el-tab-pane :label="$t('loginMsg.labelSmsCode')"
+            name="SMScode">
+            <el-form label-position="top"
+              :rules="phoneRules"
+              ref="smsPhone"
+              label-width="80px"
+              :model="smsForm">
+              <el-form-item :label="$t('loginMsg.phone')"
+                prop="phone">
                 <el-input v-model="smsForm.phone"></el-input>
               </el-form-item>
-              <el-form-item :label="$t('loginMsg.smsCode')" class="smsCode" prop="smsCode">
-                <el-input v-model="smsForm.smsCode" @keyup.enter.native="getSmsCode"></el-input>
-                <el-button class="getSms" @click="getSmsCode" :disabled="hasGetSms" type="primary" plain>{{smsMsg}}</el-button>
+              <el-form-item :label="$t('loginMsg.smsCode')"
+                class="smsCode"
+                prop="smsCode">
+                <el-input v-model="smsForm.smsCode"
+                  @keyup.enter.native="getSmsCode"></el-input>
+                <el-button class="getSms"
+                  @click="getSmsCode"
+                  :disabled="hasGetSms"
+                  type="primary"
+                  plain>{{smsMsg}}</el-button>
               </el-form-item>
               <el-form-item>
-                <el-button :loading="doLogin" type="primary" class="accpwsBtn" @click="checkSmsCode" round>{{$t('loginMsg.loginBtn')}}</el-button>
+                <el-button :loading="doLogin"
+                  type="primary"
+                  class="accpwsBtn"
+                  @click="checkSmsCode"
+                  round>{{$t('loginMsg.loginBtn')}}</el-button>
                 <!-- <button @click.stop.prevent="checkSmsCode" class="accpwsBtn">登录</button> -->
               </el-form-item>
             </el-form>
           </el-tab-pane>
         </el-tabs>
+
+      </div>
+      <div class="changeLangue">
+        <el-dropdown trigger="click"
+          placement="bottom"
+          @command="handleCommand">
+          <span class="el-dropdown-link cursor">
+            {{localLanguge}}<i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item :disabled="$i18n.locale === 'zh'"
+              command="zh">中文</el-dropdown-item>
+            <el-dropdown-item divided
+              command="en"
+              :disabled="$i18n.locale === 'en'">English</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
     </div>
   </div>
 </template>
 <script>
 export default {
-  data() {
+  data () {
     return {
+      localLanguge: '',
       hasGetSms: false,
       smsMsg: this.$t("loginMsg.getSmsCode"),
       activeName: "accPwd",
@@ -92,8 +143,29 @@ export default {
       }
     };
   },
+  created () {
+    let locallanguage = localStorage.getItem("locale");
+    if (locallanguage) {
+      this.localLanguge = locallanguage === "zh" ? "中文" : "English";
+    } else {
+      let currentLang = navigator.language; // 判断除IE外其他浏览器使用语言
+      if (!currentLang) {
+        // 判断浏览器使用语言
+        currentLang = navigator.browserLanguage;
+      }
+      if (currentLang === "zh-CN") {
+        this.localLanguge = "中文";
+        localStorage.setItem("locale", "zh");
+        this.$i18n.locale = "zh";
+      } else {
+        this.localLanguge = "English";
+        localStorage.setItem("locale", "en");
+        this.$i18n.locale = "en";
+      }
+    }
+  },
   methods: {
-    accountLogin(LoginForm) {
+    accountLogin (LoginForm) {
       this.$refs[LoginForm].validate(valid => {
         if (valid) {
           this.doLogin = true;
@@ -124,7 +196,7 @@ export default {
         }
       });
     },
-    getSmsCode() {
+    getSmsCode () {
       this.$refs.smsPhone.validateField("phone", opts => {
         console.log(opts);
         if (opts === "" || opts === undefined || opts === null) {
@@ -151,7 +223,7 @@ export default {
         }
       });
     },
-    checkSmsCode() {
+    checkSmsCode () {
       this.$refs.smsPhone.validate(valid => {
         if (valid) {
           this.doLogin = true;
@@ -178,11 +250,64 @@ export default {
           });
         }
       });
+    },
+    handleCommand (cammand) {
+      if (cammand === "zh") {
+        this.localLanguge = "中文";
+        this.$i18n.locale = "zh";
+        localStorage.setItem("locale", "zh");
+      }
+      if (cammand === "en") {
+        this.localLanguge = "English";
+        this.$i18n.locale = "en";
+        localStorage.setItem("locale", "en");
+      }
+      this.LoginRules = {
+        account: [
+          {
+            required: true,
+            message: this.$t("loginMsg.errorMsg.account"),
+            trigger: "blur"
+          }
+        ],
+        password: [
+          {
+            required: true,
+            message: this.$t("loginMsg.errorMsg.password"),
+            trigger: "blur"
+          }
+        ]
+      };
+      this.phoneRules = {
+        phone: [
+          {
+            required: true,
+            message: this.$t("loginMsg.errorMsg.phoneNub"),
+            trigger: "change"
+          },
+          {
+            pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
+            message: this.$t("loginMsg.errorMsg.checkPhone"),
+            trigger: "change"
+          }
+        ],
+        smsCode: [
+          {
+            required: true,
+            message: this.$t("loginMsg.errorMsg.smsCodeErr"),
+            trigger: "blur"
+          }
+        ]
+      };
     }
   }
 };
 </script>
 <style lang="scss" scoped>
+.cursor {
+  cursor: pointer;
+}
+
 .login {
   height: 100%;
   padding: 120px;
@@ -205,6 +330,7 @@ export default {
     }
   }
   .item {
+    position: relative;
     float: left;
     // flex: 0 0 400px;
     width: 35%;
@@ -227,6 +353,11 @@ export default {
           float: right;
         }
       }
+    }
+    .changeLangue {
+      position: absolute;
+      top: 30px;
+      right: 40px;
     }
   }
   .el-tab-pane {

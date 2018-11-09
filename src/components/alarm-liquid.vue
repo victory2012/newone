@@ -1,19 +1,37 @@
 <template>
   <div>
-    <el-table :data="tableData" style="width: 100%">
-      <el-table-column type="index" align="center" label="序号" width="100">
+    <el-table :data="tableData"
+      style="width: 100%">
+      <!-- 序号 -->
+      <el-table-column type="index"
+        align="center"
+        :label="$t('alarmList.serial')"
+        width="100">
       </el-table-column>
-      <el-table-column prop="Replenishing" align="center" label="补水时间">
+      <!-- 补水时间 -->
+      <el-table-column prop="Replenishing"
+        align="center"
+        :label="$t('history.fluidTime')">
       </el-table-column>
-      <el-table-column prop="temperature" align="center" label="补水温度">
+      <!-- 补水温度 -->
+      <el-table-column prop="temperature"
+        align="center"
+        :label="$t('history.fluidTemp')">
       </el-table-column>
-      <el-table-column prop="updateWater" align="center" label="距上次补水时长">
+      <!-- 距上次补水时长 -->
+      <el-table-column prop="updateWater"
+        align="center"
+        :label="$t('history.LengthOfYime')">
       </el-table-column>
       <!-- <el-table-column v-if="hasAddress" prop="address" align="center" label="位置">
       </el-table-column> -->
-      <el-table-column align="center" label="位置" width="380">
+      <el-table-column align="center"
+        :label="$t('alarmList.latLng')"
+        width="380">
         <template slot-scope="scope">
-          <el-button @click.native.prevent="getAdress(scope.row)" :disabled="scope.row.disabled" type="text">
+          <el-button @click.native.prevent="getAdress(scope.row)"
+            :disabled="scope.row.disabled"
+            type="text">
             {{scope.row.address}}
           </el-button>
         </template>
@@ -33,7 +51,7 @@ export default {
       default: () => []
     }
   },
-  data() {
+  data () {
     return {
       currentPage: 1,
       tableData: this.liquidData,
@@ -42,17 +60,17 @@ export default {
   },
   watch: {
     liquidData: {
-      handler: function(vals) {
+      handler: function (vals) {
         this.tableData = vals;
       },
       deep: true
     }
   },
-  mounted() {
+  mounted () {
     // this.getliquidData();
   },
   methods: {
-    getAdress(row) {
+    getAdress (row) {
       console.log(row);
       // let position =
       lnglatTrabsofor(row.position, res => {

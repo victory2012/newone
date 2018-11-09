@@ -1,48 +1,101 @@
 <template>
   <div class="alarmTable">
     <div class="addWarrp">
-      <div @click="adduser(index, key)" v-for="(key, index) in userData" class="addBox" :key="key.role">
+      <div @click="adduser(index, key)"
+        v-for="(key, index) in userData"
+        class="addBox"
+        :key="key.role">
         <!-- <img :src="key.default" alt=""> -->
-        <img src="../../../static/img/add-admin.png" alt="" srcset="">
+        <img src="../../../static/img/add-admin.png"
+          alt=""
+          srcset="">
         <p>{{key.text}}</p>
       </div>
     </div>
-    <el-table v-loading="loading" :data="tableData" style="width: 100%">
-      <el-table-column prop="account" align="center" label="用户名">
+    <el-table v-loading="loading"
+      :data="tableData"
+      style="width: 100%">
+      <!-- 用户名 -->
+      <el-table-column prop="account"
+        align="center"
+        :label="$t('useMsg.name')">
       </el-table-column>
-      <el-table-column prop="nickName" align="center" label="昵称">
+      <!-- 昵称 -->
+      <el-table-column prop="nickName"
+        align="center"
+        :label="$t('useMsg.nickName')">
       </el-table-column>
-      <el-table-column prop="role" align="center" label="账户身份">
+      <!-- 账户身份 -->
+      <el-table-column prop="role"
+        align="center"
+        :label="$t('useMsg.accountRole')">
       </el-table-column>
-      <el-table-column prop="layerName" align="center" label="企业身份">
+      <!-- 企业身份 -->
+      <el-table-column prop="layerName"
+        align="center"
+        :label="$t('useMsg.enterpriseRole')">
       </el-table-column>
-      <el-table-column prop="companyName" align="center" label="企业名称">
+      <!-- 企业名称 -->
+      <el-table-column prop="companyName"
+        align="center"
+        :label="$t('useMsg.enterpriseName')">
       </el-table-column>
-      <el-table-column prop="phone" align="center" label="手机号码">
+      <!-- 手机号码 -->
+      <el-table-column prop="phone"
+        align="center"
+        :label="$t('useMsg.phone')">
       </el-table-column>
-      <el-table-column prop="email" align="center" label="邮箱" width="240">
+      <!-- 邮箱 -->
+      <el-table-column prop="email"
+        align="center"
+        :label="$t('useMsg.email')"
+        width="240">
       </el-table-column>
-      <el-table-column align="center" label="操作" width="150">
+      <!-- 操作 -->
+      <el-table-column align="center"
+        :label="$t('batteryList.handle')"
+        width="150">
         <template slot-scope="scope">
-          <el-button :disabled="!scope.row.userType" size="small" class="limite" @click.native.prevent="changeQuanxian(scope.row)" type="text">
-            修改权限
+          <!-- 修改权限 -->
+          <el-button :disabled="!scope.row.userType"
+            size="small"
+            class="limite"
+            @click.native.prevent="changeQuanxian(scope.row)"
+            type="text">
+            {{$t('useMsg.changeRole')}}
           </el-button>
-          <el-button size="small" type="text" @click="secondary(scope.row)" :disabled="!scope.row.canNotDelete">删除</el-button>
+          <!-- 删除 -->
+          <el-button size="small"
+            type="text"
+            @click="secondary(scope.row)"
+            :disabled="!scope.row.canNotDelete">{{$t('timeBtn.del')}}</el-button>
         </template>
       </el-table-column>
     </el-table>
     <div class="page">
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout="sizes, prev, pager, next" :total="total">
+      <el-pagination @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage"
+        :page-sizes="[10, 20, 30, 50]"
+        :page-size="pageSize"
+        layout="sizes, prev, pager, next"
+        :total="total">
       </el-pagination>
     </div>
-    <Manfictors @hasCreated="reloadData" :type="addType"></Manfictors>
-    <Custom @hasCreatedCustorm="reloadData" :type="addType"></Custom>
+    <Manfictors @hasCreated="reloadData"
+      :type="addType"></Manfictors>
+    <Custom @hasCreatedCustorm="reloadData"
+      :type="addType"></Custom>
     <!-- 权限 -->
     <div>
-      <el-dialog title="修改权限" :width="'600px'" :visible.sync="jurisdiction">
+      <el-dialog :title="$t('useMsg.changeRole')"
+        width="600px"
+        :visible.sync="jurisdiction">
         <div>
           <ul class="jurisdiction-warrp">
-            <li v-for="key in userRole" :key="key.id" class="jurisdiction-itme">
+            <li v-for="key in userRole"
+              :key="key.id"
+              class="jurisdiction-itme">
               <div class="pre">{{key.label}}</div>
               <div class="pre">
                 <el-checkbox v-model="key.value"></el-checkbox>
@@ -50,9 +103,15 @@
             </li>
           </ul>
         </div>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="small" @click="jurisdiction = false">取 消</el-button>
-          <el-button size="small" type="primary" @click="doChangeJur">确 定</el-button>
+        <div slot="footer"
+          class="dialog-footer">
+          <!-- 取消 -->
+          <el-button size="small"
+            @click="jurisdiction = false">{{$t('timeBtn.cancle')}}</el-button>
+          <el-button size="small"
+            type="primary"
+            @click="doChangeJur">{{$t('timeBtn.sure')}}</el-button>
+          <!-- 确定 -->
         </div>
       </el-dialog>
     </div>
@@ -63,17 +122,18 @@
 // import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
 import permissionFun from "@/utils/valated";
-import addData from "../../config/add-user-data";
-import Manfictors from "../../components/user/manfictor";
-import Custom from "../../components/user/custom";
-import defaultPermision from "../../utils/default-permision";
+import addData from "@/config/add-user-data";
+import Manfictors from "@/components/user/manfictor";
+import Custom from "@/components/user/custom";
+import defaultPermision from "@/utils/default-permision";
+import t from "@/utils/translate";
 
 export default {
   components: {
     Manfictors,
     Custom
   },
-  data() {
+  data () {
     return {
       AdminRoles: permissionFun(),
       checked1: false,
@@ -94,39 +154,39 @@ export default {
       storge: "",
       userRole: [
         {
-          label: "电池登记",
+          label: t('defaultRole.addBatteries'), // "电池登记",
           id: "AddBatteries",
           value: false
         },
         {
-          label: "拉黑及恢复电池",
+          label: t('defaultRole.addblack'), // "拉黑及恢复电池",
           id: "addblack",
           value: false
         },
         {
-          label: "历史数据",
+          label: t('defaultRole.historyData'), // "历史数据",
           id: "historyData",
           value: false
         },
         {
-          label: "告警事件",
+          label: t('defaultRole.alarm'), // "告警事件",
           id: "alarm",
           value: false
         },
         {
-          label: "数据对比",
+          label: t('defaultRole.sameAnalysis'), // "数据对比",
           id: "sameAnalysis",
           value: false
         },
         {
-          label: "个人信息维护",
+          label: t('defaultRole.personalInfo'), // "个人信息维护",
           id: "personalInfo",
           value: false
         }
       ]
     };
   },
-  mounted() {
+  mounted () {
     this.$store.state.manfictor = false;
     this.$store.state.custom = false;
     this.storge = JSON.parse(utils.getStorage("loginData"));
@@ -135,7 +195,7 @@ export default {
     this.userLimit();
   },
   methods: {
-    userLimit() {
+    userLimit () {
       let loginData = sessionStorage.getItem("loginData");
       if (!loginData) {
         this.$router.push("/login");
@@ -159,7 +219,7 @@ export default {
       console.log(this.userData);
     },
     /* 删除按钮 */
-    secondary(item) {
+    secondary (item) {
       console.log(item);
       if (item.type === 2) {
         this.deleteAdmin(item);
@@ -169,11 +229,12 @@ export default {
       }
     },
     /* 删除用户 */
-    deleteUser(item) {
+    deleteUser (item) {
+      // 此操作将删除该用户, 是否继续?
       this.$messageBox
-        .confirm("此操作将删除该用户, 是否继续?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
+        .confirm(`${t('useMsg.delUserWarn')}`, `${t('loginMsg.tips')}`, {
+          confirmButtonText: t('timeBtn.sure'), //"确定",
+          cancelButtonText: t('timeBtn.cancle'), // "取消",
           type: "warning"
         })
         .then(() => {
@@ -181,7 +242,7 @@ export default {
             console.log(res);
             if (res.data && res.data.code === 0) {
               this.$message({
-                message: "删除成功",
+                message: `${t('successTips.delSuccess')}`, // "删除成功",
                 type: "success"
               });
               this.getUserList();
@@ -190,14 +251,14 @@ export default {
         });
     },
     /* 刪除企业 */
-    deleteAdmin(item) {
+    deleteAdmin (item) {
+      // 此操作将删除该企业以及该企业下的所有用户, 是否继续?
       this.$messageBox
         .confirm(
-          "此操作将删除该企业以及该企业下的所有用户, 是否继续?",
-          "提示",
+          `${t('useMsg.delCompanyWarn')}`, `${t('loginMsg.tips')}`,
           {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
+            confirmButtonText: t('timeBtn.sure'), //"确定",
+            cancelButtonText: t('timeBtn.cancle'), // "取消",
             type: "warning"
           }
         )
@@ -205,7 +266,7 @@ export default {
           this.$api.deleteCompany(item.id).then(res => {
             if (res.data && res.data.code === 0) {
               this.$message({
-                message: "删除成功",
+                message: `${t('successTips.delSuccess')}`, // "删除成功",
                 type: "success"
               });
               this.getUserList();
@@ -214,14 +275,14 @@ export default {
         });
     },
     /* 修改权限 -- 按钮 */
-    changeQuanxian(item) {
+    changeQuanxian (item) {
       if (
         (item.type === 2 && item.layerName === "生产企业") ||
         (item.type === 3 && item.layerName === "生产企业")
       ) {
         if (this.userRole.length === 6) {
           this.userRole.push({
-            label: "电池调配",
+            label: `${t('defaultRole.allocation')}`, //"电池调配",
             id: "allocation",
             value: false
           });
@@ -274,7 +335,7 @@ export default {
       });
     },
     /* 修改权限 -- 方法 */
-    doChangeJur() {
+    doChangeJur () {
       let permission = {};
       this.userRole.forEach(key => {
         permission[key.id] = key.value;
@@ -287,23 +348,23 @@ export default {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.$message({
-            message: res.data.msg,
+            message: t('successTips.changeSuccess'), // 修改成功
             type: "success"
           });
           this.jurisdiction = !this.jurisdiction;
         }
       });
     },
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       console.log(val);
       this.pageSize = val;
       this.getUserList();
     },
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.currentPage = val;
       this.getUserList();
     },
-    adduser(index, key) {
+    adduser (index, key) {
       console.log(key);
       // sessionStorage.setItem("useItem", key.text);
       // this.userData = addData();
@@ -317,10 +378,10 @@ export default {
         this.$store.commit("triggerManfictor");
       }
     },
-    reloadData(data) {
+    reloadData (data) {
       this.getUserList();
     },
-    getUserList() {
+    getUserList () {
       this.loading = true;
       let pageObj = {
         pageSize: this.pageSize,

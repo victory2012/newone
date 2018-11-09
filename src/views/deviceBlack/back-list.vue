@@ -1,33 +1,63 @@
 <template>
   <div class="alarmTable">
-    <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="code" align="center" label="设备编号">
+    <el-table :data="tableData"
+      style="width: 100%">
+      <!-- 设备编号 -->
+      <el-table-column prop="code"
+        align="center"
+        :label="$t('batteryList.deviceCode')">
       </el-table-column>
-      <el-table-column prop="batteryCode" align="center" label="电池编号">
+      <!-- 电池编号 -->
+      <el-table-column prop="batteryCode"
+        align="center"
+        :label="$t('batteryList.batteryCode')">
       </el-table-column>
-      <el-table-column prop="companyName" align="center" label="企业名称">
+      <!-- 企业名称 -->
+      <el-table-column prop="companyName"
+        align="center"
+        :label="$t('batteryList.enterprise')">
       </el-table-column>
-      <el-table-column prop="subCompanyName" align="center" label="客户企业">
+      <!-- 客户企业 -->
+      <el-table-column prop="subCompanyName"
+        align="center"
+        :label="$t('batteryList.customer')">
       </el-table-column>
-      <el-table-column prop="bindState" align="center" label="电池绑定状态">
+      <!-- 电池绑定状态 -->
+      <el-table-column prop="bindState"
+        align="center"
+        :label="$t('batteryList.binding')">
       </el-table-column>
-      <el-table-column align="center" label="操作" width="120">
+      <!-- 操作 -->
+      <el-table-column align="center"
+        :label="$t('batteryList.handle')"
+        width="120">
         <template slot-scope="scope">
-          <el-button size="small" @click.native.prevent="recovery(scope.row)" type="text">
-            恢复
+          <!-- 恢复 -->
+          <el-button size="small"
+            @click.native.prevent="recovery(scope.row)"
+            type="text">
+            {{$t('batteryList.recovery')}}
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <div class="page">
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout="sizes, prev, pager, next" :total="total">
+      <el-pagination @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage"
+        :page-sizes="[10, 20, 30, 50]"
+        :page-size="pageSize"
+        layout="sizes, prev, pager, next"
+        :total="total">
       </el-pagination>
     </div>
   </div>
 </template>
 <script>
+import t from "@/utils/translate";
+
 export default {
-  data() {
+  data () {
     return {
       currentPage: 1,
       total: 0,
@@ -36,7 +66,7 @@ export default {
     };
   },
   methods: {
-    recovery(data) {
+    recovery (data) {
       let deviceObj = {
         id: data.id,
         status: 0
@@ -46,21 +76,21 @@ export default {
         if (res.data && res.data.code === 0) {
           this.$message({
             type: "success",
-            message: res.data.msg
+            message: t('successTips.recoverySuccess')
           });
           this.getDeviceList();
         }
       });
     },
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.pageSize = val;
       this.getDeviceList();
     },
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.currentPage = val;
       this.getDeviceList();
     },
-    getDeviceList() {
+    getDeviceList () {
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage,
@@ -82,7 +112,7 @@ export default {
               key.blackStatus = key.status === -1;
               key.bindStatus = key.hostId === null;
               key.batteryCode = key.hostCode ? key.hostCode : "-";
-              key.bindState = key.hostId === null ? "未绑定" : "已绑定";
+              key.bindState = key.hostId === null ? t('batteryList.noBind') : t('batteryList.hasBind'); // "未绑定" : "已绑定";
               key.subCompanyName =
                 key.subCompanyName === null ? "-" : key.subCompanyName;
               this.tableData.push(key);
@@ -92,7 +122,7 @@ export default {
       });
     }
   },
-  mounted() {
+  mounted () {
     this.getDeviceList();
   }
 };

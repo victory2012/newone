@@ -3,7 +3,7 @@ export default {
     if (state.loginData) {
       return JSON.parse(state.loginData);
     }
-    return "";
+    return '';
   },
   manfictor(state) {
     return state.manfictor;
@@ -18,7 +18,7 @@ export default {
     if (state.loginData) {
       return `${JSON.parse(state.loginData).layerName}`;
     }
-    return "";
+    return '';
   },
   userText(state) {
     return state.addUserText;
@@ -56,7 +56,7 @@ export default {
     if (state.batGroupSpecifOpts) {
       return JSON.parse(state.batGroupSpecifOpts);
     }
-    return "";
+    return '';
   },
   /* 电池组规格 */
   getBatteryDetailShow(state) {
@@ -70,5 +70,9 @@ export default {
   },
   GETCARDDATA(state) {
     return state.cardData;
+  },
+
+  COMPANYARRAY(state) {
+    return state.companyArr;
   }
 };

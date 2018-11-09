@@ -2,97 +2,110 @@
   <div>
     <div class="title">
       <div class="titleCenter">
-        <a class="active">实时数据</a>
+        <a class="active">{{$t('runState.realData')}}</a>
       </div>
       <div class="search">
-        <!-- <el-autocomplete v-show="actived === 'real'" size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入电池编号" @select="handleSelect"></el-autocomplete> -->
-        <!-- <el-select v-show="actived === 'real'" v-model="state" filterable placeholder="请输入电池编号" clearable @change="changeBatteryCode">
-          <el-option v-for="item in tableData" :key="item.value" :label="item.value" :value="item">
-          </el-option>
-        </el-select>
-        <div v-show="actived !== 'real'" class="devicecode">
-          <p><img src="../../assets/img/battery.png" alt="" srcset="">{{companyInfo.code}}</p>
-          <p><img src="../../assets/img/device.png" alt="" srcset="">{{companyInfo.deviceCode}}</p>
-        </div> -->
       </div>
     </div>
     <div class="center">
       <div class="dashboad">
         <div>
-          <img src="../../assets/img/temp.png" alt="">
+          <img src="../../assets/img/temp.png"
+            alt="">
           <p class="info">{{infoData.temperature}}℃</p>
-          <p>温度</p>
+          <p>{{$t('realTime.temperature')}}</p>
         </div>
         <div>
-          <img src="../../assets/img/level.png" alt="">
+          <img src="../../assets/img/level.png"
+            alt="">
           <p class="info">{{infoData.fluid}}</p>
-          <p>液位</p>
+          <p>{{$t('realTime.fluid')}}</p>
         </div>
         <div>
-          <img src="../../assets/img/voltage_total.png" alt="">
+          <img src="../../assets/img/voltage_total.png"
+            alt="">
           <p class="info">{{infoData.voltage}}V</p>
-          <p>电压</p>
+          <p>{{$t('realTime.voltage')}}</p>
         </div>
         <div>
-          <img src="../../assets/img/voltage.png" alt="">
+          <img src="../../assets/img/voltage.png"
+            alt="">
           <p class="info">{{infoData.singleVoltage}}V</p>
-          <p>单体电压</p>
+          <p>{{$t('realTime.singleVoltage')}}</p>
         </div>
         <div>
-          <img src="../../assets/img/current.png" alt="">
+          <img src="../../assets/img/current.png"
+            alt="">
           <p class="info">{{infoData.current}}A</p>
-          <p>电流</p>
+          <p>{{$t('realTime.current')}}</p>
         </div>
         <div>
-          <img src="../../assets/img/capacity.png" alt="">
+          <img src="../../assets/img/capacity.png"
+            alt="">
           <p class="info">{{quantity}}</p>
-          <p>电量</p>
+          <p>{{$t('realTime.quantity')}}</p>
         </div>
       </div>
       <div class="warrp">
         <div class="map">
           <div class="mapCenter">
-            <div class="mapContent" id="mapContent"></div>
+            <div class="mapContent"
+              id="mapContent"></div>
           </div>
           <div class="timeCenter">
             <p class="map-time">{{infoData.hhmmss}}</p>
             <p class="map-date">{{infoData.yyddmm}}</p>
-            <p class="map-des">刷新时间</p>
-            <p @click="activeQuery" :class="{'active': queryData}" class="map-line">{{btnTip}}</p>
+            <p class="map-des">{{$t('realTime.refresh')}}</p>
+            <p @click="activeQuery"
+              :class="{'active': queryData}"
+              class="map-line">{{btnTip}}</p>
           </div>
         </div>
         <div class="address">
           <div>
-            <img width="21px" src="../../assets/img/me.png" alt="">
+            <img width="21px"
+              src="../../assets/img/me.png"
+              alt="">
             <span>{{infoData.companyName}}</span>
           </div>
           <div>
-            <img width="22px" src="../../assets/img/address.png" alt="">
+            <img width="22px"
+              src="../../assets/img/address.png"
+              alt="">
             <span>{{infoData.address}}</span>
           </div>
           <div>
-            <img width="25px" src="../../assets/img/battery.png" alt="">
+            <img width="25px"
+              src="../../assets/img/battery.png"
+              alt="">
             <span>{{infoData.code}}</span>
           </div>
           <div>
-            <img width="26px" src="../../assets/img/device.png" alt="">
+            <img width="26px"
+              src="../../assets/img/device.png"
+              alt="">
             <span>{{infoData.deviceCode}}</span>
           </div>
           <div>
-            <img width="25px" src="../../assets/img/version.svg" alt="">
+            <img width="25px"
+              src="../../assets/img/version.svg"
+              alt="">
             <span>{{version}}</span>
           </div>
           <div>
-            <img width="25px" src="../../assets/img/device-flesh.png" alt="">
+            <img width="25px"
+              src="../../assets/img/device-flesh.png"
+              alt="">
             <span>{{CCID}}</span>
           </div>
         </div>
       </div>
       <div class="my-map-divider">
-        <span>过去4小时监测数据</span>
-        <el-checkbox v-model="checked">是否自动更新数据</el-checkbox>
+        <span>{{$t('realTime.fourHour')}}</span>
+        <el-checkbox v-model="checked">{{$t('realTime.update')}}</el-checkbox>
       </div>
-      <echart-map :chartData="dataObj" :mqttData="ReceiveObj"></echart-map>
+      <echart-map :chartData="dataObj"
+        :mqttData="ReceiveObj"></echart-map>
     </div>
   </div>
 </template>
@@ -106,6 +119,7 @@ import utils from "@/utils/utils";
 import echartMap from "@/components/realTime";
 import mqttConfig from "@/api/mqtt.config";
 import lnglatTrabsofor from "@/utils/longlatTransfor";
+import t from "@/utils/translate";
 
 let mqttClient = {};
 let map;
@@ -117,13 +131,13 @@ export default {
   components: {
     echartMap
   },
-  data() {
+  data () {
     return {
       hostObj: {},
       infoData: {},
       timer: null,
       quantity: "",
-      btnTip: "主动查询",
+      btnTip: t("realTime.query"),
       CCID: "",
       address: "",
       interval: false,
@@ -144,7 +158,7 @@ export default {
       markerArr: []
     };
   },
-  mounted() {
+  mounted () {
     this.hostId = this.$route.query.hostId;
     this.deviceCode = this.$route.query.deviceCode;
     this.id = this.$route.query.id;
@@ -167,7 +181,7 @@ export default {
       }
     }, 25000);
   },
-  destroyed() {
+  destroyed () {
     if (
       typeof mqttClient === "object" &&
       typeof mqttClient.isConnected === "function"
@@ -181,13 +195,13 @@ export default {
     clearInterval(this.timer);
   },
   methods: {
-    init() {
+    init () {
       map = new AMap.Map("mapContent", {
         resizeEnable: true,
         zoom: 10
       });
     },
-    getQuantity() {
+    getQuantity () {
       if (this.hostObj.deviceCode) {
         this.interval = false;
         this.$api.batteryCapacity(this.hostObj.deviceCode).then(res => {
@@ -200,7 +214,7 @@ export default {
         });
       }
     },
-    connectMqtt() {
+    connectMqtt () {
       mqttClient = new Paho.MQTT.Client(
         mqttConfig.hostname,
         mqttConfig.port,
@@ -233,7 +247,7 @@ export default {
       };
     },
     /* 收到 mqtt数据 */
-    receiveData(data) {
+    receiveData (data) {
       let payloadString = JSON.parse(data);
       let dataObj = {
         times: utils.TimeSconds(payloadString[1]), // 时间
@@ -260,7 +274,8 @@ export default {
       this.version = dataObj.version;
       let posData = this.gcj_encrypt(dataObj.latitude, dataObj.longitude);
       this.infoData.temperature = dataObj.temperature;
-      this.infoData.fluid = dataObj.liquid === 0 ? "正常" : "异常";
+      this.infoData.fluid =
+        dataObj.liquid === 0 ? t("realTime.normal") : t("realTime.abnormal");
       this.infoData.voltage = dataObj.voltage;
       this.infoData.singleVoltage = dataObj.singleVoltage;
       this.infoData.current = dataObj.current;
@@ -299,7 +314,7 @@ export default {
         });
       }
     },
-    onConnect() {
+    onConnect () {
       console.log("messgae onConnect");
       if (
         typeof mqttClient === "object" &&
@@ -309,7 +324,7 @@ export default {
         mqttClient.subscribe(`dev/${this.deviceCode}`);
       }
     },
-    positionData(data) {
+    positionData (data) {
       if (data && data.gcjLongitude) {
         // marker.remove()
         let position = new AMap.LngLat(data.gcjLongitude, data.gcjLatitude);
@@ -331,14 +346,14 @@ export default {
         });
       }
     },
-    getCompanyInfo() {
+    getCompanyInfo () {
       this.$api.batteryGroupInfo(this.hostObj.hostId).then(res => {
         console.log(res);
         this.infoData = {};
         if (res.data && res.data.code === 0 && res.data.data) {
           let result = res.data.data;
           this.infoData = result;
-          this.infoData.fluid = result.fluidLevel === 0 ? "正常" : "异常";
+          this.infoData.fluid = result.fluidLevel === 0 ? t("realTime.normal") : t("realTime.abnormal");
           this.infoData.yyddmm = utils.yyyymmdd(new Date());
           this.infoData.hhmmss = utils.hhmmss(new Date());
           let positionData = {
@@ -349,7 +364,7 @@ export default {
         }
       });
     },
-    getData() {
+    getData () {
       let startTime = utils.getFourHours();
       let endTime = utils.getNowTime();
       if (!this.hostObj.hostId || !this.hostObj.id) {
@@ -391,7 +406,7 @@ export default {
           }
         });
     },
-    activeQuery() {
+    activeQuery () {
       console.log("123123");
       if (mqttClient.isConnected() && !this.queryData) {
         this.queryData = true;
@@ -400,28 +415,23 @@ export default {
         this.decriseTime = setInterval(() => {
           if (this.queryData) {
             index--;
-            this.btnTip = `主动查询(${index}s)`;
+            this.btnTip = `${t("realTime.query")}(${index}s)`;
             if (index === 0) {
               clearInterval(this.decriseTime);
-              this.btnTip = `主动查询`;
+              this.btnTip = `${t("realTime.query")}`;
               this.queryData = false;
             }
           } else {
             clearInterval(this.decriseTime);
-            this.btnTip = `主动查询`;
+            this.btnTip = `${t("realTime.query")}`;
           }
         }, 1000);
         let message = new Paho.MQTT.Message("c:get");
         message.destinationName = `cmd/${this.deviceCode}`;
         mqttClient.send(message);
-      } else {
-        this.$message({
-          message: "当前网络链接失败，请刷新重试",
-          type: "warning"
-        });
       }
     },
-    toggleUpdate() {
+    toggleUpdate () {
       if (this.checked) {
         if (mqttClient.isConnected()) {
           mqttClient.disconnect();
@@ -431,7 +441,7 @@ export default {
       }
     },
     //硬件GPS----转高德经纬度 ----开始
-    delta(lat, lon) {
+    delta (lat, lon) {
       let a = 6378245.0; //  a: 卫星椭球坐标投影到平面地图坐标系的投影因子。
       let ee = 0.00669342162296594323; //  ee: 椭球的偏心率。
       let dLat = this.transformLat(lon - 105.0, lat - 35.0);
@@ -446,18 +456,18 @@ export default {
     },
 
     /* 入口 */
-    gcj_encrypt(wgsLat, wgsLon) {
+    gcj_encrypt (wgsLat, wgsLon) {
       if (this.outOfChina(wgsLat, wgsLon)) return { lat: wgsLat, lon: wgsLon };
 
       var d = this.delta(wgsLat, wgsLon);
       return { lat: wgsLat + d.lat, lon: wgsLon + d.lon };
     },
-    outOfChina(lat, lon) {
+    outOfChina (lat, lon) {
       if (lon < 72.004 || lon > 137.8347) return true;
       if (lat < 0.8293 || lat > 55.8271) return true;
       return false;
     },
-    transformLat(x, y) {
+    transformLat (x, y) {
       let ret =
         -100.0 +
         2.0 * x +
@@ -478,7 +488,7 @@ export default {
         3.0;
       return ret;
     },
-    transformLon(x, y) {
+    transformLon (x, y) {
       let ret =
         300.0 +
         x +

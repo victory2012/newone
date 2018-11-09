@@ -2,28 +2,50 @@
   <div class="runCenter">
     <div class="title">
       <div class="titleCenter">
-        <a @click="showRealData" :class="{'active': actived == 'real'}">{{$t('runState.realData')}}</a>
-        <span v-if="permision.historyData" class="divider"></span>
-        <a v-if="permision.historyData" @click="showHistoryData" :class="{'active': actived == 'history'}">{{$t('runState.historyData')}}</a>
+        <a @click="showRealData"
+          :class="{'active': actived == 'real'}">{{$t('runState.realData')}}</a>
+        <span v-if="permision.historyData"
+          class="divider"></span>
+        <a v-if="permision.historyData"
+          @click="showHistoryData"
+          :class="{'active': actived == 'history'}">{{$t('runState.historyData')}}</a>
         <span class="divider"></span>
-        <a @click="showAlarmData" :class="{'active': actived == 'alarm'}">{{$t('runState.alarmData')}}</a>
+        <a @click="showAlarmData"
+          :class="{'active': actived == 'alarm'}">{{$t('runState.alarmData')}}</a>
       </div>
       <div class="search">
         <!-- <el-autocomplete v-show="actived === 'real'" size="small" suffix-icon="el-icon-search" v-model="state" :fetch-suggestions="querySearchAsync" placeholder="请输入电池编号" @select="handleSelect"></el-autocomplete> -->
-        <el-select v-show="actived === 'real'" v-model="state" filterable :placeholder="$t('runState.batteryCode')" clearable @change="changeBatteryCode">
-          <el-option v-for="item in tableData" :key="item.value" :label="item.value" :value="item">
+        <el-select v-show="actived === 'real'"
+          v-model="state"
+          filterable
+          :placeholder="$t('runState.batteryCode')"
+          clearable
+          @change="changeBatteryCode">
+          <el-option v-for="item in tableData"
+            :key="item.value"
+            :label="item.value"
+            :value="item">
           </el-option>
         </el-select>
-        <div v-show="actived !== 'real'" class="devicecode">
-          <p><img src="../../assets/img/battery.png" alt="" srcset="">{{companyInfo.code}}</p>
-          <p><img src="../../assets/img/device.png" alt="" srcset="">{{companyInfo.deviceCode}}</p>
+        <div v-show="actived !== 'real'"
+          class="devicecode">
+          <p><img src="../../assets/img/battery.png"
+              alt=""
+              srcset="">{{companyInfo.code}}</p>
+          <p><img src="../../assets/img/device.png"
+              alt=""
+              srcset="">{{companyInfo.deviceCode}}</p>
         </div>
       </div>
     </div>
-    <div v-show="hasHostId" class="tips">
+    <div v-show="hasHostId"
+      class="tips">
       {{$t('runState.selectBattery')}}
     </div>
-    <component :is="showCompontent" :hostObj="IdObj" :deviceId="deviceId" :propData="companyInfo"></component>
+    <component :is="showCompontent"
+      :hostObj="IdObj"
+      :deviceId="deviceId"
+      :propData="companyInfo"></component>
   </div>
 </template>
 <script>
@@ -44,7 +66,7 @@ export default {
     "i-history": () => import("./history.vue"),
     "i-alarm": () => import("./alearm.vue")
   },
-  data() {
+  data () {
     return {
       permision: permissionFun(),
       companyInfo: "",
@@ -61,7 +83,7 @@ export default {
       code: ""
     };
   },
-  mounted() {
+  mounted () {
     this.hostId = this.$route.query.hostId;
     this.deviceId = this.$route.query.deviceId;
     this.deviceCode = this.$route.query.deviceCode;
@@ -78,7 +100,7 @@ export default {
     }
   },
   methods: {
-    init() {
+    init () {
       if (this.hostId) {
         this.hasHostId = false;
         this.showCompontent = "real-time";
@@ -89,7 +111,7 @@ export default {
       this.batteryId = "";
       this.getBatteryList();
     },
-    querySearchAsync(queryString, callback) {
+    querySearchAsync (queryString, callback) {
       let restaurants = this.tableData;
       let results = queryString
         ? restaurants.filter(this.createStateFilter(queryString))
@@ -99,35 +121,35 @@ export default {
         callback(results);
       }, 80);
     },
-    createStateFilter(queryString) {
+    createStateFilter (queryString) {
       return state => {
         return (
           state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
         );
       };
     },
-    changeBatteryCode() {
+    changeBatteryCode () {
       console.log(this.state);
       if (this.state) {
         this.IdObj = this.state;
         this.getCompanyInfo();
       }
     },
-    showRealData() {
+    showRealData () {
       this.actived = "real";
       if (this.IdObj.hostId) {
         this.hasHostId = false;
         this.showCompontent = "real-time";
       }
     },
-    showHistoryData() {
+    showHistoryData () {
       this.actived = "history";
       if (this.IdObj.hostId) {
         this.hasHostId = false;
         this.showCompontent = "i-history";
       }
     },
-    showAlarmData() {
+    showAlarmData () {
       this.actived = "alarm";
       if (this.IdObj.hostId) {
         this.hasHostId = false;
@@ -135,7 +157,7 @@ export default {
       }
     },
     /* 获取电池列表 */
-    getBatteryList() {
+    getBatteryList () {
       let options = {
         pageSize: 99999,
         pageNum: 1,
@@ -159,7 +181,7 @@ export default {
         }
       });
     },
-    getCompanyInfo() {
+    getCompanyInfo () {
       this.$api.batteryGroupInfo(this.IdObj.hostId).then(res => {
         console.log(res);
         this.companyInfo = "";

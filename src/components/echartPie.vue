@@ -1,16 +1,18 @@
 <template>
   <div class="circel">
     <div class="circelInfo">
-      <div class="pei" id="peiCharts1"></div>
+      <div class="pei"
+        id="peiCharts1"></div>
     </div>
     <div class="circelInfo">
       <div class="item-history_alarm_divider">
         <p class="times">{{alarmTime ||0}}</p>
-        <p>累计告警</p>
+        <p>{{$t('realTime.totalWarn')}}</p>
       </div>
     </div>
     <div class="circelInfo">
-      <div class="pei" id="peiCharts2"></div>
+      <div class="pei"
+        id="peiCharts2"></div>
     </div>
   </div>
 </template>
@@ -18,7 +20,7 @@
 <script>
 /* eslint-disable */
 import echarts from "echarts";
-// import _ from "lodash";
+import t from "@/utils/translate";
 import { deepClone } from "@/utils/functions";
 
 export default {
@@ -39,7 +41,7 @@ export default {
       }
     }
   },
-  data() {
+  data () {
     return {
       pieOption: {
         tooltip: {
@@ -85,23 +87,23 @@ export default {
   },
   watch: {
     peiData: {
-      handler: function(vals) {
+      handler: function (vals) {
         this.dataChange(vals);
       },
       deep: true
     },
     loading: {
-      handler: function(vals) {
+      handler: function (vals) {
         this.loadingChange(vals);
       },
       deep: true
     }
   },
-  mounted() {
+  mounted () {
     this.init();
   },
   methods: {
-    init() {
+    init () {
       let BarDOM1 = document.getElementById("peiCharts1");
       let BarDOM2 = document.getElementById("peiCharts2");
 
@@ -110,7 +112,7 @@ export default {
       this.loadingChange(this.loading);
       this.dataChange(this.peiData);
     },
-    loadingChange(loading) {
+    loadingChange (loading) {
       if (loading) {
         this.peiEcharts1.showLoading();
         this.peiEcharts2.showLoading();
@@ -119,17 +121,17 @@ export default {
         this.peiEcharts2.hideLoading();
       }
     },
-    dataChange(peiData) {
+    dataChange (peiData) {
       let voltageOptions = deepClone(this.pieOption);
-      voltageOptions.legend.data = ["充电时间", "放电时间", "空载时间"];
+      voltageOptions.legend.data = [t('history.chargeDuration'), t('history.dischargeDuration'), t('history.empty')]; // ["充电时间", "放电时间", "空载时间"];
       voltageOptions.tooltip.formatter = p => {
         let item = `${p.percent}%<br />${p.data.name}: ${p.data.value}h`;
         return item;
       };
       voltageOptions.series[0].data = [
-        { value: peiData.summary.chargeDuration || 0, name: "充电时间" },
-        { value: peiData.summary.dischargeDuration || 0, name: "放电时间" },
-        { value: peiData.summary.idleDuration || 0, name: "空载时间" }
+        { value: peiData.summary.chargeDuration || 0, name: t('history.chargeDuration') },
+        { value: peiData.summary.dischargeDuration || 0, name: t('history.dischargeDuration') },
+        { value: peiData.summary.idleDuration || 0, name: t('history.empty') }
       ];
       voltageOptions.series[0].label.normal.formatter = "{c}h";
       this.peiEcharts1.setOption(voltageOptions);
@@ -140,16 +142,16 @@ export default {
         Number(peiData.eventSummary.voltage) +
         Number(peiData.eventSummary.current);
       let currentOptions = deepClone(this.pieOption);
-      currentOptions.legend.data = ["温度", "液位", "电压", "电流"];
+      currentOptions.legend.data = [t('realTime.temperature'), t('realTime.fluid'), t('realTime.voltage'), t('realTime.current')]; // ["温度", "液位", "电压", "电流"];
       currentOptions.tooltip.formatter = p => {
-        let item = `${p.percent}%<br />${p.data.name}-告警: ${p.data.value}次`;
+        let item = `${p.percent}%<br />${p.data.name}-${t('realTime.warn')}: ${p.data.value}${t('realTime.times')}`;
         return item;
       };
       currentOptions.series[0].data = [
-        { value: peiData.eventSummary.temperature || 0, name: "温度" },
-        { value: peiData.eventSummary.fluidLevel || 0, name: "液位" },
-        { value: peiData.eventSummary.voltage || 0, name: "电压" },
-        { value: peiData.eventSummary.current || 0, name: "电流" }
+        { value: peiData.eventSummary.temperature || 0, name: t('realTime.temperature') },
+        { value: peiData.eventSummary.fluidLevel || 0, name: t('realTime.fluid') },
+        { value: peiData.eventSummary.voltage || 0, name: t('realTime.voltage') },
+        { value: peiData.eventSummary.current || 0, name: t('realTime.current') }
       ];
       this.peiEcharts2.setOption(currentOptions);
     }

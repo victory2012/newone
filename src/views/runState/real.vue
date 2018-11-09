@@ -2,32 +2,32 @@
   <div class="center">
     <div class="dashboad">
       <div>
-        <img src="../../assets/img/temp.png" alt="">
+        <img src="../../assets/img/temp.png">
         <p class="info">{{infoData.temperature}}℃</p>
         <p>{{$t('realTime.temperature')}}</p>
       </div>
       <div>
-        <img src="../../assets/img/level.png" alt="">
+        <img src="../../assets/img/level.png">
         <p class="info">{{infoData.fluid}}</p>
         <p>{{$t('realTime.fluid')}}</p>
       </div>
       <div>
-        <img src="../../assets/img/voltage_total.png" alt="">
+        <img src="../../assets/img/voltage_total.png">
         <p class="info">{{infoData.voltage}}V</p>
         <p>{{$t('realTime.voltage')}}</p>
       </div>
       <div>
-        <img src="../../assets/img/voltage.png" alt="">
+        <img src="../../assets/img/voltage.png">
         <p class="info">{{infoData.singleVoltage}}V</p>
         <p>{{$t('realTime.singleVoltage')}}</p>
       </div>
       <div>
-        <img src="../../assets/img/current.png" alt="">
+        <img src="../../assets/img/current.png">
         <p class="info">{{infoData.current}}A</p>
         <p>{{$t('realTime.current')}}</p>
       </div>
       <div>
-        <img src="../../assets/img/capacity.png" alt="">
+        <img src="../../assets/img/capacity.png">
         <p class="info">{{quantity}}</p>
         <p>{{$t('realTime.quantity')}}</p>
       </div>
@@ -35,38 +35,53 @@
     <div class="warrp">
       <div class="map">
         <div class="mapCenter">
-          <div class="mapContent" id="mapContent"></div>
+          <div class="mapContent"
+            id="mapContent"></div>
         </div>
         <div class="timeCenter">
           <p class="map-time">{{infoData.hhmmss}}</p>
           <p class="map-date">{{infoData.yyddmm}}</p>
           <p class="map-des">{{$t('realTime.refresh')}}</p>
-          <p @click="activeQuery" :class="{'active': queryData}" class="map-line">{{btnTip}}</p>
+          <p @click="activeQuery"
+            :class="{'active': queryData}"
+            class="map-line">{{btnTip}}</p>
         </div>
       </div>
       <div class="address">
         <div>
-          <img width="21px" src="../../assets/img/me.png" alt="">
+          <img width="21px"
+            src="../../assets/img/me.png"
+            alt="">
           <span>{{infoData.companyName}}</span>
         </div>
         <div>
-          <img width="22px" src="../../assets/img/address.png" alt="">
+          <img width="22px"
+            src="../../assets/img/address.png"
+            alt="">
           <span>{{address}}</span>
         </div>
         <div>
-          <img width="25px" src="../../assets/img/battery.png" alt="">
+          <img width="25px"
+            src="../../assets/img/battery.png"
+            alt="">
           <span>{{infoData.code}}</span>
         </div>
         <div>
-          <img width="26px" src="../../assets/img/device.png" alt="">
+          <img width="26px"
+            src="../../assets/img/device.png"
+            alt="">
           <span>{{infoData.deviceCode}}</span>
         </div>
         <div>
-          <img width="25px" src="../../assets/img/version.svg" alt="">
+          <img width="25px"
+            src="../../assets/img/version.svg"
+            alt="">
           <span>{{version}}</span>
         </div>
         <div>
-          <img width="25px" src="../../assets/img/device-flesh.png" alt="">
+          <img width="25px"
+            src="../../assets/img/device-flesh.png"
+            alt="">
           <span>{{CCID}}</span>
         </div>
       </div>
@@ -75,7 +90,8 @@
       <span>{{$t('realTime.fourHour')}}</span>
       <el-checkbox v-model="checked">{{$t('realTime.update')}}</el-checkbox>
     </div>
-    <echart-map :chartData="dataObj" :mqttData="ReceiveObj"></echart-map>
+    <echart-map :chartData="dataObj"
+      :mqttData="ReceiveObj"></echart-map>
   </div>
 </template>
 <script>
@@ -99,7 +115,7 @@ export default {
   components: {
     echartMap
   },
-  data() {
+  data () {
     return {
       hasSend: false,
       sendBack: "",
@@ -127,7 +143,7 @@ export default {
       markerArr: []
     };
   },
-  mounted() {
+  mounted () {
     this.init();
     this.getData();
     this.connectMqtt();
@@ -139,7 +155,7 @@ export default {
       }
     }, 25000);
   },
-  destroyed() {
+  destroyed () {
     if (
       typeof mqttClient === "object" &&
       typeof mqttClient.isConnected === "function" &&
@@ -155,13 +171,13 @@ export default {
   },
   watch: {
     hostObj: {
-      handler: function() {
+      handler: function () {
         this.getData();
         this.getQuantity();
       }
     },
     propData: {
-      handler: function(val) {
+      handler: function (val) {
         this.infoData = val;
         this.positionData(val);
         this.onConnect();
@@ -170,13 +186,13 @@ export default {
     }
   },
   methods: {
-    init() {
+    init () {
       map = new AMap.Map("mapContent", {
         resizeEnable: true,
         zoom: 10
       });
     },
-    getQuantity() {
+    getQuantity () {
       if (this.hostObj.deviceCode) {
         this.interval = false;
         this.$api.batteryCapacity(this.hostObj.deviceCode).then(res => {
@@ -189,7 +205,7 @@ export default {
         });
       }
     },
-    connectMqtt() {
+    connectMqtt () {
       mqttClient = new Paho.MQTT.Client(
         mqttConfig.hostname,
         mqttConfig.port,
@@ -225,7 +241,7 @@ export default {
       };
     },
     /* 发送地址给后台 */
-    addressCallBack(data) {
+    addressCallBack (data) {
       let param = {
         id: this.hostObj.id,
         province: data.province ? data.province : data.city,
@@ -239,7 +255,7 @@ export default {
       });
     },
     /* 收到 mqtt数据 */
-    receiveData(data) {
+    receiveData (data) {
       let payloadString = JSON.parse(data);
       let dataObj = {
         times: utils.TimeSconds(payloadString[1]), // 时间
@@ -291,7 +307,7 @@ export default {
       } else {
       }
     },
-    onConnect() {
+    onConnect () {
       console.log("connect");
       if (
         typeof mqttClient === "object" &&
@@ -300,7 +316,7 @@ export default {
         mqttClient.subscribe(`dev/${this.infoData.deviceCode}`);
       }
     },
-    positionData(data) {
+    positionData (data) {
       if (data && data.gcjLongitude) {
         // marker.remove()
         let position = new AMap.LngLat(data.gcjLongitude, data.gcjLatitude);
@@ -322,7 +338,7 @@ export default {
           this.address = res.formattedAddress;
           let sendAddress = `${res.addressComponent.province}-${
             res.addressComponent.city
-          }`;
+            }`;
           if (this.sendBack !== sendAddress) {
             this.hasSend = false;
             this.sendBack = sendAddress;
@@ -333,7 +349,7 @@ export default {
         });
       }
     },
-    getData() {
+    getData () {
       let startTime = utils.getFourHours();
       let endTime = utils.getNowTime();
       if (!this.hostObj.hostId || !this.hostObj.device) {
@@ -375,7 +391,7 @@ export default {
           }
         });
     },
-    activeQuery() {
+    activeQuery () {
       if (mqttClient.isConnected() && !this.queryData) {
         this.queryData = true;
         clearInterval(this.decriseTime);
@@ -399,7 +415,7 @@ export default {
         mqttClient.send(message);
       }
     },
-    toggleUpdate() {
+    toggleUpdate () {
       if (this.checked) {
         if (mqttClient.isConnected()) {
           mqttClient.disconnect();
@@ -408,7 +424,7 @@ export default {
         this.connectMqtt();
       }
     },
-    getCity(long, lat) {
+    getCity (long, lat) {
       AMapUI.loadUI(["misc/PositionPicker"], PositionPicker => {
         let positionPicker = new PositionPicker({
           mode: "dragMarker",
@@ -428,7 +444,7 @@ export default {
       });
     },
     //硬件GPS----转高德经纬度 ----开始
-    delta(lat, lon) {
+    delta (lat, lon) {
       let a = 6378245.0; //  a: 卫星椭球坐标投影到平面地图坐标系的投影因子。
       let ee = 0.00669342162296594323; //  ee: 椭球的偏心率。
       let dLat = this.transformLat(lon - 105.0, lat - 35.0);
@@ -443,17 +459,17 @@ export default {
     },
 
     /* 入口 */
-    gcj_encrypt(wgsLat, wgsLon) {
+    gcj_encrypt (wgsLat, wgsLon) {
       if (this.outOfChina(wgsLat, wgsLon)) return { lat: wgsLat, lon: wgsLon };
       var d = this.delta(wgsLat, wgsLon);
       return { lat: wgsLat + d.lat, lon: wgsLon + d.lon };
     },
-    outOfChina(lat, lon) {
+    outOfChina (lat, lon) {
       if (lon < 72.004 || lon > 137.8347) return true;
       if (lat < 0.8293 || lat > 55.8271) return true;
       return false;
     },
-    transformLat(x, y) {
+    transformLat (x, y) {
       let ret =
         -100.0 +
         2.0 * x +
@@ -474,7 +490,7 @@ export default {
         3.0;
       return ret;
     },
-    transformLon(x, y) {
+    transformLon (x, y) {
       let ret =
         300.0 +
         x +

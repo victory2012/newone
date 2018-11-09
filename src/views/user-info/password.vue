@@ -1,33 +1,42 @@
 <template>
   <div class="">
     <div class="sort-content">
-      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="新密码" prop="password">
-          <el-input size="small" v-model="ruleForm.password" type="password" style="width:220px;"></el-input>
+      <el-form :model="ruleForm"
+        :rules="rules"
+        ref="ruleForm"
+        label-width="120px"
+        class="demo-ruleForm">
+        <el-form-item :label="$t('password.new')"
+          prop="password">
+          <el-input size="small"
+            v-model="ruleForm.password"
+            type="password"
+            style="width:220px;"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button size="small" type="primary" @click="submitForm('ruleForm')">修改密码</el-button>
+          <el-button size="small"
+            type="primary"
+            @click="submitForm('ruleForm')">{{$t('password.changeBtn')}}</el-button>
         </el-form-item>
       </el-form>
     </div>
   </div>
 </template>
 <script>
-// import { changePassword } from "../../api/index.js";
-// import { onTimeOut, onError, onSuccess } from "../../utils/callback";
+import t from "@/utils/translate";
 
 export default {
   name: "Password",
-  data() {
+  data () {
     return {
       ruleForm: {},
       rules: {
         password: [
-          { required: true, message: "请输入密码", trigger: "blur" },
+          { required: true, message: t('password.error'), trigger: "blur" },
           {
             min: 3,
-            max: 16,
-            message: "长度在 3 到 10 个字符",
+            max: 10,
+            message: t('password.passwordLimit'),
             trigger: "change"
           }
         ]
@@ -35,7 +44,7 @@ export default {
     };
   },
   methods: {
-    submitForm(formName) {
+    submitForm (formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let userObj = {
@@ -46,7 +55,7 @@ export default {
             if (res.data && res.data.code === 0) {
               this.$message({
                 type: "success",
-                message: "修改成功"
+                message: t('password.success')
               });
               this.ruleForm = {};
             }

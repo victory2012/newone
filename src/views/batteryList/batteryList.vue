@@ -2,110 +2,207 @@
   <div class="batteryList">
     <div class="topTab">
       <div class="icons">
-        <add-btns></add-btns>
+        <up-loade></up-loade>
       </div>
       <div class="select">
         <div class="item">
-          <el-input size="small" v-model="batteryId" :placeholder="$t('batteryList.searchContent')"></el-input>
+          <el-input size="small"
+            v-model="batteryId"
+            :placeholder="$t('batteryList.searchContent')"></el-input>
         </div>
         <div class="item">
-          <el-select size="small" v-model="batteryModel" :placeholder="$t('batteryList.model')">
-            <el-option v-for="item in Modeloptions" :key="item.id" :label="item.dicKey" :value="item.id">
+          <el-select size="small"
+            v-model="batteryModel"
+            :placeholder="$t('batteryList.model')">
+            <el-option v-for="item in Modeloptions"
+              :key="item.id"
+              :label="item.dicKey"
+              :value="item.id">
             </el-option>
           </el-select>
         </div>
-        <div v-if="userRole().selectProd" class="item">
-          <el-select size="small" v-model="manufacter" :placeholder="$t('batteryList.enterprise')">
-            <el-option v-for="item in companyArr" :key="item.id" :label="item.name" :value="item.id">
+        <div v-if="userRole().selectProd"
+          class="item">
+          <el-select size="small"
+            v-model="manufacter"
+            :placeholder="$t('batteryList.enterprise')">
+            <el-option v-for="item in companyArr"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id">
             </el-option>
           </el-select>
         </div>
-        <div v-if="userRole().selectCus" class="item">
-          <el-select size="small" v-model="batCustom" :placeholder="$t('batteryList.customer')">
-            <el-option v-for="item in batCustomOpts" :key="item.id" :label="item.name" :value="item.name">
+        <div v-if="userRole().selectCus"
+          class="item">
+          <el-select size="small"
+            v-model="batCustom"
+            :placeholder="$t('batteryList.customer')">
+            <el-option v-for="item in batCustomOpts"
+              :key="item.id"
+              :label="item.name"
+              :value="item.name">
             </el-option>
           </el-select>
         </div>
 
         <div class="item">
-          <el-select size="small" v-model="bindStatus" :placeholder="$t('batteryList.binding')">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+          <el-select size="small"
+            v-model="bindStatus"
+            :placeholder="$t('batteryList.binding')">
+            <el-option v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
             </el-option>
           </el-select>
         </div>
         <div class="item">
-          <el-button @click="getBatteryList" size="mini" type="primary">{{$t('batteryList.search')}}</el-button>
-          <el-button @click="clearOptions" size="small" plain>{{$t('batteryList.clear')}}</el-button>
+          <el-button @click="getBatteryList"
+            size="mini"
+            type="primary">{{$t('batteryList.search')}}</el-button>
+          <el-button @click="clearOptions"
+            size="small"
+            plain>{{$t('batteryList.clear')}}</el-button>
         </div>
       </div>
     </div>
     <div class="tables">
-      <el-table v-loading="loading" :data="tableData" style="width: 100%" :highlight-current-row="true">
+      <el-table v-loading="loading"
+        :data="tableData"
+        style="width: 100%"
+        :highlight-current-row="true">
         <!-- 序号 -->
-        <el-table-column type="index" width="50" align="center" :label="$t('batteryList.serial')"></el-table-column>
+        <el-table-column type="index"
+          width="50"
+          align="center"
+          :label="$t('batteryList.serial')">
+        </el-table-column>
         <!-- 电池编号 -->
-        <el-table-column prop="code" align="center" :label="$t('batteryList.batteryCode')">
+        <el-table-column prop="code"
+          align="center"
+          :label="$t('batteryList.batteryCode')">
         </el-table-column>
         <!-- 电池型号 -->
-        <el-table-column prop="model" align="center" :label="$t('batteryList.model')">
+        <el-table-column prop="model"
+          align="center"
+          :label="$t('batteryList.model')">
         </el-table-column>
         <!-- 电池组规格 -->
-        <el-table-column prop="norm" align="center" :label="$t('batteryList.specif')">
+        <el-table-column prop="norm"
+          align="center"
+          :label="$t('batteryList.specif')">
         </el-table-column>
         <!-- 生产企业名称 -->
-        <el-table-column v-if="userRole().listProd" prop="parentCompanyName" align="center" :label="$t('batteryList.enterprise')">
+        <el-table-column v-if="userRole().listProd"
+          prop="parentCompanyName"
+          align="center"
+          :label="$t('batteryList.enterprise')">
         </el-table-column>
         <!-- 客户企业名称 -->
-        <el-table-column v-if="userRole().listCus" prop="companyName" align="center" :label="$t('batteryList.customer')">
+        <el-table-column v-if="userRole().listCus"
+          prop="companyName"
+          align="center"
+          :label="$t('batteryList.customer')">
         </el-table-column>
         <!-- 监测设备编号 -->
-        <el-table-column prop="deviceCode" align="center" :label="$t('batteryList.deviceCode')">
+        <el-table-column prop="deviceCode"
+          align="center"
+          :label="$t('batteryList.deviceCode')">
         </el-table-column>
         <!-- 绑定状态 -->
-        <el-table-column prop="bindingName" align="center" :label="$t('batteryList.bindStatus')">
+        <el-table-column prop="bindingName"
+          align="center"
+          :label="$t('batteryList.bindStatus')">
         </el-table-column>
         <!-- 运行状态 -->
-        <el-table-column align="center" :label="$t('batteryList.runStatus')">
+        <el-table-column align="center"
+          :label="$t('batteryList.runStatus')">
           <template slot-scope="scope">
-            <el-button @click.native.prevent="lookFor(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">
+            <el-button @click.native.prevent="lookFor(scope.row)"
+              :disabled="scope.row.hasbind"
+              type="text"
+              size="small">
               {{$t('batteryList.view')}}
             </el-button>
           </template>
         </el-table-column>
         <!-- 操作 -->
-        <el-table-column align="center" width="220" :label="$t('batteryList.handle')">
+        <el-table-column align="center"
+          width="280"
+          :label="$t('batteryList.handle')">
           <template slot-scope="scope">
             <!-- 详情 -->
-            <el-button @click="details(scope.row)" type="text" size="small">{{$t('batteryList.batteryDetail')}}</el-button>
+            <el-button @click="details(scope.row)"
+              type="text"
+              size="small">{{$t('batteryList.batteryDetail')}}</el-button>
             <!-- 绑定 -->
-            <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind || scope.row.isPlat" type="text" size="small">{{$t('batteryList.bind')}}</el-button>
+            <el-button @click="bindDeviceClick(scope.row)"
+              :disabled="!scope.row.hasbind || scope.row.isPlat"
+              type="text"
+              size="small">{{$t('batteryList.bind')}}</el-button>
             <!-- 解绑 -->
-            <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind || scope.row.isPlat" type="text" size="small">{{$t('batteryList.unBind')}}</el-button>
+            <el-button @click="unbindClick(scope.row)"
+              :disabled="scope.row.hasbind || scope.row.isPlat"
+              type="text"
+              size="small">{{$t('batteryList.unBind')}}</el-button>
             <!-- 拉黑 -->
-            <el-button @click="addBlack(scope.row)" :disabled="!AdminRoles.addblack || scope.row.hasbind" type="text" size="small">{{$t('batteryList.black')}}</el-button>
+            <el-button @click="addBlack(scope.row)"
+              :disabled="!AdminRoles.addblack || scope.row.hasbind"
+              type="text"
+              size="small">{{$t('batteryList.black')}}</el-button>
             <!-- 删除 -->
-            <el-button @click="deleteBattery(scope.row)" :disabled="!scope.row.canDelete || scope.row.isPlat" type="text" size="small">{{$t('batteryList.detele')}}</el-button>
+            <el-button @click="deleteBattery(scope.row)"
+              :disabled="!scope.row.canDelete || scope.row.isPlat"
+              type="text"
+              size="small">{{$t('batteryList.detele')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <div class="page">
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout="sizes, prev, pager, next" :total="total">
+      <el-pagination @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage"
+        :page-sizes="[10, 20, 30, 50]"
+        :page-size="pageSize"
+        layout="sizes, prev, pager, next"
+        :total="total">
       </el-pagination>
     </div>
     <!-- 电池绑定 -->
-    <el-dialog width="600px" :title="$t('batteryList.batteryBindDevice')" :visible.sync="bindDevice">
-      <el-form :model="deviceModel" label-width="150px" label-position="right" ref="deviceModel" style="margin-top:20px;">
-        <el-form-item :title="$t('batteryList.deviceCode')" prop="deviceId" :rules="[{ required: true, message: this.$t('batteryList.warn.deviceId'), trigger: 'change' }]">
-          <el-select size="small" style="width:210px" v-model="deviceModel.deviceId" :placeholder="$t('batteryList.deviceCode')">
-            <el-option v-for="item in deviceIdOpts" :key="item.id" :label="item.code" :value="item.id" :disabled="item.disabled">
+    <el-dialog width="600px"
+      :title="$t('batteryList.batteryBindDevice')"
+      :visible.sync="bindDevice">
+      <el-form :model="deviceModel"
+        label-width="150px"
+        label-position="right"
+        ref="deviceModel"
+        style="margin-top:20px;">
+        <el-form-item :title="$t('batteryList.deviceCode')"
+          prop="deviceId"
+          :rules="bindRole">
+          <el-select size="small"
+            style="width:210px"
+            v-model="deviceModel.deviceId"
+            :placeholder="$t('batteryList.deviceCode')">
+            <el-option v-for="item in deviceIdOpts"
+              :key="item.id"
+              :label="item.code"
+              :value="item.id"
+              :disabled="item.disabled">
             </el-option>
           </el-select>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="small" @click="resetBind">{{$t('batteryList.cancel')}}</el-button>
-        <el-button :loading="bindings" size="small" @click="submitBind" type="primary">{{$t('batteryList.sure')}}</el-button>
+      <div slot="footer"
+        class="dialog-footer">
+        <el-button size="small"
+          @click="resetBind">{{$t('batteryList.cancel')}}</el-button>
+        <el-button :loading="bindings"
+          size="small"
+          @click="submitBind"
+          type="primary">{{$t('batteryList.sure')}}</el-button>
       </div>
     </el-dialog>
     <add-battery @hasCreated="reloadBattery"></add-battery>
@@ -120,12 +217,15 @@
   padding: 20px;
   // min-width: 1180px;
   overflow: auto;
+
   .topTab {
     display: flex;
     height: 60px;
     margin-bottom: 40px;
+
     .icons {
       flex: 0 0 35%;
+
       .items {
         width: 116px;
         float: left;
@@ -148,26 +248,32 @@
         }
       }
     }
+
     .select {
       flex: 1;
       display: flex;
+
       .item {
         flex: 1;
         padding: 10px 5px;
       }
     }
   }
+
   .page {
     padding-top: 20px;
     text-align: right;
   }
 }
+
 #import {
   margin-bottom: 12px;
 }
+
 #recover {
   margin-bottom: 14px;
 }
+
 #upers {
   margin-bottom: 11px;
 }
@@ -182,7 +288,7 @@ import utils from "@/utils/utils";
 import mqttConfig from "@/api/mqtt.config";
 import Paho from "Paho";
 import t from "@/utils/translate";
-import addBtns from "./buttons";
+import upLoade from "./uploade";
 
 // let wb; // 读取完成的数据
 // let rABS = false; // 是否将文件读取为二进制字符串
@@ -191,9 +297,9 @@ export default {
   components: {
     "add-battery": addBattery,
     batteryDetail,
-    addBtns
+    upLoade
   },
-  data() {
+  data () {
     return {
       AdminRoles: permissionFun(),
       companyArr: [], // 生产企业公司名称
@@ -216,6 +322,13 @@ export default {
       bindStatus: "",
       batCustomOpts: [],
       deviceIdOpts: [],
+      bindRole: [
+        {
+          required: true,
+          message: this.$t("batteryList.warn.deviceId"),
+          trigger: "change"
+        }
+      ],
       options: [
         {
           value: 1,
@@ -233,7 +346,7 @@ export default {
     };
   },
   methods: {
-    connectMqtt() {
+    connectMqtt () {
       mqttClient = new Paho.MQTT.Client(
         mqttConfig.hostname,
         mqttConfig.port,
@@ -256,11 +369,11 @@ export default {
         console.log("message", message);
       };
     },
-    onConnect() {
+    onConnect () {
       console.log("mqtt is connected");
     },
     /* 拉黑 */
-    addBlack(row) {
+    addBlack (row) {
       let deviceObj = {
         id: row.deviceId,
         status: -1
@@ -270,18 +383,18 @@ export default {
         if (res.data && res.data.code === 0) {
           this.$message({
             type: "success",
-            message: res.data.msg
+            message: t('successTips.addBlackSucc')
           });
           this.getBatteryList();
         }
       });
     },
 
-    reloadBattery() {
+    reloadBattery () {
       this.getBatteryList();
     },
     /* 查看详情 */
-    details(data) {
+    details (data) {
       console.log(data);
       this.$api.betteryDetails(data.id).then(res => {
         console.log(res);
@@ -295,12 +408,12 @@ export default {
       });
     },
     /* 取消电池绑定 */
-    resetBind() {
+    resetBind () {
       this.$refs.deviceModel.resetFields();
       this.deviceModel = {};
     },
     /* 电池绑定 */
-    submitBind() {
+    submitBind () {
       this.$refs.deviceModel.validate(vlited => {
         if (vlited) {
           this.bindings = true;
@@ -337,18 +450,18 @@ export default {
       });
     },
     /* 每页显示的数量 */
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.loading = true;
       this.pageSize = val;
       this.getBatteryList();
     },
     /* 显示第几页 */
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.currentPage = val;
       this.loading = true;
       this.getBatteryList();
     },
-    lookFor(row) {
+    lookFor (row) {
       this.$router.push({
         path: "battery/run",
         query: {
@@ -360,7 +473,7 @@ export default {
       });
     },
     /* 删除 */
-    deleteBattery(row) {
+    deleteBattery (row) {
       if (!row.id) return;
       this.$messageBox.alert(`${t("batteryList.deleteTip")}`, {
         showCancelButton: true,
@@ -382,14 +495,14 @@ export default {
       });
     },
     /* 绑定按钮 */
-    bindDeviceClick(row) {
+    bindDeviceClick (row) {
       console.log(row);
       this.getDeviceList();
       this.bindDevice = true;
       this.bindRows = row;
     },
     /* 解绑按钮 */
-    unbindClick(row) {
+    unbindClick (row) {
       this.$api.batteryUnBind(row.hostId).then(res => {
         if (res.data && res.data.code === 0) {
           // console.log(res);
@@ -403,7 +516,7 @@ export default {
     },
 
     /* 清空 */
-    clearOptions() {
+    clearOptions () {
       this.batCustom = "";
       this.batteryId = "";
       this.batteryModel = "";
@@ -411,7 +524,7 @@ export default {
       this.getBatteryList();
     },
     /* 获取电池列表 */
-    getBatteryList() {
+    getBatteryList () {
       let options = {
         pageSize: this.pageSize,
         pageNum: this.currentPage,
@@ -464,7 +577,7 @@ export default {
     },
 
     /* 获取电池组客户企业表 */
-    getCompanyId() {
+    getCompanyId () {
       this.$api.purchaseNames().then(res => {
         console.log("获取电池组客户企业表", res);
         if (res.data && res.data.code === 0) {
@@ -474,7 +587,7 @@ export default {
         }
       });
     },
-    getDeviceList() {
+    getDeviceList () {
       this.$api
         .DeviceList("/device/code?status=0&bindingStatus=0")
         .then(res => {
@@ -490,7 +603,7 @@ export default {
         });
     },
     /* 用户权限 */
-    userRole() {
+    userRole () {
       let userObj = {};
       if (
         this.loginData.type === 1 ||
@@ -521,12 +634,12 @@ export default {
       // }
       return userObj;
     },
-    init() {
+    init () {
       this.getCompanyId(); // 获取客户企业表
 
       this.getDeviceList(); // 获取设备列表
     },
-    getCompany() {
+    getCompany () {
       this.$api.manufacturerNames().then(res => {
         console.log("companyArr", res);
         if (res.data && res.data.code === 0) {
@@ -535,7 +648,7 @@ export default {
       });
     }
   },
-  destroyed() {
+  destroyed () {
     if (
       typeof mqttClient === "object" &&
       typeof mqttClient.isConnected === "function"
@@ -544,7 +657,7 @@ export default {
       mqttClient = null;
     }
   },
-  mounted() {
+  mounted () {
     console.log("translate t", t);
     this.$store.state.addBattery = false;
     this.loginData = JSON.parse(utils.getStorage("loginData"));

@@ -9,12 +9,13 @@ export default {
   userRoles: null,
   cardData: '', // 概览 统计数据
   batteryDetailsShow: false, // 是否显示电池详情框
-  batteryDetailsData: "", // 电池详情 数据
-  addUserText: "",
-  batCustomOpts: "", // 客户企业名称
-  GroupModelOpts: "", // 电池型号
-  deviceIdOpts: "", // 设备编号
-  singleBatteryOpts: "", // 电池组额定电压
-  batGroupSpecifOpts: "", // 电池组规格
-  permissions: "" // 用户权限,
+  batteryDetailsData: '', // 电池详情 数据
+  addUserText: '',
+  batCustomOpts: '', // 客户企业名称
+  GroupModelOpts: '', // 电池型号
+  deviceIdOpts: '', // 设备编号
+  singleBatteryOpts: '', // 电池组额定电压
+  batGroupSpecifOpts: '', // 电池组规格
+  permissions: '', // 用户权限,
+  companyArr: []
 };

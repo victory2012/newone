@@ -1,14 +1,21 @@
 <template>
   <div class="userMsg">
     <div class="editorBtn">
-      <el-button size="small" type="primary" @click="userMsgBox=true" class="editorContent">编辑</el-button>
+      <!-- 编辑 -->
+      <el-button size="small"
+        type="primary"
+        @click="userMsgBox=true"
+        class="editorContent">{{$t('user.edit')}}</el-button>
     </div>
     <div class="center">
-      <el-row type="flex" class="row-bg" justify="space-around">
+      <el-row type="flex"
+        class="row-bg"
+        justify="space-around">
         <el-col :span="8">
           <div class="grid-content">
             <div class="sort-content">
-              <p class="tips">昵称</p>
+              <!-- 昵称 -->
+              <p class="tips">{{$t('useMsg.nickName')}}</p>
               <p class="gridInput">{{userArr.nickName}}</p>
               <!-- <el-input v-model="userArr.userName" disabled class="gridInput"></el-input> -->
             </div>
@@ -17,7 +24,8 @@
         <el-col :span="8">
           <div class="grid-content">
             <div class="sort-content">
-              <p class="tips">账户身份</p>
+              <!-- 账户身份 -->
+              <p class="tips">{{$t('useMsg.accountIdentity')}}</p>
               <p class="gridInput">{{userArr.accountType}}</p>
               <!-- <el-input v-model="userArr.userRole" disabled class="gridInput"></el-input> -->
             </div>
@@ -26,7 +34,8 @@
         <el-col :span="8">
           <div class="grid-content">
             <div class="sort-content">
-              <p class="tips">企业身份</p>
+              <!-- 企业身份 -->
+              <p class="tips">{{$t('useMsg.companyIdentity')}}</p>
               <p class="gridInput">{{userArr.layerName}}</p>
               <!-- <el-input v-model="userArr.enterpriseRole" disabled class="gridInput"></el-input> -->
             </div>
@@ -35,11 +44,14 @@
       </el-row>
     </div>
     <div>
-      <el-row type="flex" class="row-bg" justify="space-around">
+      <el-row type="flex"
+        class="row-bg"
+        justify="space-around">
         <el-col :span="8">
           <div class="grid-content">
             <div class="sort-content">
-              <p class="tips">企业名称</p>
+              <!-- 企业名称 -->
+              <p class="tips">{{$t('useMsg.enterpriseName')}}</p>
               <p class="gridInput">{{userArr.companyName}}</p>
               <!-- <el-input v-model="userArr.enterpriseName" disabled class="gridInput"></el-input> -->
             </div>
@@ -48,7 +60,8 @@
         <el-col :span="8">
           <div class="grid-content">
             <div class="sort-content">
-              <p class="tips">手机号码</p>
+              <!-- 手机号码 -->
+              <p class="tips">{{$t('useMsg.phone')}}</p>
               <p class="gridInput">{{userArr.phone}}</p>
             </div>
           </div>
@@ -56,37 +69,61 @@
         <el-col :span="8">
           <div class="grid-content">
             <div class="sort-content">
-              <p class="tips">邮箱</p>
+              <!-- 邮箱 -->
+              <p class="tips">{{$t('useMsg.email')}}</p>
               <p class="gridInput">{{userArr.email}}</p>
             </div>
           </div>
         </el-col>
       </el-row>
     </div>
-    <el-dialog width="600px" title="编辑用户信息" @open="OpenBox" @close="closeIt" :visible.sync="userMsgBox">
-      <el-form :model="InfoForm" ref="InfoForm" label-width="200px">
-        <el-form-item label="手机号" prop="phones" :error="phonesError">
-          <el-input size="small" v-model.number="InfoForm.phones" style="width:160px;"></el-input>
+    <el-dialog width="600px"
+      :title="$t('user.userInfo')"
+      @open="OpenBox"
+      @close="closeIt"
+      :visible.sync="userMsgBox">
+      <el-form :model="InfoForm"
+        ref="InfoForm"
+        label-width="200px">
+        <el-form-item :label="$t('useMsg.phone')"
+          prop="phones"
+          :error="phonesError">
+          <el-input size="small"
+            v-model.number="InfoForm.phones"
+            style="width:160px;"></el-input>
         </el-form-item>
-        <el-form-item label="昵称" prop="userName">
-          <el-input size="small" v-model="InfoForm.nickName" style="width:160px;"></el-input>
+        <el-form-item :label="$t('useMsg.nickName')"
+          prop="userName">
+          <el-input size="small"
+            v-model="InfoForm.nickName"
+            style="width:160px;"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" prop="emails" :error="emailsError">
-          <el-input size="small" v-model="InfoForm.emails" style="width:160px;"></el-input>
+        <!-- 邮箱 -->
+        <el-form-item :label="$t('useMsg.email')"
+          prop="emails"
+          :error="emailsError">
+          <el-input size="small"
+            v-model="InfoForm.emails"
+            style="width:160px;"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="small" type="primary" @click="submitForm('InfoForm')">确认</el-button>
-        <el-button size="small" @click="resetForm">重置</el-button>
+      <div slot="footer"
+        class="dialog-footer">
+        <el-button size="small"
+          type="primary"
+          @click="submitForm('InfoForm')">{{$t('timeBtn.sure')}}</el-button>
+        <el-button size="small"
+          @click="resetForm">{{$t('timeBtn.cancle')}}</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import utils from "../../utils/utils";
+import utils from "@/utils/utils";
+import t from "@/utils/translate";
 
 export default {
-  data() {
+  data () {
     return {
       userMsgBox: false,
       userArr: {},
@@ -96,32 +133,32 @@ export default {
     };
   },
   methods: {
-    closeIt() {
+    closeIt () {
       console.log("closeIt");
     },
-    closeMsgBox(formName) {
+    closeMsgBox (formName) {
       this.userMsgBox = false;
       this.InfoForm = {};
       this.$refs[formName].resetFields();
     },
-    resetForm() {
-      // this.userMsgBox = false;
+    resetForm () {
+      this.userMsgBox = false;
       this.$refs.InfoForm.resetFields();
     },
-    OpenBox() {
+    OpenBox () {
       console.log("open it", this.$refs.InfoForm);
     },
-    submitForm() {
+    submitForm () {
       const phone = /^[1][3,4,5,7,8][0-9]{9}$/;
       const email = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
       this.emailsError = "";
       this.phonesError = "";
       if (!phone.test(this.InfoForm.phones)) {
-        this.phonesError = "手机号格式有误";
+        this.phonesError = t('useMsg.warn.phoneCheck'); // "手机号格式有误";
         return;
       }
       if (!email.test(this.InfoForm.emails) && this.InfoForm.emails !== "") {
-        this.emailsError = "邮箱格式有误";
+        this.emailsError = t('useMsg.warn.emailCheck'); // "邮箱格式有误";
         return;
       }
       let userObj = {};
@@ -134,7 +171,7 @@ export default {
           if (res.data && res.data.code === 0) {
             this.$message({
               type: "success",
-              message: "修改成功"
+              message: t('successTips.changeSuccess') // "修改成功"
             });
             this.init();
             this.closeMsgBox("InfoForm");
@@ -142,13 +179,13 @@ export default {
         });
       }
     },
-    init() {
+    init () {
       this.$api.getUserMsg().then(res => {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.userArr = res.data.data;
           this.userArr.accountType = utils.accountType(this.userArr.type);
-          this.userArr.email = res.data.data.email || "暂无";
+          this.userArr.email = res.data.data.email || "";
           this.InfoForm.emails = this.userArr.email;
           this.InfoForm.phones = this.userArr.phone;
           this.InfoForm.nickName = this.userArr.nickName;
@@ -156,7 +193,7 @@ export default {
       });
     }
   },
-  mounted() {
+  mounted () {
     this.init();
   }
 };

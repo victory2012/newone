@@ -2,9 +2,13 @@
   <div>
     <div class="titleTab textAlain">
       <div class="tabInfo">
-        <a @click="showSameData" :class="{'active': actived == 'same'}">同一电池单元</a>
+        <!-- 同一电池单元 -->
+        <a @click="showSameData"
+          :class="{'active': actived == 'same'}">{{$t('comparison.same')}}</a>
         <span class="divider"></span>
-        <a @click="showDiffData" :class="{'active': actived == 'diff'}">不同电池单元</a>
+        <!-- 不同电池单元 -->
+        <a @click="showDiffData"
+          :class="{'active': actived == 'diff'}">{{$t('comparison.diffrence')}}</a>
       </div>
     </div>
     <component :is="activeComponent"></component>
@@ -18,23 +22,23 @@ export default {
     sameCompent: () => import("./same"),
     diffCompent: () => import("./different")
   },
-  data() {
+  data () {
     return {
       actived: "same",
       activeComponent: "sameCompent"
     };
   },
   methods: {
-    showSameData() {
+    showSameData () {
       this.activeComponent = "sameCompent";
       this.actived = "same";
     },
-    showDiffData() {
+    showDiffData () {
       this.activeComponent = "diffCompent";
       this.actived = "diff";
     }
   },
-  mounted() {}
+  mounted () { }
 };
 </script>
 <style lang="scss" scoped>

@@ -1,25 +1,49 @@
 module.exports = {
-  platform: '平台',
+  platform: '平台管理员',
   manufacturer: '生产商',
+  administrator: '管理员',
   customer: '客户',
-  adminIden: '客户',
+  adminIden: '用户',
   internetErr: '服务器请求超时，请稍后重试',
   mapError: '地图加载失败，请检查网络连接',
   connectErr: '服务器繁忙，请稍后重试。',
   responseCode: {
     timeOut: '登录超时，请重新登录',
-    // timeOut: 'Login time out, please try again later.',
     sessionOut: '会话过期', // 1
-    accountExists: "账号已存在", // 1001
-    accountNotExist: "账号不存在", // 1002
-    accountOperation: "账号操作失败", // 1003
-    UnableDevice: '设备操作失败', // 4003
-    hasdevice: '设备已存在', // 4001
-    notFindDevice: '设备未找到', // 4002
-    hasHost: '宿主已存在', // 5001
-    noHost: '宿主未找到', // 5002
-    UnableBattery: '宿主操作失败', // 5003
-    UnableGecfence: '电子围栏操作失败' // 6023
+    parameterErr: '参数错误', // 10
+    permissions: '权限不足', // 20
+    dataExists: '数据已存在', // 30
+    sendCode: '发送短信失败', // 40
+    smscodeErr: '验证码错误或已过期', // 41
+    accountExists: '账号已存在', // 101001
+    phoneExists: '手机号已存在', // 101002
+    emailExists: '邮箱已存在', // 101003
+    accountOrPwdErr: '账号名密码错误', // 104001
+    userNotExist: '用户不存在', // `104002`: 用户不存在
+    companyExists: '公司已存在', // 201001
+    hasInvalidDevice: '存在有效设备(请先删除设备)', // 202001
+    hasInvalidHost: '存在有效宿主(请先删除电池)', // 202002
+    notFindCompany: '公司未找到', // 204001
+    deviceExists: '设备已存在', // 301001
+    notFindDevice: '设备未找到', // 301002
+    gpsDeviceExists: '设备已存在', // 301101 --电池gps设备已存在--
+    MonitorDeviceExists: '设备已存在', // 301201 --电池检测设备已存在--
+    deviceRunning: '设备运行中', // 302001
+    deviceBind: '设备已绑定', // 303001
+    hasHost: '宿主已存在', // 401001
+    hostBind: '宿主已绑定', // 403002
+    batteryGroupExists: '电池组已存在', // 401201
+    batteryModelExists: '电池组型号已存在', // 401211
+    batteryModelNotFind: '电池组型号未找到', // 401212
+    batterySpecExists: '电池组规格已存在', // 401213
+    batterySpecNotFind: '电池组规格未找到', // 401214
+    batterySingleModelExists: '电池组单体型号已存在', // 401215
+    batterySingleModelNotFind: '电池组单体型号未找到', // 401216
+    innerNoticeExists: '电池组通知已规则存在', // 501211
+    InnerNoticeUserExists: '电池组内部通知已用户存在', // 501221
+    InnerNoticeOverrun: '电池组内部通知数量超限', // 501222
+    outerNoticeUserExists: '电池组外部通知用户已存在', // 501231
+    outerNoticeOverrun: '电池组外部通知数量超限' // 501232
   },
   loginMsg: {
     userNameMsg: '请输入用户名',
@@ -46,7 +70,7 @@ module.exports = {
     phone: '手机号',
     smsCode: '短信验证码',
     getSmsCode: '获取验证码',
-    smsSuccess: "发送成功"
+    smsSuccess: '发送成功'
   },
   userInfo: {
     userMsg: '个人信息',
@@ -54,12 +78,18 @@ module.exports = {
     logOut: '退出登录'
   },
   successTips: {
-    addSuccess: "添加成功",
-    delSuccess: "删除成功",
+    addSuccess: '添加成功',
+    delSuccess: '删除成功',
     unbindSuccess: '解绑成功',
     bindSuccess: '绑定成功',
     batchSuccess: '批量添加成功',
-    recoverySuccess: '恢复拉黑成功'
+    recoverySuccess: '恢复拉黑成功',
+    changeSuccess: '修改成功',
+    addBlackSucc: '添加黑名单成功',
+    regDevice: '设备注册成功',
+    recoverySuc: '回收成功',
+    distributionSuc: '分配成功',
+    regBattery: '电池注册成功'
   },
   batch: {
     formatErr: '请导入xls格式或者xlsx格式',
@@ -69,7 +99,8 @@ module.exports = {
     betteryCodeRepeat: '电池编号不能重复，请检查文件',
     timeFormatErr: '时间格式不支持，请选择文本形式'
   },
-  menu: { // 菜单列表
+  menu: {
+    // 菜单列表
     overview: '概览',
     realposition: '实时位置',
     history: '历史轨迹',
@@ -77,9 +108,8 @@ module.exports = {
     batteryManage: '电池管理',
     batteryList: '电池列表',
     alarm: '告警数据',
-    userManage: "用户管理",
+    userManage: '用户管理',
     device: '设备管理',
-
     deviceList: '设备列表',
     deviceDefriend: '恢复拉黑设备',
     batteryInfo: '电池信息',
@@ -103,7 +133,6 @@ module.exports = {
     valid: '有效监控数',
     newAdd: '本月新增电池数',
     RunNormal: '正常运行',
-
     batteryModel: '型号',
     provence: '省份'
   },
@@ -120,7 +149,14 @@ module.exports = {
     intersection: '路口',
     latLng: '坐标',
     address: '地址',
-    getAdressErr: "地址获取失败"
+    getAdressErr: '地址获取失败'
+  },
+  group: {
+    allGroup: '整组',
+    single: '单体',
+    high: '高',
+    mid: '中',
+    low: '低'
   },
   history: {
     startTime: '选择开始时间',
@@ -133,26 +169,61 @@ module.exports = {
     TrackReplay: '轨迹回放',
     times: '时间',
     batteryList: '电池列表',
-
     online: '上线',
     offLine: '下线',
     checkErr: '开始时间应小于结束时间',
-    noData: "此设备当前时间段内，暂无数据",
+    noData: '此设备当前时间段内，暂无数据',
     noDevice: '暂无设备, 请先注册设备',
     latLng: '坐标',
-    address: '地址'
+    address: '查看地址',
+    from: '从',
+    to: '至',
+    exportBtn: '导出Excel',
+    cycle: '电池循环次数',
+    chargeDuration: '充电时间',
+    dischargeDuration: '放电时间',
+    avgChargeDuration: '平均充电时间',
+    avgDischargeDuration: '平均放电时间',
+    empty: '空载时间',
+    fluidTimes: '补水次数',
+    avgFluidDuration: '平均补水时长',
+    historyWarn: '历史告警',
+    historyfluid: '历史补水',
+    week: '最近一周',
+    mounth: '最近一月',
+    threemonth: '最近三个月',
+    sixmounth: '最近六个月',
+    year: '最近一年',
+    all: '全生命周期',
+    maker: '制表人',
+    makeTime: '制表时间',
+    fileName: '请输入导出文件名',
+    tips: '提示',
+    fluidTime: '补水时间',
+    fluidTemp: '补水温度',
+    LengthOfYime: '距上次补水时长',
+    No: '第',
+    point: '个点',
+    junction: '路口',
+    track: '轨迹'
   },
   pageBtn: {
     previous: '上一页',
     next: '下一页'
   },
   toggleTip: {
-    open: "展开",
+    open: '展开',
     close: '收起'
   },
   timeBtn: {
-    cancle: "取消",
-    sure: '确定'
+    cancle: '取消',
+    sure: '确定',
+    clear: '清空',
+    all: '全部',
+    del: '删除',
+    confirm: '确定',
+    reset: '重 置',
+    save: '保存'
   },
   fence: {
     cancelSeting: '取消设置',
@@ -169,6 +240,11 @@ module.exports = {
     }
   },
   batteryList: {
+    batteryVoltage: '电池组额定电压',
+    batteryCapacity: '电池组额定容量',
+    singleBattery: '电池单体型号',
+    choseDevice: '监测设备编号（选填）',
+    deviceCode: '设备编号',
     serial: '序号',
     batteryCode: '电池编号',
     binding: '绑定状态',
@@ -182,9 +258,8 @@ module.exports = {
     batteryNumber: '电池编号',
     model: '电池型号',
     specif: '电池组规格',
-    customer: '客户企业名称',
-    enterprise: '生产企业名称',
-    deviceCode: '设备编号',
+    customer: '客户企业',
+    enterprise: '生产企业',
     bindStatus: '绑定状态',
     onlineStatus: '在线状态',
     view: '查看',
@@ -198,13 +273,16 @@ module.exports = {
       enterprise: '请填写生产商',
       customerCom: '请选择客户企业',
       batteryCode: '请输入电池编号',
-      model: '请输入型号',
-      specif: '请输入规格',
+      model: '请选择电池组型号',
+      specif: '请选择电池组规格',
       createDate: '请选择生产日期',
       manufactureDate: '请选择出厂日期',
       warrantyDate: '请选择质保期',
       deviceId: '请选择设备编号',
-      content: '内容不能为空'
+      content: '内容不能为空',
+      batteryVoltage: '请输入电池组额定电压',
+      batteryCapacity: '请输入电池组额定容量',
+      singleBattery: '请选择电池单体型号'
     },
     batteries: '电池',
     batchImport: '批量导入',
@@ -225,9 +303,8 @@ module.exports = {
     clear: '清空',
     searchContent: '电池/设备编号',
     name: '企业名称',
-    recovery: "恢复"
+    recovery: '恢复'
   },
-
   runState: {
     realData: '实时数据',
     historyData: '历史数据',
@@ -236,6 +313,7 @@ module.exports = {
     selectBattery: '请先选择一个电池组！'
   },
   realTime: {
+    time: '时间',
     temperature: '温度',
     fluid: '液位',
     voltage: '电压',
@@ -247,7 +325,10 @@ module.exports = {
     query: '主动查询',
     normal: '正常',
     abnormal: '异常',
-    refresh: "刷新时间"
+    refresh: '刷新时间',
+    warn: '告警',
+    times: '次',
+    totalWarn: '累计告警'
   },
   alarmList: {
     serial: '序号',
@@ -263,12 +344,20 @@ module.exports = {
     grid: '设备坐标',
     position: '查看位置',
     location: '查看告警位置',
-
     alarmItem: '告警项目',
     alarmHierarchy: '告警层级',
     alarmLevel: '告警级别',
     more: '更多',
-    batteries: '电池数'
+    batteries: '电池数',
+    thride: '告警阈值',
+    realDate: '实际值',
+    view: '查看',
+    custorm: '客户',
+    latLng: '位置',
+
+    warnData: '告警值',
+    endTime: '结束时间',
+    startTime: '开始时间'
   },
   useMsg: {
     serial: '序号',
@@ -285,7 +374,6 @@ module.exports = {
     enterpriseName: '企业名称',
     phone: '手机号',
     email: '邮箱',
-
     add: {
       china: '国内',
       international: '国际',
@@ -309,11 +397,25 @@ module.exports = {
       passwordLimit: '密码至少6位',
       phone: '请输入手机号码',
       phoneCheck: '手机号格式错误',
+      emailCheck: '邮箱格式有误',
       enterprise: '请输入企业名称',
       nature: '请选择企业性质'
     },
     success: '创建成功！',
-    no: '无'
+    no: '无',
+    nickName: '昵称',
+    changeRole: '修改权限',
+    delUserWarn: '此操作将删除该用户, 是否继续?',
+    delCompanyWarn: '此操作将删除该企业以及该企业下的所有用户, 是否继续?'
+  },
+  defaultRole: {
+    addBatteries: '电池登记',
+    addblack: '拉黑及恢复电池',
+    historyData: '历史数据',
+    alarm: '告警事件',
+    sameAnalysis: '数据对比',
+    personalInfo: '个人信息维护',
+    allocation: '电池调配'
   },
   device: {
     serial: '序号',
@@ -332,7 +434,18 @@ module.exports = {
     nobind: '未绑定',
     hasbind: '已绑定',
     online: '在线',
-    offline: '离线'
+    offline: '离线',
+    regDevice: '设备注册',
+    enterprise: '生产企业',
+    upLevel: '设备升级',
+    deviceCategory: '设备类别',
+    company: '相关企业',
+    registed: '已注册',
+    noregist: '未注册',
+    delTips: '确定删除此设备吗？',
+    selectCampany: '请选择企业',
+    batteryGps: '电池追踪',
+    batteryMonitor: '电池监测'
   },
   addDevice: {
     title: '添加设备',
@@ -342,7 +455,7 @@ module.exports = {
     Customer: '客户',
     createBtn: '确认',
     noData: '暂无数据',
-    errorTip: "请填写设备编号",
+    errorTip: '请填写设备编号',
     manufacturerErr: '请选择生产商',
     success: '创建成功'
   },
@@ -377,5 +490,90 @@ module.exports = {
     OUT: 'OUT',
     Geofence: '超出围栏点',
     nowPosition: '当前实时位置'
+  },
+  comparison: {
+    same: '同一电池单元',
+    diffrence: '不同电池单元',
+    comparData: '比较数据',
+    batteryCode: '电池编号',
+    timeRange: '请选择时间范围',
+    comparWay: '请选择对比方式',
+    addCompar: '添加电池单元',
+    most: '最多可选',
+    item: '项',
+    deviceId: '设备ID',
+    YearOnYear: '同比',
+    monthOnMonth: '环比',
+    thisPeriod: '本期',
+    lastPeriod: '上期',
+    batteryUse: '电池使用情况',
+    alarmTimes: '告警次数',
+    charageSituation: '充电情况',
+    charageTimes: '充电次数',
+    discharageSituation: '放电情况',
+    discharageTimes: '工作次数',
+    selectBattery: '请选择电池组',
+    addOneBattery: '需添加1组电池',
+    addTwoBattery: '需添加2组电池',
+    changeBattery: '更换电池单元'
+  },
+  notice: {
+    status: '状态',
+    hasAdd: '已添加',
+    noAdd: '未添加',
+    viewUser: '查看已添加用户',
+    atMost: '（最多添加128人）',
+    add: '添加',
+    outerMost: '已添加的告警接收人（最多3位）'
+  },
+  stock: {
+    unassigned: '未分配电池',
+    custormBat: '客户企业电池',
+    selectAll: '全选',
+    distribution: '分配',
+    recovery: '回收',
+    load: '加载中...',
+    noData: '暂无数据'
+  },
+  threshold: {
+    changeThreshold: '修改阈值',
+    recovery: '恢复全局',
+    singleVoltage: '单体充电电压上限阈值',
+    singleDisVoltage: '单体放电电压下限阈值',
+    maxColtage: '整组充电电压上限阈值',
+    minDVoltage: '整组放电电压下限阈值',
+    maxCCurrent: '充电电流上限阈值系数',
+    maxDCurrent: '放电电流上限阈值系数',
+    maxCTemperat: '充电温度上限阈值(℃)',
+    minCTemperat: '充电温度下限阈值(℃)',
+    maxDTemperat: '放电温度上限阈值(℃)',
+    minDTemperat: '放电温度下限阈值(℃)',
+    maxFODays: '补水超限天数',
+    maxCCapacity: '充电容量上限阈值系数',
+    minCCapacity: '充电容量下限阈值系数',
+    warn: {
+      singleVoltage: '请输入单体充电电压上限阈值',
+      singleDisVoltage: '请输入单体放电电压下限阈值',
+      maxColtage: '请输入整组充电电压上限阈值',
+      minDVoltage: '请输入整组放电电压下限阈值',
+      maxCCurrent: '请输入充电电流上限阈值系数',
+      maxDCurrent: '请输入放电电流上限阈值系数',
+      maxCTemperat: '请输入充电温度上限阈值',
+      minCTemperat: '请输入充电温度下限阈值',
+      maxDTemperat: '请输入放电温度上限阈值',
+      minDTemperat: '请输入放电温度下限阈值',
+      maxFODays: '请输入补水超限天数',
+      maxCCapacity: '请输入充电容量上限阈值系数',
+      minCCapacity: '请输入充电容量下限阈值系数',
+      selectBatModel: '请选择电池型号',
+      modelNoThres: '此电池型号暂未设置阈值',
+      NOverall: '暂未设置全局阈值'
+    }
+  },
+  time: {
+    day: '天',
+    hour: '小时',
+    mins: '分钟',
+    sec: '秒'
   }
 };

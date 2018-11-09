@@ -1,27 +1,56 @@
 <template>
   <div class="maps">
     <div class="date">
-      <el-button v-show="!trajectory" size="mini" plain @click="startOnclick" title="开始">
+      <el-button v-show="!trajectory"
+        size="mini"
+        plain
+        @click="startOnclick"
+        :title="$t('history.start')">
         <i class="iconfont icon-ic_song_next"></i>
       </el-button>
-      <el-button v-show="!trajectory" size="mini" plain @click="pauseOnclick" title="暂停">
+      <el-button v-show="!trajectory"
+        size="mini"
+        plain
+        @click="pauseOnclick"
+        :title="$t('history.pause')">
         <i class="iconfont icon-artboard25copy"></i>
       </el-button>
-      <el-button v-show="!trajectory" size="mini" plain @click="resumeOnclick" title="继续">
+      <el-button v-show="!trajectory"
+        size="mini"
+        plain
+        @click="resumeOnclick"
+        :title="$t('history.continue')">
         <i class="iconfont icon-icons-resume_button"></i>
       </el-button>
-      <el-button v-show="!trajectory" size="mini" plain @click="stopOnclick" title="停止">
+      <el-button v-show="!trajectory"
+        size="mini"
+        plain
+        @click="stopOnclick"
+        :title="$t('history.stop')">
         <i class="iconfont icon-stop"></i>
       </el-button>
-      <el-button v-show="!trajectory" type="danger" size="small" @click="heat">活动热区</el-button>
-      <el-button v-show="trajectory" type="primary" size="mini" @click="posi">轨迹回放</el-button>
+      <!-- 活动热区 -->
+      <el-button v-show="!trajectory"
+        type="danger"
+        size="small"
+        @click="heat">{{$t('history.heatActive')}}</el-button>
+      <!-- 轨迹回放 -->
+      <el-button v-show="trajectory"
+        type="primary"
+        size="mini"
+        @click="posi">{{$t('history.TrackReplay')}}</el-button>
     </div>
-    <div class="timeRange" v-show="!trajectory">
-      <span>时间(s)</span>
-      <el-slider v-model="timeSeconds" @change="speedChange" vertical height="200px">
+    <div class="timeRange"
+      v-show="!trajectory">
+      <span>{{$t('history.times')}}(s)</span>
+      <el-slider v-model="timeSeconds"
+        @change="speedChange"
+        vertical
+        height="200px">
       </el-slider>
     </div>
-    <div id="historyContent" class="historyContent"></div>
+    <div id="historyContent"
+      class="historyContent"></div>
   </div>
 </template>
 <script>
@@ -29,6 +58,7 @@
 import AMap from "AMap";
 import AMapUI from "AMapUI";
 import utils from "@/utils/utils";
+import t from "@/utils/translate";
 
 let map;
 let pathSimplifierIns;
@@ -49,7 +79,7 @@ export default {
   },
   watch: {
     travelData: {
-      handler: function(vals) {
+      handler: function (vals) {
         if (this.trajectory) {
           this.heatMapFun(vals.heatmap);
         } else {
@@ -59,7 +89,7 @@ export default {
       deep: true
     }
   },
-  data() {
+  data () {
     return {
       trajectory: true,
       markerArr: [],
@@ -67,14 +97,16 @@ export default {
       alldistance: 0
     };
   },
-  mounted() {
+  mounted () {
     this.mapInit();
   },
   methods: {
-    mapInit() {
+    mapInit () {
+      const lang = localStorage.getItem('locale') === 'en' ? 'en' : 'zh_cn';
       map = new AMap.Map("historyContent", {
         resizeEnable: true,
-        zoom: 10
+        zoom: 10,
+        lang: lang
       });
       AMap.plugin(["AMap.Heatmap"], () => {
         // 初始化heatmap对象
@@ -84,14 +116,14 @@ export default {
         });
       });
     },
-    heat() {
+    heat () {
       this.heatMapFun(this.travelData.heatmap);
     },
-    posi() {
+    posi () {
       this.positionChange(this.travelData.travel);
     },
     /* 热力图 方法 */
-    heatMapFun(heatData) {
+    heatMapFun (heatData) {
       this.trajectory = true;
       if (!heatData[0] || !heatData[0].lng) {
         return;
@@ -107,7 +139,7 @@ export default {
       });
     },
     /* 轨迹相关方法 */
-    positionChange(positions) {
+    positionChange (positions) {
       this.trajectory = false;
       heatmap && heatmap.setDataSet({ data: [] });
       if (!positions || positions.length < 1) {
@@ -129,10 +161,6 @@ export default {
         this.alldistance += distance;
       }
       AMapUI.load(["ui/misc/PathSimplifier"], PathSimplifier => {
-        if (!PathSimplifier.supportCanvas) {
-          alert("当前环境不支持 Canvas！");
-          return;
-        }
         AMapUI.loadUI(["misc/PositionPicker"], PositionPicker => {
           let positionPicker = new PositionPicker({
             mode: "dragMarker",
@@ -146,12 +174,14 @@ export default {
           pathSimplifierIns = new PathSimplifier({
             zIndex: 100,
             map: map,
-            getHoverTitle: function(pathData, pathIndex, pointIndex) {
+            getHoverTitle: function (pathData, pathIndex, pointIndex) {
               if (pointIndex >= 0) {
-                return "第" + pointIndex + "个点";
+                return `${t("history.No")} ${pointIndex} ${t(
+                  "history.point"
+                )}`;
               }
             },
-            getPath: function(pathData, pathIndex) {
+            getPath: function (pathData, pathIndex) {
               return pathData.path;
             },
             renderOptions: {
@@ -167,7 +197,7 @@ export default {
               }
             }
           });
-          pathSimplifierIns.on("pointClick", function(e, info) {
+          pathSimplifierIns.on("pointClick", function (e, info) {
             let pointIndex = info.pointIndex;
             let pathData = info.pathData;
             let point = pathData.path[pointIndex];
@@ -175,10 +205,14 @@ export default {
             positionPicker.start(position);
             positionPicker.on("success", result => {
               var info = [];
-              info.push(`<div><div>时间：${utils.dateFomat(point[2])}</div>`);
               info.push(
-                `<div style="font-size:14px;">地址 :${
-                  result.address
+                `<div><div>${t("history.times")}：${utils.dateFomat(
+                  point[2]
+                )}</div>`
+              );
+              info.push(
+                `<div style="font-size:14px;">${t("positions.address")} :${
+                result.address
                 }</div></div>`
               );
               infoWindow = new AMap.InfoWindow({
@@ -193,7 +227,7 @@ export default {
           window.pathSimplifierIns = pathSimplifierIns;
           pathSimplifierIns.setData([
             {
-              name: "轨迹",
+              name: t("history.track"),
               path: positions
             }
           ]);
@@ -237,24 +271,24 @@ export default {
       });
     },
     // 开始运动
-    startOnclick() {
+    startOnclick () {
       navg && navg.start();
     },
     // 暂停运动
-    pauseOnclick() {
+    pauseOnclick () {
       navg && navg.pause();
     },
     // 继续运动
-    resumeOnclick() {
+    resumeOnclick () {
       navg && navg.resume();
     },
     // 停止运动
-    stopOnclick() {
+    stopOnclick () {
       navg && navg.stop();
       // map.clearMap();
     },
     /* 设置速度 */
-    speedChange() {
+    speedChange () {
       if (this.timeSeconds < 1) {
         this.timeSeconds = 1;
       }
@@ -264,7 +298,7 @@ export default {
       navg.setSpeed(speeds);
     }
   },
-  destroyed() {
+  destroyed () {
     map.destroy();
     pathSimplifierIns && pathSimplifierIns.setData();
   }

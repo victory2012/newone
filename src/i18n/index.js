@@ -1,5 +1,5 @@
-import Vue from "vue";
-import VueI18n from "vue-i18n";
+import Vue from 'vue';
+import VueI18n from 'vue-i18n';
 import enLocale from 'element-ui/lib/locale/lang/en';
 import zhLocale from 'element-ui/lib/locale/lang/zh-CN';
 import ElementLocale from 'element-ui/lib/locale';
@@ -14,7 +14,7 @@ const messages = {
 };
 
 const i18n = new VueI18n({
-  locale: sessionStorage.getItem('locale') || 'en',
+  locale: localStorage.getItem('locale') || 'zh',
   // fallbackLocale: 'CN',
   messages
 });

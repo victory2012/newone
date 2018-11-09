@@ -1,73 +1,125 @@
 <template>
   <div class="history">
     <div class="timeBar">
-      <span class="lables">从</span>
-      <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="start" type="date" placeholder="选择日期"></el-date-picker>
-      <span class="lable">至</span>
-      <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="end" type="date" placeholder="选择日期"></el-date-picker>
-      <el-select class="queryTime" :class="{'timeSelect': defaultGray}" size="small" @change="changeTime" @focus="selectTimeChanges" v-model="timevalue" placeholder="请选择">
-        <el-option v-for="item in weekOption" :key="item.value" :label="item.label" :value="item.value">
+      <!-- 从 -->
+      <span class="lables">{{$t('history.from')}}</span>
+      <el-date-picker class="queryTime"
+        :class="{'timeSelect': !defaultGray}"
+        @focus="timeChanges"
+        size="small"
+        v-model="start"
+        type="date"
+        :placeholder="$t('history.startTime')"></el-date-picker>
+      <!-- 至 -->
+      <span class="lable">{{$t('history.to')}}</span>
+      <el-date-picker class="queryTime"
+        :class="{'timeSelect': !defaultGray}"
+        @focus="timeChanges"
+        size="small"
+        v-model="end"
+        type="date"
+        placeholder="$t('history.endTime')"></el-date-picker>
+      <el-select class="queryTime"
+        :class="{'timeSelect': defaultGray}"
+        size="small"
+        @change="changeTime"
+        @focus="selectTimeChanges"
+        v-model="timevalue">
+        <el-option v-for="item in weekOption"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
         </el-option>
       </el-select>
-      <el-button @click="getChartData" class="queryBtn" size="small" type="primary">确定</el-button>
+      <el-button @click="getChartData"
+        class="queryBtn"
+        size="small"
+        type="primary">{{$t('timeBtn.sure')}}</el-button>
     </div>
     <div class="btns">
       <div class="btns-item">
-        <el-button :type="btnTypeDown" :disabled="narrowBtn" plain @click="narrow" icon="el-icon-remove-outline"></el-button>
-        <el-button :type="btnTypeUp" :disabled="enlargeBtn" plain @click="enlarge" icon="el-icon-circle-plus-outline"></el-button>
+        <el-button :type="btnTypeDown"
+          :disabled="narrowBtn"
+          plain
+          @click="narrow"
+          icon="el-icon-remove-outline"></el-button>
+        <el-button :type="btnTypeUp"
+          :disabled="enlargeBtn"
+          plain
+          @click="enlarge"
+          icon="el-icon-circle-plus-outline"></el-button>
       </div>
       <div class="btns-item">
-        <el-button type="primary" plain @click="exportExcel">导出Excel</el-button>
+        <el-button type="primary"
+          plain
+          @click="exportExcel">{{$t('history.exportBtn')}}</el-button>
       </div>
     </div>
-    <echart-map :chartData="dataObj" :loading="loading" @timeZoom="timeZoom"></echart-map>
+    <echart-map :chartData="dataObj"
+      :loading="loading"
+      @timeZoom="timeZoom"></echart-map>
     <div class="batteryChart">
       <div class="addbattery">
         <ul>
           <li>
             <p class="history_count_val">{{summary.cycle || 0}}</p>
-            <p>电池循环次数</p>
+            <!-- 电池循环次数 -->
+            <p>{{$t('history.cycle')}}</p>
           </li>
           <li>
             <p class="history_count_val">{{summary.chargeDuration || 0}}</p>
-            <p>充电时间(h)</p>
+            <!-- 充电时间 -->
+            <p>{{$t('history.chargeDuration')}}(h)</p>
           </li>
           <li>
             <p class="history_count_val">{{summary.dischargeDuration || 0}}</p>
-            <p>放电时间(h)</p>
+            <!-- 放电时间 -->
+            <p>{{$t('history.dischargeDuration')}}(h)</p>
           </li>
           <li>
             <p class="history_count_val">{{summary.avgChargeDuration || 0}}</p>
-            <p>平均充电时间(h)</p>
+            <!-- 平均充电时间 -->
+            <p>{{$t('history.avgChargeDuration')}}(h)</p>
           </li>
           <li>
             <p class="history_count_val">{{summary.avgDischargeDuration || 0}}</p>
-            <p>平均放电时间(h)</p>
+            <!-- 平均放电时间 -->
+            <p>{{$t('history.avgDischargeDuration')}}(h)</p>
           </li>
           <li>
             <p class="history_count_val">{{summary.fluidSupplementTimes || 0}}</p>
-            <p>补水次数</p>
+            <!-- 补水次数 -->
+            <p>{{$t('history.fluidTimes')}}</p>
           </li>
           <li>
             <p class="history_count_val">{{summary.avgFluidSupplementDuration || 0}}</p>
-            <p>平均补水时长(h)</p>
+            <!-- 平均补水时长 -->
+            <p>{{$t('history.avgFluidDuration')}}(h)</p>
           </li>
         </ul>
       </div>
-      <chart-pie :loading="loading" :peiData="peiObj"></chart-pie>
+      <chart-pie :loading="loading"
+        :peiData="peiObj"></chart-pie>
     </div>
     <div class="alarmTab">
       <div class="tabInfo">
-        <a :class="{'active': active === 'alarm'}" @click="historAlarm">历史告警</a>
+        <a :class="{'active': active === 'alarm'}"
+          @click="historAlarm">{{$t('history.historyWarn')}}</a>
         <span class="divider"></span>
-        <a :class="{'active': active === 'liquid'}" @click="historyLiquid">历史补水</a>
+        <a :class="{'active': active === 'liquid'}"
+          @click="historyLiquid">{{$t('history.historyfluid')}}</a>
       </div>
     </div>
     <div class="tables">
-      <i-alarm :alarmData="alarmData" v-show="active === 'alarm'"></i-alarm>
-      <liquid :liquidData="liquidData" v-show="active === 'liquid'"></liquid>
+      <i-alarm :alarmData="alarmData"
+        v-show="active === 'alarm'"></i-alarm>
+      <liquid :liquidData="liquidData"
+        v-show="active === 'liquid'"></liquid>
       <div class="page">
-        <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" layout="prev, pager, next" :total="total">
+        <el-pagination @current-change="handleCurrentChange"
+          :current-page.sync="currentPage"
+          layout="prev, pager, next"
+          :total="total">
         </el-pagination>
       </div>
     </div>
@@ -84,6 +136,7 @@ import iAlarm from "@/components/alarm-data";
 import travelMap from "@/components/travel";
 import chartPie from "@/components/echartPie";
 import liquid from "@/components/alarm-liquid";
+import t from "@/utils/translate";
 
 let map;
 let pathSimplifierIns;
@@ -101,7 +154,7 @@ export default {
     travelMap,
     liquid
   },
-  data() {
+  data () {
     return {
       trajectory: true,
       btnTypeDown: "info",
@@ -135,27 +188,27 @@ export default {
       weekOption: [
         {
           value: "week",
-          label: "最近一周"
+          label: t('history.week')
         },
         {
           value: "mounth",
-          label: "最近一月"
+          label: t('history.mounth')
         },
         {
           value: "threemonth",
-          label: "最近三个月"
+          label: t('history.threemonth')
         },
         {
           value: "sixmounth",
-          label: "最近六个月"
+          label: t('history.sixmounth')
         },
         {
           value: "year",
-          label: "最近一年"
+          label: t('history.year')
         },
         {
           value: "all",
-          label: "全生命周期"
+          label: t('history.all')
         }
       ],
       defaultGet: true,
@@ -170,28 +223,28 @@ export default {
       resultList: []
     };
   },
-  mounted() {
+  mounted () {
     this.getChartData();
     // this.mapInit();
   },
-  destroyed() {
+  destroyed () {
     this.waterLastOneTime = {};
   },
   methods: {
-    timeChanges() {
+    timeChanges () {
       this.defaultGray = true;
     },
-    selectTimeChanges() {
+    selectTimeChanges () {
       this.defaultGray = false;
     },
     /* 确认按钮 */
-    getChartData() {
+    getChartData () {
       let startTime = utils.toUTCTime(utils.startTime(this.start));
       let endTime = utils.toUTCTime(utils.endTime(this.end));
       this.getChartDatafun(startTime, endTime);
     },
     /* 获取Echart相关数据 以及 地图坐标 */
-    getChartDatafun(startTime, endTime) {
+    getChartDatafun (startTime, endTime) {
       this.loading = true;
       let endTimes = `${endTime}`.length > 8 ? endTime : `${endTime}235959`;
       if (!this.hostObj.hostId || !this.hostObj.device) {
@@ -300,7 +353,7 @@ export default {
       this.getAlarmData();
     },
     /* 快速选择日期 */
-    changeTime() {
+    changeTime () {
       if (this.timevalue === "week") {
         this.start = utils.getWeek();
       }
@@ -321,7 +374,7 @@ export default {
       }
     },
     /* 分页方法 */
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.currentPage = val;
       if (this.active === "alarm") {
         this.getAlarmData();
@@ -330,7 +383,7 @@ export default {
       }
     },
     /* 历史补水 */
-    getliquidData() {
+    getliquidData () {
       let startTime = utils.sortTime(this.start);
       let endTime = utils.sortTime(this.end);
       let pageObj = {
@@ -359,7 +412,7 @@ export default {
                   if (index + 1 < result.pageData.length) {
                     key.updateWater = utils.Days(
                       currentTime -
-                        utils.TimeSconds(result.pageData[index + 1].time)
+                      utils.TimeSconds(result.pageData[index + 1].time)
                     );
                   } else {
                     key.updateWater = "-";
@@ -367,7 +420,7 @@ export default {
 
                   key.temperature = `${key.temperature}°C`;
                   key.Replenishing = utils.UTCTime(key.time);
-                  key.address = "查看地址";
+                  key.address = t('history.address');
                   key.disabled = false;
                   if (index < 10) {
                     dataArr.push(key);
@@ -380,7 +433,7 @@ export default {
         });
     },
     /* 历史告警 */
-    getAlarmData() {
+    getAlarmData () {
       let startTime = utils.sortTime(this.start);
       let endTime = utils.sortTime(this.end);
       let pageObj = {
@@ -401,11 +454,11 @@ export default {
                 result.pageData.forEach(key => {
                   // key.alarmtime = utils.fomats(key.time);
                   key.levels = utils.level(key.level);
-                  key.hierarchy = key.hierarchy === "Group" ? "整组" : "单体";
+                  key.hierarchy = key.hierarchy === "Group" ? t('group.allGroup') : t('group.single');
                   key.items = utils.item(key.item);
                   if (key.item === "Fluid") {
                     key.thresholdValue = "-";
-                    key.actualValue = "异常";
+                    key.actualValue = t('realTime.abnormal');
                   }
                   this.alarmData.push(key);
                 });
@@ -414,18 +467,18 @@ export default {
           }
         });
     },
-    historAlarm() {
+    historAlarm () {
       this.currentPage = 1;
       this.total = 0;
       this.active = "alarm";
     },
-    historyLiquid() {
+    historyLiquid () {
       this.active = "liquid";
       this.total = 0;
       this.currentPage = 1;
       this.getliquidData();
     },
-    timeZoom(data) {
+    timeZoom (data) {
       // console.log(data);
       this.zoomBar = data;
       if (
@@ -440,7 +493,7 @@ export default {
       }
     },
     /* 缩小 */
-    narrow() {
+    narrow () {
       if (!this.zoomBar || this.Timeindex < -2) {
         return;
       }
@@ -462,7 +515,7 @@ export default {
       // console.log("this.zoomArr", this.zoomArr);
     },
     /* 放大 */
-    enlarge() {
+    enlarge () {
       if (
         !this.zoomBar &&
         (this.zoomBar.batchEnd === 100 && this.zoomBar.batchStart === 0)
@@ -471,40 +524,37 @@ export default {
       }
       this.btnTypeDown = "primary";
       this.narrowBtn = false;
-      // _m.utc().format()new Date("2018-09-11 15:12:05").toISOString()
       let obj = {
         start: utils.toUTCTime(this.zoomBar.tstart),
         end: utils.toUTCTime(this.zoomBar.tend)
       };
       this.zoomArr.push(obj);
-      console.log("this.zoomArr", this.zoomArr);
       this.getChartDatafun(obj.start, obj.end);
       let len = this.zoomArr.length;
       this.Timeindex = len - 2;
     },
     /* 导出 Excel */
-    exportExcel() {
-      // console.log(this.exportData);
+    exportExcel () {
       let storage = JSON.parse(utils.getStorage("loginData"));
       let arr = [
-        ["制表时间", new Date()],
-        ["制表人", `${storage.companyName}-${storage.account}`],
+        [t('history.makeTime'), new Date()],
+        [t('history.maker'), `${storage.companyName}-${storage.account}`],
         [
-          "设备编号",
+          t('positions.deviceCode'),
           this.propData.deviceCode,
-          "电池组编号",
+          t('positions.batteryCode'),
           this.propData.code
         ],
-        ["时间", "温度", "电压", "电流", "单体电压", "电量"]
+        [t('realTime.time'), t('realTime.temperature'), t('realTime.voltage'), t('realTime.current'), t('realTime.singleVoltage'), t('realTime.quantity')]
       ];
       this.$messageBox
-        .prompt("请输入导出文件名", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消"
+        .prompt(t('history.fileName'), t('history.tips'), {
+          confirmButtonText: t('timeBtn.sure'),
+          cancelButtonText: t('timeBtn.cancle')
         })
         .then(({ value }) => {
           if (!value) {
-            this.$message("请输入文件名");
+            this.$message(t('history.fileName'));
           } else {
             if (this.exportData.length < 1) return;
             this.exportData.forEach(key => {
@@ -518,12 +568,9 @@ export default {
               ];
               arr.push(opts);
             });
-
             this.$outputXlsxFile(arr, value);
           }
-          // this.$outputXlsxFile(arr, value);
         })
-        .catch(() => {});
     }
   }
 };

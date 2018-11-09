@@ -4,30 +4,41 @@
       <!-- <el-button @click="exportExcel" type="primary">导出Excel</el-button> -->
     </div>
     <div class="chartWarrp">
-      <div class="chartInfo" id="echart1"></div>
-      <div class="chartInfo" id="echart2"></div>
+      <div class="chartInfo"
+        id="echart1"></div>
+      <div class="chartInfo"
+        id="echart2"></div>
     </div>
     <div class="chartWarrp">
-      <div class="chartInfo" id="echart3"></div>
-      <div class="chartInfo" id="echart5"></div>
+      <div class="chartInfo"
+        id="echart3"></div>
+      <div class="chartInfo"
+        id="echart5"></div>
     </div>
     <div class="chartWarrp">
-      <div class="chartInfo" id="echart4"></div>
+      <div class="chartInfo"
+        id="echart4"></div>
       <div class="chartInfo"></div>
     </div>
     <div class="chartWarrp">
       <div class="chartInfo">
-        <div class="echartBarTimes1" id="echartBarTimes1"></div>
-        <div class="echartBar1" id="echartBar1"></div>
+        <div class="echartBarTimes1"
+          id="echartBarTimes1"></div>
+        <div class="echartBar1"
+          id="echartBar1"></div>
       </div>
       <div class="chartInfo">
-        <div class="echartBarTimes1" id="echartBarTimes2"></div>
-        <div class="echartBar1" id="echartBar2"></div>
+        <div class="echartBarTimes1"
+          id="echartBarTimes2"></div>
+        <div class="echartBar1"
+          id="echartBar2"></div>
       </div>
     </div>
     <div class="chartWarrp">
-      <div class="chartInfo" id="echartBar3"></div>
-      <div class="chartInfo" id="echartBar4"></div>
+      <div class="chartInfo"
+        id="echartBar3"></div>
+      <div class="chartInfo"
+        id="echartBar4"></div>
     </div>
   </div>
 </template>
@@ -39,6 +50,8 @@ import _ from "lodash";
 import utils from "@/utils/utils";
 import options from "@/config/moreLine";
 import BarOptions from "@/config/echartBarOptions";
+import t from "@/utils/translate";
+import { deepClone } from "@/utils/functions"
 
 export default {
   props: {
@@ -82,7 +95,7 @@ export default {
       }
     }
   },
-  data() {
+  data () {
     return {
       timeArr: [],
       singleVoltage: [],
@@ -96,21 +109,21 @@ export default {
   },
   watch: {
     chartData: {
-      handler: function(vals) {
+      handler: function (vals) {
         // console.log(vals);
         this.dataChange(vals);
       },
       deep: true
     },
     loading: {
-      handler: function(vals) {
+      handler: function (vals) {
         this.showLoading(vals);
         // console.log(vals);
       },
       deep: true
     },
     chartBarData: {
-      handler: function(vals) {
+      handler: function (vals) {
         this.barDataChange(vals);
         this.barTime(vals);
         // console.log(vals);
@@ -118,11 +131,11 @@ export default {
       deep: true
     }
   },
-  mounted() {
+  mounted () {
     this.init();
   },
   methods: {
-    init() {
+    init () {
       let $echartsDOM1 = document.getElementById("echart1");
       let $echartsDOM2 = document.getElementById("echart2");
       let $echartsDOM3 = document.getElementById("echart3");
@@ -179,7 +192,7 @@ export default {
         last: {}
       });
     },
-    showLoading(curVal) {
+    showLoading (curVal) {
       if (curVal) {
         this.lineEcharts1.showLoading();
         this.lineEcharts2.showLoading();
@@ -202,7 +215,7 @@ export default {
         this.lineEcharts5.hideLoading();
       }
     },
-    dataChange(datas) {
+    dataChange (datas) {
       // console.log(datas);
       this.exportData = datas;
       let name1;
@@ -211,16 +224,16 @@ export default {
         name1 = datas.battertCode[0].code;
         name2 = datas.battertCode[1].code;
       } else {
-        name1 = "本期";
-        name2 = "上期";
+        name1 = t('comparison.thisPeriod');
+        name2 = t('comparison.lastPeriod');
       }
       options.series[0].name = name1;
       options.series[1].name = name2;
       options.legend.data = [name1, name2];
-      options.xAxis.data = datas.dataObjFirst.timeArr;
+      // options.xAxis.data = datas.dataObjFirst.timeArr;
 
-      let voltageOptions = _.cloneDeep(options);
-      voltageOptions.title.text = "电压";
+      let voltageOptions = deepClone(options);
+      voltageOptions.title.text = t('realTime.voltage'); // 电压
       voltageOptions.yAxis.axisLabel.formatter = "{value} v";
       voltageOptions.series[0].data = datas.dataObjFirst.voltage;
       voltageOptions.series[1].data = datas.dataObjSecond.voltage;
@@ -228,14 +241,14 @@ export default {
         voltageOptions.tooltip.formatter = p => {
           let item;
           let v = p[0];
-          if (p[0].seriesName === "上期") {
+          if (p[0].seriesName === t('comparison.lastPeriod')) {
             item = `${utils.dateFomat(p[0].value[0] - datas.different)}<br/>${
               v.seriesName
-            }:${v.value[1]}<br/>`;
+              }:${v.value[1]}<br/>`;
           } else {
             item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
               v.value[1]
-            }<br/>`;
+              }<br/>`;
           }
           return item;
         };
@@ -246,14 +259,14 @@ export default {
           // console.log(v);
           item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
             v.value[1]
-          }<br/>`;
+            }<br/>`;
           return item;
         };
       }
       this.lineEcharts1.setOption(voltageOptions);
 
-      let singleVoltageOptions = _.cloneDeep(options);
-      singleVoltageOptions.title.text = "单体电压";
+      let singleVoltageOptions = deepClone(options);
+      singleVoltageOptions.title.text = t('realTime.singleVoltage'); // 单体电压
       singleVoltageOptions.yAxis.axisLabel.formatter = "{value} v";
       singleVoltageOptions.series[0].data = datas.dataObjFirst.singleVoltage;
       singleVoltageOptions.series[1].data = datas.dataObjSecond.singleVoltage;
@@ -261,14 +274,14 @@ export default {
         singleVoltageOptions.tooltip.formatter = p => {
           let item;
           let v = p[0];
-          if (p[0].seriesName === "上期") {
+          if (p[0].seriesName === t('comparison.lastPeriod')) {
             item = `${utils.dateFomat(p[0].value[0] - datas.different)}<br/>${
               v.seriesName
-            }: ${v.value[1]}<br/>`;
+              }: ${v.value[1]}<br/>`;
           } else {
             item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
               v.value[1]
-            }<br/>`;
+              }<br/>`;
           }
           return item;
         };
@@ -279,14 +292,14 @@ export default {
           // console.log(v);
           item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
             v.value[1]
-          }<br/>`;
+            }<br/>`;
           return item;
         };
       }
       this.lineEcharts2.setOption(singleVoltageOptions);
 
-      let currentOptions = _.cloneDeep(options);
-      currentOptions.title.text = "电流";
+      let currentOptions = deepClone(options);
+      currentOptions.title.text = t('realTime.current'); // 电流
       currentOptions.yAxis.axisLabel.formatter = "{value} A";
       currentOptions.series[0].data = datas.dataObjFirst.current;
       currentOptions.series[1].data = datas.dataObjSecond.current;
@@ -294,14 +307,14 @@ export default {
         currentOptions.tooltip.formatter = p => {
           let item;
           let v = p[0];
-          if (p[0].seriesName === "上期") {
+          if (p[0].seriesName === t('comparison.lastPeriod')) {
             item = `${utils.dateFomat(p[0].value[0] - datas.different)}<br/>${
               v.seriesName
-            }: ${v.value[1]}<br/>`;
+              }: ${v.value[1]}<br/>`;
           } else {
             item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
               v.value[1]
-            }<br/>`;
+              }<br/>`;
           }
           return item;
         };
@@ -312,14 +325,14 @@ export default {
           // console.log(v);
           item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
             v.value[1]
-          }<br/>`;
+            }<br/>`;
           return item;
         };
       }
       this.lineEcharts3.setOption(currentOptions);
 
-      let temperatureOptions = _.cloneDeep(options);
-      temperatureOptions.title.text = "温度";
+      let temperatureOptions = deepClone(options);
+      temperatureOptions.title.text = t('realTime.temperature'); // 温度
       temperatureOptions.yAxis.axisLabel.formatter = "{value} ℃";
       temperatureOptions.series[0].data = datas.dataObjFirst.temperature;
       temperatureOptions.series[1].data = datas.dataObjSecond.temperature;
@@ -327,14 +340,14 @@ export default {
         temperatureOptions.tooltip.formatter = p => {
           let item;
           let v = p[0];
-          if (v.seriesName === "上期") {
+          if (v.seriesName === t('comparison.lastPeriod')) {
             item = `${utils.dateFomat(p[0].value[0] - datas.different)}<br/>${
               v.seriesName
-            }: ${v.value[1]}<br/>`;
+              }: ${v.value[1]}<br/>`;
           } else {
             item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
               v.value[1]
-            }<br/>`;
+              }<br/>`;
           }
           return item;
         };
@@ -345,14 +358,14 @@ export default {
           // console.log(v);
           item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}:${
             v.value[1]
-          }<br/>`;
+            }<br/>`;
           return item;
         };
       }
       this.lineEcharts4.setOption(temperatureOptions);
 
-      let capacity = _.cloneDeep(options);
-      capacity.title.text = "电量";
+      let capacity = deepClone(options);
+      capacity.title.text = t('realTime.quantity'); // "电量";
       capacity.yAxis.axisLabel.formatter = "{value} %";
       capacity.series[0].data = datas.dataObjFirst.capacity;
       capacity.series[1].data = datas.dataObjSecond.capacity;
@@ -360,14 +373,14 @@ export default {
         capacity.tooltip.formatter = p => {
           let item;
           let v = p[0];
-          if (v.seriesName === "上期") {
+          if (v.seriesName === t('comparison.lastPeriod')) {
             item = `${utils.dateFomat(p[0].value[0] - datas.different)}<br/>${
               v.seriesName
-            }: ${v.value[1]}%<br/>`;
+              }: ${v.value[1]}%<br/>`;
           } else {
             item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
               v.value[1]
-            }%<br/>`;
+              }%<br/>`;
           }
           return item;
         };
@@ -378,13 +391,13 @@ export default {
           // console.log(v);
           item = `${utils.dateFomat(p[0].value[0])}<br/>${v.seriesName}: ${
             v.value[1]
-          }%<br/>`;
+            }%<br/>`;
           return item;
         };
       }
       this.lineEcharts5.setOption(capacity);
     },
-    barDataChange(datas) {
+    barDataChange (datas) {
       // console.log(datas);legend
       let name1;
       let name2;
@@ -392,18 +405,18 @@ export default {
         name1 = datas.battertCode[0].code;
         name2 = datas.battertCode[1].code;
       } else {
-        name1 = "本期";
-        name2 = "上期";
+        name1 = t('comparison.thisPeriod');
+        name2 = t('comparison.lastPeriod');
       }
       BarOptions.legend.data = [name1, name2];
       BarOptions.series[0].name = name1;
       BarOptions.series[1].name = name2;
-      let voltageBarOptions = _.cloneDeep(BarOptions);
+      let voltageBarOptions = deepClone(BarOptions);
       // voltageBarOptions.title.text = "";
       voltageBarOptions.xAxis[0].data = [
         // "充电次数",
-        "充电时间",
-        "平均充电时间"
+        `${t('history.chargeDuration')}`, // 充电时间
+        `${t('history.avgChargeDuration')}`, // "平均充电时间"
       ];
       voltageBarOptions.legend.show = false;
       voltageBarOptions.series[0].data = [
@@ -418,12 +431,12 @@ export default {
       ];
       this.myBarEcharts1.setOption(voltageBarOptions);
 
-      let singleVoltageBarOptions = _.cloneDeep(BarOptions);
+      let singleVoltageBarOptions = deepClone(BarOptions);
       // singleVoltageBarOptions.title.text = "放电情况";
       singleVoltageBarOptions.xAxis[0].data = [
         // "工作次数",
-        "放电时间",
-        "平均放电时间"
+        `${t('history.dischargeDuration')}`, //"放电时间",
+        `${t('history.avgDischargeDuration')}` //"平均放电时间"
       ];
       singleVoltageBarOptions.legend.show = false;
       singleVoltageBarOptions.series[0].data = [
@@ -438,9 +451,9 @@ export default {
       ];
       this.myBarEcharts2.setOption(singleVoltageBarOptions);
 
-      let currentBarOptions = _.cloneDeep(BarOptions);
-      currentBarOptions.title.text = "电池使用情况";
-      currentBarOptions.xAxis[0].data = ["充电时间", "放电时间", "空截时间"];
+      let currentBarOptions = deepClone(BarOptions);
+      currentBarOptions.title.text = `${t('comparison.batteryUse')}`; //"电池使用情况";
+      currentBarOptions.xAxis[0].data = [`${t('history.chargeDuration')}`, `${t('history.dischargeDuration')}`, `${t('history.empty')}`]; // ["充电时间", "放电时间", "空截时间"];
       currentBarOptions.series[0].data = [
         (datas.now.chargeDuration / 60).toFixed(2),
         (datas.now.dischargeDuration / 60).toFixed(2),
@@ -463,13 +476,13 @@ export default {
         Number(datas.last_eventSummary.fluidLevel) +
         Number(datas.last_eventSummary.current) +
         Number(datas.last_eventSummary.voltage);
-      let temperatureBarOptions = _.cloneDeep(BarOptions);
+      let temperatureBarOptions = deepClone(BarOptions);
       temperatureBarOptions.title.text = "告警情况";
       temperatureBarOptions.xAxis[0].data = [
-        "告警次数",
-        "温度",
-        "液位",
-        "电流"
+        `${t('comparison.alarmTimes')}`, // "告警次数",
+        `${t('realTime.temperature')}`, //"温度",
+        `${t('realTime.fluid')}`, //"液位",
+        `${t('realTime.current')}` //"电流"
       ];
       temperatureBarOptions.series[0].data = [
         result1,
@@ -485,33 +498,31 @@ export default {
       ];
       this.myBarEcharts4.setOption(temperatureBarOptions);
     },
-    barTime(datas) {
-      let chargeTimesOption = _.cloneDeep(BarOptions);
-      chargeTimesOption.title.text = "充电情况";
-      chargeTimesOption.xAxis[0].data = ["充电次数"];
+    barTime (datas) {
+      let chargeTimesOption = deepClone(BarOptions);
+      chargeTimesOption.title.text = `${t('comparison.charageSituation')}`; //"充电情况";
+      chargeTimesOption.xAxis[0].data = [`${t('comparison.charageTimes')}`]; // ["充电次数"];
       chargeTimesOption.series[0].data = [datas.now.chargeTimes];
       chargeTimesOption.series[1].data = [datas.last.chargeTimes];
       this.berCharts1.setOption(chargeTimesOption);
 
-      let DsiChargeTimesOption = _.cloneDeep(BarOptions);
-      DsiChargeTimesOption.title.text = "放电情况";
-      DsiChargeTimesOption.xAxis[0].data = ["工作次数"];
+      let DsiChargeTimesOption = deepClone(BarOptions);
+      DsiChargeTimesOption.title.text = `${t('comparison.discharageSituation')}`; //"放电情况";
+      DsiChargeTimesOption.xAxis[0].data = [`${t('comparison.discharageTimes')}`]; // ["工作次数"];
       DsiChargeTimesOption.series[0].data = [datas.now.dischargeTimes];
       DsiChargeTimesOption.series[1].data = [datas.last.dischargeTimes];
       this.berCharts2.setOption(DsiChargeTimesOption);
     },
     /* 导出 Excel */
-    exportExcel() {
-      console.log(this.exportData);
-
+    exportExcel () {
       let storage = JSON.parse(utils.getStorage("loginData"));
       let arr = [
-        ["制表时间", new Date()],
-        ["制表人", `${storage.companyName}-${storage.account}`],
+        [`${t('history.makeTime')}`, new Date()], // 制表时间
+        [`${t('history.maker')}`, `${storage.companyName}-${storage.account}`], // 制表人
         [
-          "设备编号",
+          `${t('batteryList.deviceCode')}`,
           this.exportData.deviceCode,
-          "电池组编号",
+          `${t('batteryList.batteryCode')}`,
           this.exportData.batteryCode
         ],
         ["时间", "温度", "电压", "电流", "单体电压"]
@@ -540,7 +551,7 @@ export default {
           }
           // this.$outputXlsxFile(arr, value);
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   }
 };

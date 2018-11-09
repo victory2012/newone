@@ -2,26 +2,37 @@
   <div class="home">
     <div class="menu">
       <div class="log">
-        <el-dropdown size="small" placement="bottom" class="user-name" @command="handleCommand">
+        <el-dropdown size="small"
+          placement="bottom"
+          class="user-name"
+          @command="handleCommand">
           <span class="el-dropdown-link">
             <span class="avatar">
               <i class="iconfont icon-user"></i>
             </span>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item v-if="AdminRoles.personalInfo" command="userMsg">
+            <el-dropdown-item v-if="AdminRoles.personalInfo"
+              command="userMsg">
               <i class="iconfont icon-user"></i>{{$t('userInfo.userMsg')}}
             </el-dropdown-item>
-            <el-dropdown-item divided command="userPwd">
+            <el-dropdown-item divided
+              command="userPwd">
               <i class="el-icon-setting"></i>{{$t('userInfo.pasword')}}</el-dropdown-item>
-            <el-dropdown-item divided command="loginout">
+            <el-dropdown-item divided
+              command="loginout">
               <i class="iconfont icon-logout"></i>{{$t('userInfo.logOut')}}</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <p>{{getUserLoginData.nickName}}</p>
         <p>{{getUserLoginData.companyName}}</p>
       </div>
-      <el-menu class="sidebar-el-menu" :default-active="$route.path" background-color="#404040" text-color="rgba(255, 255, 255, 0.67)" :unique-opened='true' router>
+      <el-menu class="sidebar-el-menu"
+        :default-active="$route.path"
+        background-color="#404040"
+        text-color="rgba(255, 255, 255, 0.67)"
+        :unique-opened='true'
+        router>
         <MenuTree :menuData="this.menus.data"></MenuTree>
       </el-menu>
     </div>
@@ -39,11 +50,12 @@
 import { mapGetters } from "vuex";
 import utils from "@/utils/utils";
 import MenuTree from "./sidebar";
-import menu from "./menuData";
+import t from '@/utils/translate';
+import { getManifactor, getManifactorCus, getPlat, purchaseAdmin, purchaseCus } from "./menuData";
 import permissionFun from "@/utils/valated";
 
 export default {
-  data() {
+  data () {
     return {
       AdminRoles: {},
       isCollapse: false,
@@ -55,7 +67,7 @@ export default {
   components: {
     MenuTree: MenuTree
   },
-  mounted() {
+  mounted () {
     let loginData = sessionStorage.getItem("loginData");
     if (loginData) {
       this.AdminRoles = permissionFun();
@@ -68,7 +80,7 @@ export default {
     }
   },
   methods: {
-    handleCommand(command) {
+    handleCommand (command) {
       if (command === "loginout") {
         this.$api.logOut().then(res => {
           if (res.data && res.data.code === 0) {
@@ -86,49 +98,53 @@ export default {
         this.$router.push("/user-pwd");
       }
     },
-    switchMenu(getUserType) {
+    switchMenu (getUserType) {
+      let menuData;
       if (
         getUserType.type === 1 ||
         (getUserType.type === 3 && getUserType.layerName === "平台")
       ) {
-        this.menus = menu.getPlat();
+        menuData = getPlat();
       } else if (
         getUserType.type === 2 &&
         getUserType.layerName === "生产企业"
       ) {
-        this.menus = menu.getManifactor();
+        menuData = getManifactor();
       } else if (
         getUserType.type === 2 &&
         getUserType.layerName === "采购企业"
       ) {
-        this.menus = menu.purchaseAdmin();
+        menuData = purchaseAdmin();
       } else if (
         getUserType.type === 3 &&
         getUserType.layerName === "生产企业"
       ) {
-        this.menus = menu.getManifactorCus();
+        menuData = getManifactorCus();
       } else if (
         getUserType.type === 3 &&
         getUserType.layerName === "采购企业"
       ) {
-        this.menus = menu.purchaseCus();
+        menuData = purchaseCus();
       }
-      this.eachMenus(this.menus.data);
+      const copyData = JSON.parse(JSON.stringify(menuData))
+      this.menus.data = this.eachMenus(copyData.data);
+      this.menus.permissions = copyData.permissions;
       utils.setStorage("permissions", JSON.stringify(this.menus.permissions));
     },
-    eachMenus(data) {
+    eachMenus (data) {
       data.forEach(key => {
         if (typeof key === "object") {
-          key.text = this.$t(`menu.${key.text}`);
-          if (key.children) {
+          key.text = t(key.text);
+          if (key.children && key.children.length > 0) {
             this.eachMenus(key.children);
           }
         }
       });
+      return data
     }
   },
-  beforeDestroy() {
-    this.menus = "";
+  beforeDestroy () {
+    this.menus = {};
     this.$store.state.loginData = "";
   }
 };
