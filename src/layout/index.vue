@@ -1,6 +1,22 @@
 <template>
   <div class="home">
     <div class="menu">
+      <!-- <div class="changeLangue">
+        <el-dropdown trigger="click"
+          placement="bottom-end"
+          @command="langugeHandleChange">
+          <span class="el-dropdown-link cursor">
+            {{localLanguge}}<i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item :disabled="$i18n.locale === 'zh'"
+              command="zh">中文</el-dropdown-item>
+            <el-dropdown-item divided
+              command="en"
+              :disabled="$i18n.locale === 'en'">English</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div> -->
       <div class="log">
         <el-dropdown size="small"
           placement="bottom"
@@ -57,11 +73,14 @@ import permissionFun from "@/utils/valated";
 export default {
   data () {
     return {
+      // CopyMenuData: '',
+      menuData: '',
       AdminRoles: {},
       isCollapse: false,
       menus: {},
       roles: "",
-      getUserLoginData: ""
+      getUserLoginData: "",
+      localLanguge: localStorage.getItem('locale') === 'zh' ? '中文' : 'English'
     };
   },
   components: {
@@ -99,34 +118,34 @@ export default {
       }
     },
     switchMenu (getUserType) {
-      let menuData;
+      // let menuData;
       if (
         getUserType.type === 1 ||
         (getUserType.type === 3 && getUserType.layerName === "平台")
       ) {
-        menuData = getPlat();
+        this.menuData = getPlat();
       } else if (
         getUserType.type === 2 &&
         getUserType.layerName === "生产企业"
       ) {
-        menuData = getManifactor();
+        this.menuData = getManifactor();
       } else if (
         getUserType.type === 2 &&
         getUserType.layerName === "采购企业"
       ) {
-        menuData = purchaseAdmin();
+        this.menuData = purchaseAdmin();
       } else if (
         getUserType.type === 3 &&
         getUserType.layerName === "生产企业"
       ) {
-        menuData = getManifactorCus();
+        this.menuData = getManifactorCus();
       } else if (
         getUserType.type === 3 &&
         getUserType.layerName === "采购企业"
       ) {
-        menuData = purchaseCus();
+        this.menuData = purchaseCus();
       }
-      const copyData = JSON.parse(JSON.stringify(menuData))
+      const copyData = JSON.parse(JSON.stringify(this.menuData))
       this.menus.data = this.eachMenus(copyData.data);
       this.menus.permissions = copyData.permissions;
       utils.setStorage("permissions", JSON.stringify(this.menus.permissions));
@@ -141,6 +160,20 @@ export default {
         }
       });
       return data
+    },
+    langugeHandleChange (cammand) {
+      if (cammand === "zh") {
+        this.localLanguge = "中文";
+        this.$i18n.locale = "zh";
+        localStorage.setItem("locale", "zh");
+      }
+      if (cammand === "en") {
+        this.localLanguge = "English";
+        this.$i18n.locale = "en";
+        localStorage.setItem("locale", "en");
+      }
+      const copyData2 = JSON.parse(JSON.stringify(this.menuData))
+      this.menus.data = this.eachMenus(copyData2.data);
     }
   },
   beforeDestroy () {
@@ -157,6 +190,15 @@ export default {
     flex: 0 0 220px;
     overflow: hidden;
     background: #404040;
+    .changeLangue {
+      text-align: right;
+      margin: 20px auto 30px;
+      .el-dropdown {
+        color: #ffffff;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+    }
   }
   .content {
     box-sizing: border-box;

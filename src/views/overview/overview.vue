@@ -69,7 +69,7 @@
                 <el-table-column prop="company"
                   align="center"
                   :label="$t('alarmList.customer')"
-                  width="180">
+                  width="200">
                 </el-table-column>
                 <!-- 电池数 -->
                 <el-table-column prop="total"
@@ -104,7 +104,7 @@
                 <el-table-column prop="address"
                   align="center"
                   :label="$t('overview.provence')"
-                  width="180">
+                  width="200">
                 </el-table-column>
                 <el-table-column prop="total"
                   align="center"
@@ -136,7 +136,7 @@
                 <el-table-column prop="models"
                   align="center"
                   :label="$t('overview.batteryModel')"
-                  width="180">
+                  width="200">
                 </el-table-column>
                 <el-table-column prop="total"
                   align="center"
@@ -220,15 +220,13 @@ export default {
   },
   mounted () {
     let userType = JSON.parse(sessionStorage.getItem("loginData"));
+    console.log('userType', userType);
     this.init(userType);
     this.Timer = setInterval(() => {
       if (this.canInterval) {
         this.getListData();
       }
     }, 30000);
-    // langlat(["121.540279", "31.212035"], result => {
-    //   console.log(result);
-    // });
   },
   beforeDestroy () {
     clearInterval(this.Timer);
@@ -241,7 +239,7 @@ export default {
       this.getProvenceData();
       if (
         (userType.type === 3 && userType.layerName === "平台") ||
-        userType.type === 2 ||
+        (userType.type === 2 && userType.layerName === "生产企业") ||
         userType.type === 1
       ) {
         // if (userType.type !== 3 && userType.layerName !== "采购企业") {

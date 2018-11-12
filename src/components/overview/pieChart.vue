@@ -1,9 +1,15 @@
 <template>
   <div class="pieWarper">
-    <div class="pieItme shadow"
-      id="pieChart1"></div>
-    <div class="pieItme shadow"
-      id="pieChart2"></div>
+    <div class="pieItme shadow">
+      <p>{{$t("overview.valid")}}</p>
+      <div class="chat"
+        id="pieChart1"></div>
+    </div>
+    <div class="pieItme shadow">
+      <p>{{$t("overview.RunNormal")}}</p>
+      <div class="chat"
+        id="pieChart2"></div>
+    </div>
   </div>
 </template>
 <script>
@@ -13,6 +19,7 @@ import echarts from "echarts";
 import utils from "@/utils/utils";
 import options from "@/config/echartOptions";
 import { deepClone, debounce } from "@/utils/functions";
+import t from "@/utils/translate";
 
 export default {
   props: {
@@ -63,13 +70,6 @@ export default {
                 color: "auto"
               }
             },
-            // axisLabel: {
-
-            //   textStyle: {
-
-            //     color: "auto"
-            //   }
-            // },
             splitLine: {
               show: true,
               length: 30,
@@ -159,7 +159,7 @@ export default {
         )}：${p.data.per || 0}<br />${p.data.value}%`;
         return item;
       };
-      voltageOptions.title.text = `${this.$t("overview.valid")}`;
+      // voltageOptions.title.text = t("overview.valid");
       voltageOptions.series[0].data = [
         {
           per: data.activeTotal,
@@ -168,9 +168,8 @@ export default {
         }
       ];
       this.pieChart1.setOption(voltageOptions);
-
       let currentOptions = deepClone(this.pieOption);
-      currentOptions.title.text = `${this.$t("overview.RunNormal")}`;
+      // currentOptions.title.text = t("overview.RunNormal");
       currentOptions.tooltip.formatter = p => {
         let item = `${this.$t("overview.total")}：${data.total}<br />${this.$t(
           "overview.RunNormal"
@@ -199,6 +198,17 @@ export default {
     flex: 0 0 49%;
     height: 350px;
     background: #ffffff;
+    p {
+      color: #484848;
+      // font-weight: bolder;
+      font-weight: 800;
+      line-height: 26px;
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+    .chat {
+      width: 100%;
+      height: 304px;
+    }
   }
   .shadow {
     box-shadow: 4px 4px 40px rgba(0, 0, 0, 0.05);
