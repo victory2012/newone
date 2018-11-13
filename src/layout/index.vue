@@ -187,7 +187,7 @@ export default {
   display: flex;
   height: 100%;
   .menu {
-    flex: 0 0 220px;
+    flex: 0 0 245px;
     overflow: hidden;
     background: #404040;
     .changeLangue {
@@ -211,7 +211,7 @@ export default {
   }
 }
 .el-menu {
-  width: 220px;
+  width: 245px;
 }
 // .el-scrollbar {
 //   .el-scrollbar__wrap {

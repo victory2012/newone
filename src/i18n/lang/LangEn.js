@@ -1,49 +1,55 @@
 module.exports = {
   platform: 'Platform',
   manufacturer: 'Manufacturer',
-  administrator: '管理员',
+  administrator: 'Administrator',
   customer: 'Customer',
-  adminIden: '用户',
+  adminIden: 'User',
   internetErr: 'Service request time out, please try again later.',
   mapError: 'Map failed to load, please check network connection.',
   connectErr: 'Service request time out, please try again later.',
   responseCode: {
-    timeOut: '登录超时，请重新登录',
-    sessionOut: '会话过期', // 1
-    parameterErr: '参数错误', // 10
-    permissions: '权限不足', // 20
-    dataExists: '数据已存在', // 30
-    sendCode: '发送短信失败', // 40
-    smscodeErr: '验证码错误或已过期', // 41
-    accountExists: '账号已存在', // 101001
-    phoneExists: '手机号已存在', // 101002
-    emailExists: '邮箱已存在', // 101003
-    accountOrPwdErr: '账号名密码错误', // 104001
-    userNotExist: '用户不存在', // `104002`: 用户不存在
-    companyExists: '公司已存在', // 201001
-    hasInvalidDevice: '存在有效设备(请先删除设备)', // 202001
-    hasInvalidHost: '存在有效宿主(请先删除电池)', // 202002
-    notFindCompany: '公司未找到', // 204001
-    deviceExists: '设备已存在', // 301001
-    notFindDevice: '设备未找到', // 301002
-    gpsDeviceExists: '设备已存在', // 301101 --电池gps设备已存在--
-    MonitorDeviceExists: '设备已存在', // 301201 --电池检测设备已存在--
-    deviceRunning: '设备运行中', // 302001
-    deviceBind: '设备已绑定', // 303001
-    hasHost: '宿主已存在', // 401001
-    hostBind: '宿主已绑定', // 403002
-    batteryGroupExists: '电池组已存在', // 401201
-    batteryModelExists: '电池组型号已存在', // 401211
-    batteryModelNotFind: '电池组型号未找到', // 401212
-    batterySpecExists: '电池组规格已存在', // 401213
-    batterySpecNotFind: '电池组规格未找到', // 401214
-    batterySingleModelExists: '电池组单体型号已存在', // 401215
-    batterySingleModelNotFind: '电池组单体型号未找到', // 401216
-    innerNoticeExists: '电池组通知已规则存在', // 501211
-    InnerNoticeUserExists: '电池组内部通知已用户存在', // 501221
-    InnerNoticeOverrun: '电池组内部通知数量超限', // 501222
-    outerNoticeUserExists: '电池组外部通知用户已存在', // 501231
-    outerNoticeOverrun: '电池组外部通知数量超限' // 501232
+    timeOut: 'Login timed out, please log in again.',
+    sessionOut: 'The current session has expired.', // 1
+    parameterErr: 'Invalid parameter.', // 10
+    permissions: 'Permission denied.', // 20
+    dataExists: 'Data already exists.', // 30
+    sendCode: 'SMS failed to send.', // 40
+    smscodeErr: 'Verification code is incorrect or has expired.', // 41
+    accountExists: 'Account already exists.', // 101001
+    phoneExists: 'Mobile phone number already exists.', // 101002
+    emailExists: 'Mailbox already exists.', // 101003
+    accountOrPwdErr: 'Invalid account or password.', // 104001
+    userNotExist: 'The user does not exist.', // `104002`: 用户不存在
+    companyExists: 'The company already exists.', // 201001
+    hasInvalidDevice:
+      'There are still valid devices that must be deleted first, please delete them.', // 202001
+    hasInvalidHost:
+      'There are still valid batteries that must be deleted first, please delete them.', // 202002
+    notFindCompany: 'The company not found.', // 204001
+    deviceExists: 'The device already exists.', // 301001
+    notFindDevice: 'The device not found.', // 301002
+    gpsDeviceExists: 'The device already exists.', // 301101 --电池gps设备已存在--
+    MonitorDeviceExists: 'The device already exists.', // 301201 --电池检测设备已存在--
+    deviceRunning: 'The device is working.', // 302001
+    deviceBind: 'The device has been bound.', // 303001
+    hasHost: 'The battery already exists.', // 401001
+    hostBind: 'The battery has been bound.', // 403002
+    batteryGroupExists: 'The battery pack already exists.', // 401201
+    batteryModelExists: 'The battery pack model already exists.', // 401211
+    batteryModelNotFind: 'The battery pack model not found.', // 401212
+    batterySpecExists: 'The battery pack specification already exists.', // 401213
+    batterySpecNotFind: 'The battery pack specification not found.', // 401214
+    batterySingleModelExists: 'The battery cell specification already exists.', // 401215
+    batterySingleModelNotFind: 'The battery cell specification not found.', // 401216
+    innerNoticeExists:
+      'The notification rule of this platform for abnormal alarms already exists.', // 501211
+    InnerNoticeUserExists: 'The notified user of this platform already exists.', // 501221
+    InnerNoticeOverrun:
+      'The number of notified users of this platform exceeds the maximum.', // 501222
+    outerNoticeUserExists:
+      'The Mobile phone number used by the notified person who is outside the platform already exists.', // 501231
+    outerNoticeOverrun:
+      'The number of notified persons outside the platform exceeds the maximum.' // 501232
   },
   loginMsg: {
     userNameMsg: 'Please enter user id.',
@@ -59,38 +65,39 @@ module.exports = {
       account: 'Please enter user id.',
       password: 'Please enter password.',
       phoneNub: 'Please enter phone number.',
-      checkPhone: '手机号格式错误.',
-      smsCodeErr: '请输入短信验证码.'
+      checkPhone: 'The phone number is in the wrong format.',
+      smsCodeErr: 'Please enter SMS verification code.'
     },
-    labelAccPass: '账户密码登录.',
-    labelSmsCode: '验证码登录.',
-    phone: '手机号.',
-    smsCode: '短信验证码.',
-    getSmsCode: '获取验证码.',
-    smsSuccess: '发送成功.',
-    tips: '提示.'
+    labelAccPass: 'Account password login.',
+    labelSmsCode: 'Verification code login.',
+    phone: 'Mobile Number',
+    smsCode: 'Verification Code',
+    getSmsCode: 'Get verification code',
+    smsSuccess: 'The verification code was sent successfully.',
+    tips: 'Tips: '
   },
   successTips: {
-    addSuccess: '添加成功.',
-    delSuccess: 'Deleted Successfully.',
-    unbindSuccess: '解绑成功.',
-    bindSuccess: '绑定成功.',
-    batchSuccess: '批量添加成功.',
-    recoverySuccess: '恢复拉黑成功.',
-    changeSuccess: '修改成功.',
-    addBlackSucc: '添加黑名单成功.',
-    regDevice: '设备注册成功.',
-    recoverySuc: '回收成功.',
-    distributionSuc: '分配成功.',
-    regBattery: '电池注册成功.'
+    addSuccess: 'Successfully added.',
+    delSuccess: 'Successfully deleted.',
+    unbindSuccess: 'Successfully unbind.',
+    bindSuccess: 'Successful binding.',
+    batchSuccess: 'Successfully added in batches.',
+    recoverySuccess: 'Successfully restored from the blacklist.',
+    changeSuccess: 'Successfully modified.',
+    addBlackSucc: 'Pulled into the blacklist successfully.',
+    regDevice: 'Device successfully registered.',
+    recoverySuc: 'Succcessfully unallocated.',
+    distributionSuc: 'Successfully allocated.',
+    regBattery: 'Battery successfully registered.'
   },
   batch: {
-    formatErr: '请导入xls格式或者xlsx格式.',
-    volumeErr: '导入的表格文件不能大于1M.',
-    nodata: '上传的文件内容为空，请检查文件.',
-    complete: '请文件填写完整.',
-    betteryCodeRepeat: '电池编号不能重复，请检查文件.',
-    timeFormatErr: '时间格式不支持，请选择文本形式.'
+    formatErr: 'Format of the imported data file is xls or xlsx.',
+    volumeErr: 'Imported data files cannot be larger than 1M.',
+    nodata: 'The uploaded file is empty, please check and correct it.',
+    complete: 'Please complete the file data.',
+    betteryCodeRepeat:
+      'Battery id cannot be repeated, please check and correct it.',
+    timeFormatErr: 'Time format is not supported, please change to text format.'
   },
   userInfo: {
     userMsg: 'User Profile',
@@ -111,29 +118,29 @@ module.exports = {
 
     deviceList: 'Device Profiles',
     // deviceDefriend: '恢复拉黑设备.',
-    batteryInfo: '电池信息.',
-    defriend: '恢复拉黑设备.',
-    runStatus: '运行状况.',
-    compare: '数据对比.',
-    setting: '配置管理.',
-    threshold: '报警阈值.',
-    sortByModel: '按电池型号分类.',
-    sortByCompany: '按企业全局分类.',
-    WarningNotice: '告警通知.',
-    receiveList: '告警接收人.',
-    addReceive: '已添加接收人.',
-    OuterReceive: '外部告警接收人.',
-    Allocation: '电池调配.',
-    alarmData: '告警数据.'
+    batteryInfo: 'Battery Situation',
+    defriend: 'Restore Black',
+    runStatus: 'Working Status',
+    compare: 'Comparison Analysis',
+    setting: 'Configuration Management',
+    threshold: 'Alarm Threshold',
+    sortByModel: 'By battery model',
+    sortByCompany: 'Universal',
+    WarningNotice: 'Alarm Notification',
+    receiveList: 'All Users',
+    addReceive: 'Notified Users',
+    OuterReceive: 'Notified Outsiders',
+    Allocation: 'Battery Allocation',
+    alarmData: 'Battery Alarms'
   },
   overview: {
     total: 'All',
     newAdd: 'This Month',
     valid: 'Valid',
-    alarmed: '告警电池数.',
-    RunNormal: 'Run Normal',
+    alarmed: 'Alarmed',
+    RunNormal: 'Normal Run',
     batteryModel: 'Model',
-    provence: 'Province'
+    provence: 'Area'
   },
   positions: {
     title1: 'Device Profiles',
@@ -145,21 +152,21 @@ module.exports = {
     batteryCode: 'Battery Id',
     deviceCode: 'Device Id',
     updateTime: 'Time',
-    intersection: 'Road junction',
+    intersection: 'Road Junction',
     latLng: 'Coordinate',
     address: 'Address',
     getAdressErr: 'Address acquisition failed.'
   },
   group: {
-    allGroup: '整组.',
-    single: '单体.',
-    high: '高.',
-    mid: '中.',
-    low: '低.'
+    allGroup: 'Pack',
+    single: 'Unit',
+    high: 'High',
+    mid: 'Medium',
+    low: 'Low'
   },
   toggleTip: {
-    open: '展开.',
-    close: '收起.'
+    open: 'Open',
+    close: 'Close'
   },
   history: {
     startTime: 'Please enter start time.',
@@ -179,47 +186,46 @@ module.exports = {
     noData: 'This device has no data during the current time period.',
     noDevice: 'There is no corresponding device, please register first.',
     latLng: 'Coordinate',
-    address: '查看地址.',
-
-    from: '从.',
-    to: '至.',
-    exportBtn: '导出Excel.',
-    cycle: '电池循环次数.',
-    chargeDuration: '充电时间.',
-    dischargeDuration: '放电时间.',
-    avgChargeDuration: '平均充电时间.',
-    avgDischargeDuration: '平均放电时间.',
-    empty: '空载时间.',
-    fluidTimes: '补水次数.',
-    avgFluidDuration: '平均补水时长.',
-    historyWarn: '历史告警.',
-    historyfluid: '历史补水.',
-    week: '最近一周.',
-    mounth: '最近一月.',
-    threemonth: '最近三个月.',
-    sixmounth: '最近六个月',
-    year: '最近一年.',
-    all: '全生命周期.',
-    maker: '制表人.',
-    makeTime: '制表时间.',
-    fileName: '请输入导出文件名.',
-    tips: '提示.',
-    fluidTime: '补水时间.',
-    fluidTemp: '补水温度.',
-    LengthOfYime: '距上次补水时长.',
-    No: '第.',
-    point: '个点.',
-    junction: '路口.',
-    track: '轨迹.'
+    address: 'Address',
+    from: 'From ',
+    to: 'To ',
+    exportBtn: 'Export to excel',
+    cycle: 'Amounts of electrical cycle',
+    chargeDuration: 'Charging time',
+    dischargeDuration: 'Discharge time',
+    avgChargeDuration: 'Average charging time',
+    avgDischargeDuration: 'Average discharge time',
+    empty: 'Idle time',
+    fluidTimes: 'Amounts of water infusion',
+    avgFluidDuration: 'Average duration of water infusion',
+    historyWarn: 'Historical alarm',
+    historyfluid: 'Historical water infusion',
+    week: 'Last one week',
+    mounth: 'Last on month',
+    threemonth: 'Last three months',
+    sixmounth: 'Last six months',
+    year: 'Last one year',
+    all: 'Full life time',
+    maker: 'Editor',
+    makeTime: 'Edit time',
+    fileName: 'Please enter the name of the export file.',
+    tips: 'Prompt',
+    fluidTime: 'Time',
+    fluidTemp: 'Temperature',
+    LengthOfYime: 'Time interval from last water infusion',
+    No: 'No.',
+    point: 'point',
+    junction: 'Road Junction',
+    track: 'Motion Track'
   },
   timeBtn: {
     cancle: 'Cancel',
     sure: 'Submit',
-    clear: '清空',
+    clear: 'Empty',
     all: 'All',
-    del: '删除',
+    del: 'Delete',
     confirm: 'Confirm',
-    reset: '重置',
+    reset: 'Reset',
     save: 'Submit'
   },
   fence: {
@@ -237,10 +243,10 @@ module.exports = {
     }
   },
   batteryList: {
-    batteryVoltage: '电池组额定电压',
-    batteryCapacity: '电池组额定容量',
-    singleBattery: '电池单体型号',
-    choseDevice: '监测设备编号（选填）',
+    batteryVoltage: 'Rated Voltage',
+    batteryCapacity: 'Rated Capacity',
+    singleBattery: 'Unit Specification',
+    choseDevice: 'Device Id (optional)',
     serial: 'No.',
     batteryCode: 'Battery Id',
     binding: 'Binding Status',
@@ -278,56 +284,56 @@ module.exports = {
       manufactureDate: 'Date of manufacture',
       warrantyDate: 'Warranty',
       deviceId: 'Please enter device id.',
-      content: '内容不能为空.',
-      batteryVoltage: '请输入电池组额定电压',
-      batteryCapacity: '请输入电池组额定容量',
-      singleBattery: '请选择电池单体型号'
+      content: 'The content can not be blank.',
+      batteryVoltage: 'Please enter the rated voltage.',
+      batteryCapacity: 'Please enter the rated capacity.',
+      singleBattery: 'Please choose battery unit specification.'
     },
-    batteries: '电池.',
-    batchImport: '批量导入.',
-    defriend: '恢复拉黑设备.',
-    runStatus: '运行状态.',
-    handle: '操作.',
-    unBind: '解绑.',
-    bind: '绑定.',
-    black: '拉黑.',
-    detele: '删除.',
-    batteryBindDevice: '电池与检测设备绑定.',
-    addModel: '添加型号.',
-    addSpecif: '添加规格.',
-    addSinggleSpecif: '添加单体规格.',
-    singgleSpecif: '添加单体规格.',
-    deleteTip: '确定删除此电池组吗？.',
-    search: '查询.',
-    clear: '清空.',
-    searchContent: '电池/设备编号',
-    name: '企业名称.',
-    recovery: '恢复.'
+    batteries: 'New Battery',
+    batchImport: 'Batch Import.',
+    defriend: 'Restore Black',
+    runStatus: 'Working Status',
+    handle: 'Action',
+    unBind: 'Unbind',
+    bind: 'Bind',
+    black: 'Black',
+    detele: 'Delete',
+    batteryBindDevice: 'Battery is bound to the device.',
+    addModel: 'Add new pack model',
+    addSpecif: 'Add new pack specification',
+    addSinggleSpecif: 'Add new unit specification',
+    singgleSpecif: 'Add new unit specification',
+    deleteTip: 'Are you sure you want to delete this battery pack?',
+    search: 'Search',
+    clear: 'Empty',
+    searchContent: 'Battery/Device Id',
+    name: 'Company Name',
+    recovery: 'Retore'
   },
   runState: {
-    realData: '实时数据.',
-    historyData: '历史数据.',
-    alarmData: '告警数据.',
+    realData: 'Real Time',
+    historyData: 'Historical',
+    alarmData: 'Alarm',
     batteryCode: 'Please enter battery id.',
-    selectBattery: '请先选择一个电池组！.'
+    selectBattery: 'Please select a battery pack first.'
   },
   realTime: {
-    time: '时间.',
+    time: 'Time',
     temperature: 'Temperature',
-    fluid: '液位.',
-    voltage: 'Voltage',
-    singleVoltage: '单体电压.',
+    fluid: 'Electrolyte Level',
+    voltage: 'Pack Voltage',
+    singleVoltage: 'Unit Voltage',
     current: 'Current',
-    quantity: '电量.',
-    fourHour: '过去4小时监测数据.',
-    update: '是否自动更新数据.',
-    query: '主动查询.',
+    quantity: 'Capacity',
+    fourHour: 'Data for the past 4 hours',
+    update: 'Automatically update',
+    query: 'Active Inquiry',
     normal: 'Normal',
     abnormal: 'Abnormal',
-    refresh: '刷新时间.',
-    warn: '告警.',
-    times: '次.',
-    totalWarn: '累计告警.'
+    refresh: 'Update Time',
+    warn: 'Alarm',
+    times: '',
+    totalWarn: 'Total Alarms'
   },
   alarmList: {
     serial: 'No.',
@@ -344,19 +350,19 @@ module.exports = {
     grid: 'Coordinate Position',
     position: 'Location',
     location: 'View',
-    alarmItem: '告警项目.',
-    alarmHierarchy: '告警层级.',
-    alarmLevel: '告警级别.',
+    alarmItem: 'Alarm Item',
+    alarmHierarchy: 'Hierarchy',
+    alarmLevel: 'Level',
     more: 'More',
-    batteries: '电池数.',
-    thride: '告警阈值.',
-    realDate: '实际值.',
-    view: '查看.',
-    custorm: '客户.',
-    latLng: '位置.',
-    warnData: '告警值.',
-    endTime: '结束时间.',
-    startTime: '开始时间.'
+    batteries: 'Batteries',
+    thride: 'Alarm Threshold',
+    realDate: 'Actual Data',
+    view: 'View',
+    custorm: 'Customer',
+    latLng: 'Location',
+    warnData: 'Alarm Data',
+    endTime: 'End Time',
+    startTime: 'Start Time'
   },
   useMsg: {
     serial: 'No.',
@@ -373,7 +379,7 @@ module.exports = {
     enterpriseName: 'Company Name',
     phone: 'Mobile',
     email: 'Email',
-    loginPwd: '登陆密码',
+    loginPwd: 'Login Password',
     add: {
       china: 'In China',
       international: 'Abroad',
@@ -383,10 +389,10 @@ module.exports = {
       email: 'Email(optional)',
       enterpriseName: 'Company Name',
       nature: 'Company Type',
-      manufacturer: 'New Manufacturer Administrator.',
-      customer: 'New Customer Administrator.',
-      manuProduct: 'New Manufacturer User.',
-      cusNoraml: 'New User',
+      manufacturer: 'New Manufacturer Administrator',
+      customer: 'New Customer Administrator',
+      manuProduct: 'New Manufacturer User',
+      cusNoraml: 'Add common users',
       cancel: 'Cancel',
       sure: 'Submit'
     },
@@ -397,25 +403,27 @@ module.exports = {
       passwordLimit: 'The password at least 6 characters.',
       phone: 'Please enter mobile number.',
       phoneCheck: 'Wrong format of mobile number entered.',
-      emailCheck: '邮箱格式有误',
+      emailCheck: 'Wrong format of mailbox entered.',
       enterprise: 'Please eneter name of company.',
       nature: 'Please choose nature of company.'
     },
     success: 'Created Successfully.',
     no: 'No Data',
-    nickName: '昵称.',
-    changeRole: '修改权限.',
-    delUserWarn: '此操作将删除该用户, 是否继续?.',
-    delCompanyWarn: '此操作将删除该企业以及该企业下的所有用户, 是否继续?.'
+    nickName: 'Nickname',
+    changeRole: 'Change Permission',
+    delUserWarn:
+      'Your Operation will delete this user. Do you want to continue?',
+    delCompanyWarn:
+      'Your Operation will delete this company and all users under it. Do you want to continue?'
   },
   defaultRole: {
-    addBatteries: '电池登记',
-    addblack: '拉黑及恢复电池',
-    historyData: '历史数据',
-    alarm: '告警事件',
-    sameAnalysis: '数据对比',
-    personalInfo: '个人信息维护',
-    allocation: '电池调配'
+    addBatteries: 'Battery Enrollment',
+    addblack: 'Black and Restore',
+    historyData: 'Historical Data',
+    alarm: 'Alarm Event',
+    sameAnalysis: 'Comparison Analysis',
+    personalInfo: 'Personal Maintenance',
+    allocation: 'Battery Allocation'
   },
   device: {
     serial: 'No.',
@@ -435,17 +443,17 @@ module.exports = {
     hasbind: 'Bound',
     online: 'Online',
     offline: 'Offline',
-    regDevice: '设备注册.',
-    enterprise: '生产企业.',
-    upLevel: '设备升级.',
-    deviceCategory: '设备类别.',
-    company: '相关企业.',
-    registed: '已注册.',
-    noregist: '未注册.',
-    delTips: '确定删除此设备吗？.',
-    selectCampany: '请选择企业.',
-    batteryGps: '电池追踪.',
-    batteryMonitor: '电池监测.'
+    regDevice: 'Device Registration',
+    enterprise: 'Manufacturer',
+    upLevel: 'Device Upgrade',
+    deviceCategory: 'Device Type',
+    company: 'Related usiness',
+    registed: 'Registed',
+    noregist: 'Unregistered',
+    delTips: 'Are you sure you want to delete this device?',
+    selectCampany: 'Please choose the company',
+    batteryGps: 'Battery Tracking',
+    batteryMonitor: 'Battery Monitoring'
   },
   addDevice: {
     title: 'Device Registration',
@@ -492,88 +500,114 @@ module.exports = {
     nowPosition: 'Current Location'
   },
   comparison: {
-    same: '同一电池单元.',
-    diffrence: '不同电池单元.',
-    comparData: '比较数据.',
-    batteryCode: '电池编号.',
-    timeRange: '请选择时间范围.',
-    comparWay: '请选择对比方式.',
-    addCompar: '添加电池单元.',
-    most: '最多可选.',
-    item: '项.',
-    deviceId: '设备ID.',
-    YearOnYear: '同比.',
-    monthOnMonth: '环比.',
-    thisPeriod: '本期.',
-    lastPeriod: '上期.',
-    batteryUse: '电池使用情况.',
-    alarmTimes: '告警次数.',
-    charageSituation: '充电情况.',
-    charageTimes: '充电次数.',
-    discharageSituation: '放电情况.',
-    discharageTimes: '工作次数.',
-    selectBattery: '请选择电池组.',
-    addOneBattery: '需添加1组电池.',
-    addTwoBattery: '需添加2组电池.',
-    changeBattery: '更换电池单元.'
+    same: 'Same battery pack',
+    diffrence: 'Different battery pack',
+    comparData: 'Comparison',
+    batteryCode: 'Battery Id',
+    timeRange: 'Please select range of time.',
+    comparWay: 'Please choose a comparison method.',
+    addCompar: 'Please add a battery pack',
+    most: 'You could choose up to ',
+    item: 'items.',
+    deviceId: 'Device Id',
+    YearOnYear: 'Compare with the same period of last year',
+    monthOnMonth: 'Compare with previous period',
+    thisPeriod: 'This period',
+    lastPeriod: 'Previous period',
+    batteryUse: 'Battery Situation',
+    alarmTimes: 'Amounts of alarm',
+    charageSituation: 'Charging condition',
+    charageTimes: 'Amounts of charging',
+    discharageSituation: 'Discharge condition',
+    discharageTimes: 'Amounts of discharge',
+    selectBattery: 'Please choose a battery.',
+    addOneBattery: 'You should join one battery',
+    addTwoBattery: 'You should join two batteries',
+    changeBattery: 'Please change a battery.',
+    alarm: 'Alarm'
   },
   notice: {
-    status: '状态.',
-    hasAdd: '已添加.',
-    noAdd: '未添加.',
-    viewUser: '查看已添加用户.',
-    atMost: '（最多添加128人）.',
-    add: '添加.',
-    outerMost: '已添加的告警接收人（最多3位）.'
+    status: 'Status',
+    hasAdd: 'added',
+    noAdd: 'not added',
+    viewUser: 'View added users',
+    atMost: '(up to 128 users)',
+    add: 'Add',
+    outerMost: 'Outsiders added(up to 3 persons)'
   },
   stock: {
-    unassigned: '未分配电池.',
-    custormBat: '客户企业电池.',
-    selectAll: '全选.',
-    distribution: '分配.',
-    recovery: '回收.',
-    load: '加载中....',
-    noData: '暂无数据.'
+    unassigned: 'Unallocated',
+    custormBat: 'Allocated',
+    selectAll: 'Select All',
+    distribution: 'Allocate',
+    recovery: 'Unallocate',
+    load: 'Loading...',
+    noData: 'blank'
   },
   threshold: {
-    changeThreshold: '修改阈值.',
-    recovery: '恢复全局.',
-    singleVoltage: '单体充电电压上限阈值.',
-    singleDisVoltage: '单体放电电压下限阈值.',
-    maxColtage: '整组充电电压上限阈值.',
-    minDVoltage: '整组放电电压下限阈值.',
-    maxCCurrent: '充电电流上限阈值系数.',
-    maxDCurrent: '放电电流上限阈值系数.',
-    maxCTemperat: '充电温度上限阈值.',
-    minCTemperat: '充电温度下限阈值.',
-    maxDTemperat: '放电温度上限阈值.',
-    minDTemperat: '放电温度下限阈值.',
-    maxFODays: '补水超限天数',
-    maxCCapacity: '充电容量上限阈值系数.',
-    minCCapacity: '充电容量下限阈值系数.',
+    changeThreshold: 'Modify Threshold',
+    recovery: 'Restore universal',
+    singleVoltage:
+      'Upper threshold value of unit voltage while battery is in charging',
+    singleDisVoltage:
+      'Lower threshold value of unit voltage while battery is in discharging',
+    maxColtage:
+      'Upper threshold value of pack voltage while battery is in charging',
+    minDVoltage:
+      'Lower threshold value of pack voltage while battery is in discharging',
+    maxCCurrent:
+      'Upper threshold coefficient of current while battery is in charging',
+    maxDCurrent:
+      'Upper threshold coefficient of current while battery is in discharging',
+    maxCTemperat:
+      'Upper threshold value of temperature while battery is in charging',
+    minCTemperat:
+      'Lower threshold value of temperature while battery is in charging',
+    maxDTemperat:
+      'Upper threshold value of temperature while battery is in discharging',
+    minDTemperat:
+      'Lower threshold value of temperature while battery is in discharging',
+    maxFODays: 'Days of overrun time while battery is lack of electrolyte',
+    maxCCapacity:
+      'Upper threshold coefficient of capacity while battery is in charging',
+    minCCapacity:
+      'Lower threshold coefficient of capacity while battery is in charging',
     warn: {
-      singleVoltage: '请输入单体充电电压上限阈值.',
-      singleDisVoltage: '请输入单体放电电压下限阈值.',
-      maxColtage: '请输入整组充电电压上限阈值.',
-      minDVoltage: '请输入整组放电电压下限阈值.',
-      maxCCurrent: '请输入充电电流上限阈值系数.',
-      maxDCurrent: '请输入放电电流上限阈值系数.',
-      maxCTemperat: '请输入充电温度上限阈值.',
-      minCTemperat: '请输入充电温度下限阈值.',
-      maxDTemperat: '请输入放电温度上限阈值.',
-      minDTemperat: '请输入放电温度下限阈值.',
-      maxFODays: '请输入补水超限天数.',
-      maxCCapacity: '请输入充电容量上限阈值系数.',
-      minCCapacity: '请输入充电容量下限阈值系数.',
-      selectBatModel: '请选择电池型号.',
-      modelNoThres: '此电池型号暂未设置阈值.',
-      NOverall: '暂未设置全局阈值.'
+      singleVoltage:
+        'Please enter the upper threshold value of unit voltage while battery is in charging.',
+      singleDisVoltage:
+        'Please enter the lower threshold value of unit voltage while battery is in discharging.',
+      maxColtage:
+        'Please enter the upper threshold value of pack voltage while batteryialarm n charging.',
+      minDVoltage:
+        'Please enter the lower threshold value of pack voltage while battery is in discharging',
+      maxCCurrent:
+        'Please enter the upper threshold coefficient of current while battery is in charging.',
+      maxDCurrent:
+        'Please enter the upper threshold coefficient of current while battery is in discharging.',
+      maxCTemperat:
+        'Please enter the upper threshold value of temperature while battery is in charging.',
+      minCTemperat:
+        'Please enter the lower threshold value of temperature while battery is in charging.',
+      maxDTemperat:
+        'Please enter the upper threshold value of temperature while battery is in discharging.',
+      minDTemperat:
+        'Please enter the lower threshold value of temperature while battery is in discharging.',
+      maxFODays:
+        'Please enter the days of overrun time while battery is lack of electrolyte',
+      maxCCapacity:
+        'Please enter the upper threshold coefficient of capacity while battery is in charging.',
+      minCCapacity:
+        'Please enter the lower threshold coefficient of capacity while battery is in charging.',
+      selectBatModel: 'Please select battery model.',
+      modelNoThres: 'The threshold on this battery model is not deployed.',
+      NOverall: 'The universal threshold is not deployed.'
     }
   },
   time: {
-    day: '天',
-    hour: '小时',
-    mins: '分钟',
-    sec: '秒'
+    day: 'Day',
+    hour: 'Hour',
+    mins: 'Minute',
+    sec: 'Second'
   }
 };

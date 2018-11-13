@@ -387,7 +387,7 @@ module.exports = {
       manufacturer: '创建生产企业管理员',
       customer: '添加客户企业管理员',
       manuProduct: '添加生产企业普通管理员',
-      cusNoraml: '添加普通管理员',
+      cusNoraml: '添加本企业用户',
       cancel: '取 消',
       sure: '确 认'
     },
@@ -516,7 +516,8 @@ module.exports = {
     selectBattery: '请选择电池组',
     addOneBattery: '需添加1组电池',
     addTwoBattery: '需添加2组电池',
-    changeBattery: '更换电池单元'
+    changeBattery: '更换电池单元',
+    alarm: '告警情况'
   },
   notice: {
     status: '状态',

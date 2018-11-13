@@ -57,7 +57,7 @@
         :chartBarData="summary"></com-chart>
     </div>
 
-    <el-dialog title="添加比较"
+    <el-dialog :title="$t('comparison.addCompar')"
       width="800px"
       :visible.sync="tableVisible">
       <div class="TopWrapper">
@@ -95,7 +95,7 @@
         <el-table-column property="deviceCode"
           :label="$t('batteryList.deviceCode')"></el-table-column>
         <el-table-column :label="$t('alarmList.handle')"
-          width="55">
+          width="70">
           <template slot-scope="scope">
             <el-checkbox @change="toggleCheck(scope.row)"
               v-model="scope.row.checked"></el-checkbox>
@@ -429,6 +429,7 @@ export default {
     },
     /* 获取电池列表 */
     getBatteryList () {
+      this.stacks1 = [];
       this.loading = true;
       let options = {
         pageSize: 8,

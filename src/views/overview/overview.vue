@@ -27,13 +27,14 @@
                   <!-- 告警项目 -->
                   <el-table-column prop="items"
                     align="center"
+                    width="120"
                     :label="$t('alarmList.alarmItem')">
                   </el-table-column>
                   <!-- 告警内容 -->
                   <el-table-column prop="content"
                     align="center"
                     :label="$t('alarmList.content')"
-                    width="260">
+                    width="220">
                   </el-table-column>
                   <!-- 告警层级 -->
                   <el-table-column prop="hierarchy"
@@ -242,7 +243,6 @@ export default {
         (userType.type === 2 && userType.layerName === "生产企业") ||
         userType.type === 1
       ) {
-        // if (userType.type !== 3 && userType.layerName !== "采购企业") {
         this.getCampanyData();
       } else {
         this.isUser = true;
@@ -409,11 +409,11 @@ export default {
             result.pageData.forEach(key => {
               // key.alarmtime = utils.fomats(key.time);
               key.levels = utils.level(key.level);
-              key.hierarchy = key.hierarchy === "Group" ? "整组" : "单体";
+              key.hierarchy = key.hierarchy === "Group" ? t('group.allGroup') : t('group.single');// "整组" : "单体";
               key.items = utils.item(key.item);
               if (key.item === "Fluid") {
                 key.thresholdValue = "-";
-                key.actualValue = "异常";
+                key.actualValue = t('realTime.abnormal'); // "异常";
               }
               this.tableData.push(key);
             });

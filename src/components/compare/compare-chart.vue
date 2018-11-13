@@ -477,7 +477,7 @@ export default {
         Number(datas.last_eventSummary.current) +
         Number(datas.last_eventSummary.voltage);
       let temperatureBarOptions = deepClone(BarOptions);
-      temperatureBarOptions.title.text = "告警情况";
+      temperatureBarOptions.title.text = t('comparison.alarm');
       temperatureBarOptions.xAxis[0].data = [
         `${t('comparison.alarmTimes')}`, // "告警次数",
         `${t('realTime.temperature')}`, //"温度",

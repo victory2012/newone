@@ -73,10 +73,23 @@ export default {
     let hours = parseInt((str % 86400000) / 3600000);
     let minutes = parseInt((str % 3600000) / 60000);
     let seconds = str % 60;
-
-    return `${days}${t('time.day')}${hours}${t('time.hour')}${minutes}${t(
-      'time.mins'
-    )}${seconds}${t('time.sec')}`;
+    let result;
+    if (!days) {
+      result = `${hours}${t('time.hour')} ${minutes}${t(
+        'time.mins'
+      )} ${seconds}${t('time.sec')}`;
+      if (!hours) {
+        result = `${minutes}${t('time.mins')} ${seconds}${t('time.sec')}`;
+        if (!minutes) {
+          result = `${seconds}${t('time.sec')}`;
+        }
+      }
+    } else {
+      result = `${days}${t('time.day')} ${hours}${t('time.hour')} ${minutes}${t(
+        'time.mins'
+      )} ${seconds}${t('time.sec')}`;
+    }
+    return result;
   },
   setStorage: (key, data) => {
     sessionStorage.setItem(key, data);

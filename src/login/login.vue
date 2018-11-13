@@ -91,12 +91,14 @@
   </div>
 </template>
 <script>
+import t from "@/utils/translate";
+
 export default {
   data () {
     return {
       localLanguge: '',
       hasGetSms: false,
-      smsMsg: this.$t("loginMsg.getSmsCode"),
+      smsMsg: t("loginMsg.getSmsCode"),
       activeName: "accPwd",
       smsForm: {
         phone: "",
@@ -107,19 +109,19 @@ export default {
         phone: [
           {
             required: true,
-            message: this.$t("loginMsg.errorMsg.phoneNub"),
+            message: t("loginMsg.errorMsg.phoneNub"),
             trigger: "change"
           },
           {
             pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
-            message: this.$t("loginMsg.errorMsg.checkPhone"),
+            message: t("loginMsg.errorMsg.checkPhone"),
             trigger: "change"
           }
         ],
         smsCode: [
           {
             required: true,
-            message: this.$t("loginMsg.errorMsg.smsCodeErr"),
+            message: t("loginMsg.errorMsg.smsCodeErr"),
             trigger: "blur"
           }
         ]
@@ -129,14 +131,14 @@ export default {
         account: [
           {
             required: true,
-            message: this.$t("loginMsg.errorMsg.account"),
+            message: t("loginMsg.errorMsg.account"),
             trigger: "blur"
           }
         ],
         password: [
           {
             required: true,
-            message: this.$t("loginMsg.errorMsg.password"),
+            message: t("loginMsg.errorMsg.password"),
             trigger: "blur"
           }
         ]
@@ -209,7 +211,7 @@ export default {
                 conut--;
                 this.smsMsg = `${conut}s`;
                 if (conut < 1) {
-                  this.smsMsg = this.$t("loginMsg.getSmsCode");
+                  this.smsMsg = t("loginMsg.getSmsCode");
                   this.hasGetSms = false;
                   clearInterval(Timer);
                 }
@@ -262,6 +264,7 @@ export default {
         this.$i18n.locale = "en";
         localStorage.setItem("locale", "en");
       }
+      this.smsMsg = t("loginMsg.getSmsCode");
       this.LoginRules = {
         account: [
           {
@@ -347,7 +350,7 @@ export default {
       margin: 120px auto;
       .smsCode {
         .el-input {
-          width: 62%;
+          width: 50%;
         }
         .getSms {
           float: right;

@@ -117,7 +117,7 @@
         <el-table-column property="deviceCode"
           :label="$t('batteryList.deviceCode')"></el-table-column>
         <el-table-column :label="$t('alarmList.handle')"
-          width="55">
+          width="70">
           <template slot-scope="scope">
             <el-checkbox @change="toggleCheck(scope.row)"
               v-model="scope.row.checked"></el-checkbox>

@@ -51,9 +51,7 @@
 <script>
 import utils from "@/utils/utils";
 import permissionFun from "@/utils/valated";
-// import real from "./real";
-// import history from "./history";
-// import alearm from "./alearm";
+import t from "@/utils/translate";
 
 export default {
   // components: {
@@ -189,7 +187,7 @@ export default {
           let result = res.data.data;
           let Times = utils.TimeSconds(result.time);
           this.companyInfo = result;
-          this.companyInfo.fluid = result.fluidLevel === 0 ? "正常" : "异常";
+          this.companyInfo.fluid = result.fluidLevel === 0 ? t('realTime.normal') : t('realTime.abnormal'); // "正常" : "异常";
           this.companyInfo.yyddmm = utils.yyyymmdd(Times);
           this.companyInfo.hhmmss = utils.hhmmss(Times);
           this.showRealData();

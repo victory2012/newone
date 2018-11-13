@@ -5,12 +5,16 @@
       <el-button type="primary" icon="el-icon-circle-plus-outline"></el-button>
     </div> -->
     <div class="chartWarrp">
-      <div class="chartInfo" id="echart1"></div>
-      <div class="chartInfo" id="echart2"></div>
+      <div class="chartInfo"
+        id="echart1"></div>
+      <div class="chartInfo"
+        id="echart2"></div>
     </div>
     <div class="chartWarrp">
-      <div class="chartInfo" id="echart3"></div>
-      <div class="chartInfo" id="echart4"></div>
+      <div class="chartInfo"
+        id="echart3"></div>
+      <div class="chartInfo"
+        id="echart4"></div>
     </div>
   </div>
 </template>
@@ -33,10 +37,10 @@ export default {
     },
     mqttData: {
       type: Object,
-      default: () => {}
+      default: () => { }
     }
   },
-  data() {
+  data () {
     return {
       timeArr: [],
       singleVoltage: [],
@@ -47,18 +51,18 @@ export default {
       isOptionAbnormal: false
     };
   },
-  mounted() {
+  mounted () {
     this.init();
   },
   watch: {
     mqttData: {
-      handler: function(val) {
+      handler: function (val) {
         this.formatter(val);
       },
       deep: true
     },
     chartData: {
-      handler: function(val) {
+      handler: function (val) {
         // console.log("chartData changes", val);
         this.dataChange(val);
       },
@@ -66,7 +70,7 @@ export default {
     }
   },
   methods: {
-    init() {
+    init () {
       let $echartsDOM1 = document.getElementById("echart1");
       let $echartsDOM2 = document.getElementById("echart2");
       let $echartsDOM3 = document.getElementById("echart3");
@@ -92,7 +96,7 @@ export default {
       };
       this.dataChange(this.chartData);
     },
-    dataChange(datas) {
+    dataChange (datas) {
       let voltageOptions = deepClone(options);
       voltageOptions.title.text = t("realTime.voltage");
       voltageOptions.yAxis.axisLabel.formatter = "{value} v";
@@ -102,7 +106,7 @@ export default {
         p.forEach(v => {
           item += `${utils.dateFomat(v.value[0])}<br/>${t(
             "realTime.voltage"
-          )}:${v.value[1]}V<br/>`;
+          )}：${v.value[1]}V<br/>`;
         });
         return item;
       };
@@ -117,7 +121,7 @@ export default {
         p.forEach(v => {
           item += `${utils.dateFomat(v.value[0])}<br/>${t(
             "realTime.singleVoltage"
-          )}:${v.value[1]}V<br/>`;
+          )}：${v.value[1]}V<br/>`;
         });
         return item;
       };
@@ -132,7 +136,7 @@ export default {
         p.forEach(v => {
           item += `${utils.dateFomat(v.value[0])}<br/>${t(
             "realTime.current"
-          )}:${v.value[1]}A<br/>`;
+          )}：${v.value[1]}A<br/>`;
         });
         return item;
       };
@@ -147,13 +151,13 @@ export default {
         p.forEach(v => {
           item += `${utils.dateFomat(v.value[0])}<br/>${t(
             "realTime.temperature"
-          )}:${v.value[1]}℃<br/>`;
+          )}：${v.value[1]}℃<br/>`;
         });
         return item;
       };
       this.myEcharts4.setOption(temperatureOptions);
     },
-    formatter(data) {
+    formatter (data) {
       this.chartData.voltage.shift();
       this.chartData.singleVoltage.shift();
       this.chartData.current.shift();

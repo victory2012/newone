@@ -54,7 +54,7 @@
       <!-- 操作 -->
       <el-table-column align="center"
         :label="$t('batteryList.handle')"
-        width="150">
+        :width="width">
         <template slot-scope="scope">
           <!-- 修改权限 -->
           <el-button :disabled="!scope.row.userType"
@@ -135,6 +135,7 @@ export default {
   },
   data () {
     return {
+      width: localStorage.getItem('locale') === 'en' ? 230 : 150,
       AdminRoles: permissionFun(),
       checked1: false,
       loading: true,
@@ -203,19 +204,23 @@ export default {
       }
       let getLayerName = JSON.parse(loginData);
       // console.log(getLayerName);
+      let UserLimet;
       if (
         getLayerName.layerName === "平台" &&
         (getLayerName.type === 1 || getLayerName.type === 3)
       ) {
-        this.userData = addData.getPlat();
+        UserLimet = addData.getPlat();
       }
       if (getLayerName.layerName === "生产企业" && getLayerName.type === 2) {
-        this.userData = addData.getProduct();
+        UserLimet = addData.getProduct();
       }
       if (getLayerName.layerName === "采购企业" && getLayerName.type === 2) {
-        this.userData = addData.getCreateUser();
+        UserLimet = addData.getCreateUser();
       }
-
+      this.userData = JSON.parse(JSON.stringify(UserLimet));
+      this.userData.forEach(key => {
+        key.text = t(`${key.text}`)
+      })
       console.log(this.userData);
     },
     /* 删除按钮 */

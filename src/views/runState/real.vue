@@ -187,9 +187,11 @@ export default {
   },
   methods: {
     init () {
+      const lang = localStorage.getItem('locale') === 'en' ? 'en' : 'zh_cn';
       map = new AMap.Map("mapContent", {
         resizeEnable: true,
-        zoom: 10
+        zoom: 10,
+        lang
       });
     },
     getQuantity () {

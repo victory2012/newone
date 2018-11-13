@@ -20,7 +20,7 @@
               <el-input-number controls-position="right"
                 size="small"
                 v-model="batteryForm.singleMaxChargeVoltage"
-                style="width:200px;"></el-input-number>
+                :style="inputWidth"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -30,7 +30,7 @@
               <el-input-number controls-position="right"
                 size="small"
                 v-model.number="batteryForm.singleMinDischargeVoltage"
-                style="width:200px;"></el-input-number>
+                :style="inputWidth"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -42,7 +42,7 @@
               <el-input-number controls-position="right"
                 size="small"
                 v-model="batteryForm.maxChargeVoltage"
-                style="width:200px;"></el-input-number>
+                :style="inputWidth"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -52,7 +52,7 @@
               <el-input-number controls-position="right"
                 size="small"
                 v-model.number="batteryForm.minDischargeVoltage"
-                style="width:200px;"></el-input-number>
+                :style="inputWidth"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -64,7 +64,7 @@
               <el-input-number controls-position="right"
                 size="small"
                 v-model.number="batteryForm.maxChargeCurrent"
-                style="width:200px;"></el-input-number>
+                :style="inputWidth"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -74,7 +74,7 @@
               <el-input-number controls-position="right"
                 size="small"
                 v-model.number="batteryForm.maxDischargeCurrent"
-                style="width:200px;"></el-input-number>
+                :style="inputWidth"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -86,7 +86,7 @@
               <el-input-number controls-position="right"
                 size="small"
                 v-model.number="batteryForm.maxChargeTemperature"
-                style="width:200px;"></el-input-number>
+                :style="inputWidth"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -96,7 +96,7 @@
               <el-input-number controls-position="right"
                 size="small"
                 v-model.number="batteryForm.minChargeTemperature"
-                style="width:200px;"></el-input-number>
+                :style="inputWidth"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -108,7 +108,7 @@
               <el-input-number controls-position="right"
                 size="small"
                 v-model.number="batteryForm.maxDischargeTemperature"
-                style="width:200px;"></el-input-number>
+                :style="inputWidth"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -118,7 +118,7 @@
               <el-input-number controls-position="right"
                 size="small"
                 v-model.number="batteryForm.minDischargeTemperature"
-                style="width:200px;"></el-input-number>
+                :style="inputWidth"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -130,7 +130,7 @@
               <el-input-number controls-position="right"
                 size="small"
                 v-model.number="batteryForm.maxFluidOverDays"
-                style="width:200px;"></el-input-number>
+                :style="inputWidth"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -147,7 +147,7 @@
               <el-input-number controls-position="right"
                 size="small"
                 v-model.number="batteryForm.maxChargeCapacity"
-                style="width:200px;"></el-input-number>
+                :style="inputWidth"></el-input-number>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -157,7 +157,7 @@
               <el-input-number controls-position="right"
                 size="small"
                 v-model.number="batteryForm.minChargeCapacity"
-                style="width:200px;"></el-input-number>
+                :style="inputWidth"></el-input-number>
             </el-form-item>
           </el-col>
         </el-row>
@@ -172,6 +172,7 @@ import t from "@/utils/translate";
 export default {
   data () {
     return {
+      inputWidth: 'width:400px',
       setings: {},
       batteryForm: {},
       batteryFormRules: {
@@ -370,7 +371,7 @@ export default {
   margin-bottom: 40px;
 }
 .warrp {
-  width: 630px;
+  width: 1080px;
   margin: 0 auto;
   .item {
     color: #484848;

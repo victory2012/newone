@@ -43,7 +43,7 @@
           <el-form-item :label="$t('batteryList.batteryCode')"
             prop="groupNum">
             <el-input size="small"
-              v-model="batteryForm.groupNum"
+              v-model.trim="batteryForm.groupNum"
               style="width:210px;"
               :placeholder="$t('batteryList.batteryCode')"></el-input>
           </el-form-item>
@@ -213,30 +213,30 @@ export default {
         batCustom: [
           {            required: true,
             message: t('batteryList.warn.customerCom'), // "请选择电池组客户企业",
-            trigger: "change"
+            trigger: "blur"
           }
         ],
         groupNum: [
           {            required: true,
             message: t('batteryList.warn.batteryCode'), // "请选择电池组编号",
-            trigger: "change"          }
+            trigger: "blur"          }
         ],
         batGroupModel: [
           {            required: true,
             message: t('batteryList.warn.model'), // "请选择电池组型号",
-            trigger: "change"          }
+            trigger: "blur"          }
         ],
         batGroupSpecif: [
           {            required: true,
             message: t('batteryList.warn.specif'), // "请选择电池组规格",
-            trigger: "change"          }
+            trigger: "blur"          }
         ],
         batteryVoltage: [{ required: true, message: t('batteryList.warn.batteryVoltage') }],
         batteryCapacity: [{ required: true, message: t('batteryList.warn.batteryCapacity') }],
         singleBattery: [
           {            required: true,
             message: t('batteryList.warn.singleBattery'),
-            trigger: "change"          }
+            trigger: "blur"          }
         ],
         productDate: [
           {            required: true,
