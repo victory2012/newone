@@ -37,30 +37,29 @@ module.exports = {
     batteryModelNotFind: '电池组型号未找到', // 401212
     batterySpecExists: '电池组规格已存在', // 401213
     batterySpecNotFind: '电池组规格未找到', // 401214
-    batterySingleModelExists: '电池组单体型号已存在', // 401215
-    batterySingleModelNotFind: '电池组单体型号未找到', // 401216
-    innerNoticeExists: '电池组通知已规则存在', // 501211
-    InnerNoticeUserExists: '电池组内部通知已用户存在', // 501221
-    InnerNoticeOverrun: '电池组内部通知数量超限', // 501222
+    batterySingleModelExists: '电池组单体规格已存在', // 401215
+    batterySingleModelNotFind: '电池组单体规格未找到', // 401216
+    innerNoticeExists: '电池组通知规则已存在', // 501211
+    InnerNoticeUserExists: '电池组内部通知用户已存在', // 501221
+    InnerNoticeOverrun: '电池组内部通知用户数量超限', // 501222
     outerNoticeUserExists: '电池组外部通知用户已存在', // 501231
-    outerNoticeOverrun: '电池组外部通知数量超限' // 501232
+    outerNoticeOverrun: '电池组外部通知用户数量超限' // 501232
   },
   loginMsg: {
     userNameMsg: '请输入用户名',
     password: '请输入密码',
-    projectName: '电池后台管理系统',
-    subProjectName: '后台管理系统',
+    projectName: '电池定位追踪管理系统',
+    subProjectName: '电池定位追踪管理系统',
     RMaccount: '记住账户',
     RMpassword: '记住密码',
     accountPlace: '账号',
     passwordPlace: '密码',
     tips: '提示',
-    sortage: '请关闭无痕模式后，在访问',
+    sortage: '请关闭无痕模式后，再访问',
     loginBtn: '登录',
     errorMsg: {
       account: '请输入账号',
       password: '请输入密码',
-
       phoneNub: '请输入手机号',
       checkPhone: '手机号格式错误',
       smsCodeErr: '请输入短信验证码'
@@ -87,7 +86,7 @@ module.exports = {
     changeSuccess: '修改成功',
     addBlackSucc: '添加黑名单成功',
     regDevice: '设备注册成功',
-    recoverySuc: '回收成功',
+    recoverySuc: '收回成功',
     distributionSuc: '分配成功',
     regBattery: '电池注册成功'
   },
@@ -111,7 +110,7 @@ module.exports = {
     userManage: '用户管理',
     device: '设备管理',
     deviceList: '设备列表',
-    deviceDefriend: '恢复拉黑设备',
+    // deviceDefriend: '恢复拉黑设备',
     batteryInfo: '电池信息',
     defriend: '恢复拉黑设备',
     runStatus: '运行状况',
@@ -129,12 +128,16 @@ module.exports = {
   },
   overview: {
     total: '电池总数',
-    alarmed: '告警电池数',
-    valid: '有效监控数',
     newAdd: '本月新增电池数',
+    valid: '有效监控数',
+    alarmed: '运行异常数',
+    effectiveRate: '有效监控',
     RunNormal: '正常运行',
+    subtotalField: '电池数',
+    effectiveField: '有效监控数',
+    abnormalField: '运行异常数',
     batteryModel: '型号',
-    provence: '省份'
+    provence: '地区'
   },
   positions: {
     title1: '设备列表',
@@ -157,6 +160,10 @@ module.exports = {
     high: '高',
     mid: '中',
     low: '低'
+  },
+  toggleTip: {
+    open: '展开',
+    close: '收起'
   },
   history: {
     startTime: '选择开始时间',
@@ -211,10 +218,6 @@ module.exports = {
     previous: '上一页',
     next: '下一页'
   },
-  toggleTip: {
-    open: '展开',
-    close: '收起'
-  },
   timeBtn: {
     cancle: '取消',
     sure: '确定',
@@ -234,9 +237,9 @@ module.exports = {
     tipMsg: {
       addSuccess: '添加成功',
       delSuccess: '删除成功',
-      addPointer: '请选区围栏点',
+      addPointer: '请选取围栏点',
       selectToDel: '请点击要删除的围栏',
-      morePointer: '最多选区10个点'
+      morePointer: '最多选取10个点'
     }
   },
   batteryList: {
@@ -284,7 +287,7 @@ module.exports = {
       batteryCapacity: '请输入电池组额定容量',
       singleBattery: '请选择电池单体型号'
     },
-    batteries: '电池',
+    batteries: '添加电池',
     batchImport: '批量导入',
     defriend: '恢复拉黑设备',
     runStatus: '运行状态',
@@ -354,7 +357,6 @@ module.exports = {
     view: '查看',
     custorm: '客户',
     latLng: '位置',
-
     warnData: '告警值',
     endTime: '结束时间',
     startTime: '开始时间'
@@ -488,7 +490,7 @@ module.exports = {
   googleAbno: {
     return: '返回',
     title: '查看设备当前位置',
-    OUT: 'OUT',
+    OUT: 'Out of the geofence.',
     Geofence: '超出围栏点',
     nowPosition: '当前实时位置'
   },
@@ -533,7 +535,7 @@ module.exports = {
     custormBat: '客户企业电池',
     selectAll: '全选',
     distribution: '分配',
-    recovery: '回收',
+    recovery: '收回',
     load: '加载中...',
     noData: '暂无数据'
   },

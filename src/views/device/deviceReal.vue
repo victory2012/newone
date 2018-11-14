@@ -274,7 +274,17 @@ export default {
         batteryCode: payloadString[21] // 电池编号
       };
       this.version = dataObj.version;
-      let posData = this.gcj_encrypt(dataObj.latitude, dataObj.longitude);
+      if (Number(dataObj.latitude) > 0 && Number(dataObj.longitude) > 0) {
+        let posData = this.gcj_encrypt(dataObj.latitude, dataObj.longitude);
+        let resultPos = {
+          gcjLongitude: posData.lon,
+          gcjLatitude: posData.lat
+        };
+        this.infoData.gcjLongitude = posData.lon;
+        this.infoData.gcjLatitude = posData.lat;
+        this.positionData(resultPos);
+      }
+
       this.infoData.temperature = dataObj.temperature;
       this.infoData.fluid =
         dataObj.liquid === 0 ? t("realTime.normal") : t("realTime.abnormal");
@@ -283,16 +293,9 @@ export default {
       this.infoData.current = dataObj.current;
       this.infoData.hhmmss = utils.hhmmss(dataObj.times);
       this.infoData.yyddmm = utils.yyyymmdd(dataObj.times);
-      this.infoData.gcjLongitude = posData.lon;
-      this.infoData.gcjLatitude = posData.lat;
+
       // this.$set(this.infoData, "yyddmm", utils.yyyymmdd(new Date()));
       // this.$set(this.infoData, "hhmmss", utils.hhmmss(dataObj.times));
-      let resultPos = {
-        gcjLongitude: posData.lon,
-        gcjLatitude: posData.lat
-      };
-      this.positionData(resultPos);
-
       if (this.checked && this.hostId) {
         this.ReceiveObj = dataObj;
       }

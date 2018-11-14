@@ -75,17 +75,17 @@
                 <!-- 电池数 -->
                 <el-table-column prop="total"
                   align="center"
-                  :label="$t('alarmList.batteries')">
+                  :label="$t('overview.subtotalField')">
                 </el-table-column>
                 <!-- 有效监控数 -->
                 <el-table-column prop="activeTotal"
                   align="center"
-                  :label="$t('overview.valid')">
+                  :label="$t('overview.effectiveRate')">
                 </el-table-column>
                 <!-- 告警电池数 -->
                 <el-table-column prop="alarmedTotal"
                   align="center"
-                  :label="$t('overview.alarmed')">
+                  :label="$t('overview.abnormalField')">
                 </el-table-column>
               </el-table>
               <div v-if="companyMoreBtn"
@@ -109,15 +109,15 @@
                 </el-table-column>
                 <el-table-column prop="total"
                   align="center"
-                  :label="$t('alarmList.batteries')">
+                  :label="$t('overview.subtotalField')">
                 </el-table-column>
                 <el-table-column prop="activeTotal"
                   align="center"
-                  :label="$t('overview.valid')">
+                  :label="$t('overview.effectiveField')">
                 </el-table-column>
                 <el-table-column prop="alarmedTotal"
                   align="center"
-                  :label="$t('overview.alarmed')">
+                  :label="$t('overview.abnormalField')">
                 </el-table-column>
               </el-table>
               <!-- provenceMoreBtn -->
@@ -141,15 +141,15 @@
                 </el-table-column>
                 <el-table-column prop="total"
                   align="center"
-                  :label="$t('alarmList.batteries')">
+                  :label="$t('overview.subtotalField')">
                 </el-table-column>
                 <el-table-column prop="activeTotal"
                   align="center"
-                  :label="$t('overview.valid')">
+                  :label="$t('overview.effectiveField')">
                 </el-table-column>
                 <el-table-column prop="alarmedTotal"
                   align="center"
-                  :label="$t('overview.alarmed')">
+                  :label="$t('overview.abnormalField')">
                 </el-table-column>
               </el-table>
               <div v-if="modelMoreBtn"

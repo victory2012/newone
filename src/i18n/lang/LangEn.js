@@ -34,13 +34,13 @@ module.exports = {
     deviceBind: 'The device has been bound.', // 303001
     hasHost: 'The battery already exists.', // 401001
     hostBind: 'The battery has been bound.', // 403002
-    batteryGroupExists: 'The battery pack already exists.', // 401201
-    batteryModelExists: 'The battery pack model already exists.', // 401211
-    batteryModelNotFind: 'The battery pack model not found.', // 401212
+    batteryGroupExists: 'The battery already exists.', // 401201
+    batteryModelExists: 'The battery model already exists.', // 401211
+    batteryModelNotFind: 'The battery model not found.', // 401212
     batterySpecExists: 'The battery pack specification already exists.', // 401213
     batterySpecNotFind: 'The battery pack specification not found.', // 401214
-    batterySingleModelExists: 'The battery cell specification already exists.', // 401215
-    batterySingleModelNotFind: 'The battery cell specification not found.', // 401216
+    batterySingleModelExists: 'The battery unit specification already exists.', // 401215
+    batterySingleModelNotFind: 'The battery unit specification not found.', // 401216
     innerNoticeExists:
       'The notification rule of this platform for abnormal alarms already exists.', // 501211
     InnerNoticeUserExists: 'The notified user of this platform already exists.', // 501221
@@ -60,6 +60,8 @@ module.exports = {
     RMpassword: 'Remember the password',
     accountPlace: 'User Id',
     passwordPlace: 'Password',
+    tips: 'Prompt',
+    sortage: 'Please close the invisible mode before you visit',
     loginBtn: 'Login',
     errorMsg: {
       account: 'Please enter user id.',
@@ -73,36 +75,35 @@ module.exports = {
     phone: 'Mobile Number',
     smsCode: 'Verification Code',
     getSmsCode: 'Get verification code',
-    smsSuccess: 'The verification code was sent successfully.',
-    tips: 'Tips: '
+    smsSuccess: 'The verification code was sent successfully.'
+  },
+  userInfo: {
+    userMsg: 'User Profile',
+    pasword: 'Change Password',
+    logOut: 'Logout'
   },
   successTips: {
     addSuccess: 'Successfully added.',
     delSuccess: 'Successfully deleted.',
-    unbindSuccess: 'Successfully unbind.',
-    bindSuccess: 'Successful binding.',
+    unbindSuccess: 'Successfully unbound.',
+    bindSuccess: 'Successful bound.',
     batchSuccess: 'Successfully added in batches.',
     recoverySuccess: 'Successfully restored from the blacklist.',
     changeSuccess: 'Successfully modified.',
-    addBlackSucc: 'Pulled into the blacklist successfully.',
+    addBlackSucc: 'Successfully pushed into the blacklist.',
     regDevice: 'Device successfully registered.',
     recoverySuc: 'Succcessfully unallocated.',
     distributionSuc: 'Successfully allocated.',
     regBattery: 'Battery successfully registered.'
   },
   batch: {
-    formatErr: 'Format of the imported data file is xls or xlsx.',
-    volumeErr: 'Imported data files cannot be larger than 1M.',
+    formatErr: 'The imported data file format is xls or xlsx.',
+    volumeErr: 'The imported data files cannot be larger than 1M.',
     nodata: 'The uploaded file is empty, please check and correct it.',
     complete: 'Please complete the file data.',
     betteryCodeRepeat:
-      'Battery id cannot be repeated, please check and correct it.',
-    timeFormatErr: 'Time format is not supported, please change to text format.'
-  },
-  userInfo: {
-    userMsg: 'User Profile',
-    pasword: 'Change Password',
-    logOut: 'Logout'
+      'Battery id cannot be duplicated, please check and correct it.',
+    timeFormatErr: 'Time format is invalid, please change to text format.'
   },
   menu: {
     // 菜单列表
@@ -115,7 +116,6 @@ module.exports = {
     alarm: 'Battery Alarms',
     userManage: 'User Management',
     device: 'Device Management',
-
     deviceList: 'Device Profiles',
     // deviceDefriend: '恢复拉黑设备.',
     batteryInfo: 'Battery Situation',
@@ -124,8 +124,8 @@ module.exports = {
     compare: 'Comparison Analysis',
     setting: 'Configuration Management',
     threshold: 'Alarm Threshold',
-    sortByModel: 'By battery model',
-    sortByCompany: 'Universal',
+    sortByModel: 'Pattern of model',
+    sortByCompany: 'Pattern of universal',
     WarningNotice: 'Alarm Notification',
     receiveList: 'All Users',
     addReceive: 'Notified Users',
@@ -134,13 +134,17 @@ module.exports = {
     alarmData: 'Battery Alarms'
   },
   overview: {
-    total: 'All',
-    newAdd: 'This Month',
-    valid: 'Valid',
-    alarmed: 'Alarmed',
-    RunNormal: 'Normal Run',
+    total: 'Total Currently',
+    newAdd: 'Increase in this month',
+    valid: 'Monitor effectively',
+    alarmed: 'Work Abnormally',
+    effectiveRate: 'Effective Rate', // gehongwei新增
+    RunNormal: 'Normal Rate',
+    subtotalField: 'Subtotal', // gehongwei新增
+    effectiveField: 'Effective', // gehongwei新增
+    abnormalField: 'Abnormal', // gehongwei新增
     batteryModel: 'Model',
-    provence: 'Area'
+    provence: 'Region'
   },
   positions: {
     title1: 'Device Profiles',
@@ -173,13 +177,12 @@ module.exports = {
     endTime: 'Please enter end time.',
     start: 'Start',
     pause: 'Pause',
-    continue: 'continue',
+    continue: 'Continue',
     stop: 'Stop',
     heatActive: 'Hot Zone',
     TrackReplay: 'Playback',
     times: 'Time',
     batteryList: 'Battery Profiles',
-
     online: 'Online',
     offLine: 'Offline',
     checkErr: 'Start time must before end time.',
@@ -192,16 +195,16 @@ module.exports = {
     exportBtn: 'Export to excel',
     cycle: 'Amounts of electrical cycle',
     chargeDuration: 'Charging time',
-    dischargeDuration: 'Discharge time',
+    dischargeDuration: 'Discharging time',
     avgChargeDuration: 'Average charging time',
-    avgDischargeDuration: 'Average discharge time',
+    avgDischargeDuration: 'Average discharging time',
     empty: 'Idle time',
     fluidTimes: 'Amounts of water infusion',
     avgFluidDuration: 'Average duration of water infusion',
     historyWarn: 'Historical alarm',
     historyfluid: 'Historical water infusion',
     week: 'Last one week',
-    mounth: 'Last on month',
+    mounth: 'Last one month',
     threemonth: 'Last three months',
     sixmounth: 'Last six months',
     year: 'Last one year',
@@ -214,9 +217,13 @@ module.exports = {
     fluidTemp: 'Temperature',
     LengthOfYime: 'Time interval from last water infusion',
     No: 'No.',
-    point: 'point',
+    point: ' point',
     junction: 'Road Junction',
     track: 'Motion Track'
+  },
+  pageBtn: {
+    previous: 'Previous',
+    next: 'Next'
   },
   timeBtn: {
     cancle: 'Cancel',
@@ -247,10 +254,11 @@ module.exports = {
     batteryCapacity: 'Rated Capacity',
     singleBattery: 'Unit Specification',
     choseDevice: 'Device Id (optional)',
+    deviceCode: 'Device Id',
     serial: 'No.',
     batteryCode: 'Battery Id',
     binding: 'Binding Status',
-    running: 'Operating Satus',
+    running: 'Working Satus',
     detail: 'Action',
     online: 'Online',
     offline: 'Offline',
@@ -261,14 +269,11 @@ module.exports = {
     model: 'Model',
     specif: 'Specification',
     customer: 'Customer',
-    deviceCode: 'Device Id',
+    enterprise: 'Manufacturer',
     bindStatus: 'Binding Status',
     onlineStatus: 'Online Status',
-
     view: 'View',
     batteryAddBtn: 'Battery Registration',
-    enterprise: 'Manufacturer',
-    customerCom: 'Customer',
     createDate: 'Date of production.',
     manufactureDate: 'Date of manufacture.',
     warrantyDate: 'Warranty',
@@ -280,9 +285,9 @@ module.exports = {
       batteryCode: 'Please enter battery id.',
       model: 'Please enter battery model.',
       specif: 'Please enter battery specification.',
-      createDate: 'Date of production',
-      manufactureDate: 'Date of manufacture',
-      warrantyDate: 'Warranty',
+      createDate: 'Please choose date of production',
+      manufactureDate: 'Please choose date of manufacture',
+      warrantyDate: 'Please choose warranty',
       deviceId: 'Please enter device id.',
       content: 'The content can not be blank.',
       batteryVoltage: 'Please enter the rated voltage.',
@@ -290,7 +295,7 @@ module.exports = {
       singleBattery: 'Please choose battery unit specification.'
     },
     batteries: 'New Battery',
-    batchImport: 'Batch Import.',
+    batchImport: 'Batch Import',
     defriend: 'Restore Black',
     runStatus: 'Working Status',
     handle: 'Action',
@@ -299,11 +304,11 @@ module.exports = {
     black: 'Black',
     detele: 'Delete',
     batteryBindDevice: 'Battery is bound to the device.',
-    addModel: 'Add new pack model',
+    addModel: 'Add new model',
     addSpecif: 'Add new pack specification',
     addSinggleSpecif: 'Add new unit specification',
     singgleSpecif: 'Add new unit specification',
-    deleteTip: 'Are you sure you want to delete this battery pack?',
+    deleteTip: 'Are you sure you want to delete this battery?',
     search: 'Search',
     clear: 'Empty',
     searchContent: 'Battery/Device Id',
@@ -311,17 +316,17 @@ module.exports = {
     recovery: 'Retore'
   },
   runState: {
-    realData: 'Real Time',
+    realData: 'Realtime',
     historyData: 'Historical',
     alarmData: 'Alarm',
     batteryCode: 'Please enter battery id.',
-    selectBattery: 'Please select a battery pack first.'
+    selectBattery: 'Please select a battery first.'
   },
   realTime: {
     time: 'Time',
     temperature: 'Temperature',
     fluid: 'Electrolyte Level',
-    voltage: 'Pack Voltage',
+    voltage: 'Voltage',
     singleVoltage: 'Unit Voltage',
     current: 'Current',
     quantity: 'Capacity',
@@ -339,28 +344,27 @@ module.exports = {
     serial: 'No.',
     time: 'Alarm Time',
     batteryCode: 'Battery Id',
-    content: 'Alarm Description',
+    content: 'Description',
     handle: 'Action',
     detail: 'Detail',
     batteryDetail: 'Battery Detail',
-    batteryNumber: 'Battery Id',
     specif: 'Specification',
     customer: 'Customer',
     deviceCode: 'Device Id',
-    grid: 'Coordinate Position',
+    grid: 'Coordinate',
     position: 'Location',
     location: 'View',
-    alarmItem: 'Alarm Item',
+    alarmItem: 'Entry',
     alarmHierarchy: 'Hierarchy',
-    alarmLevel: 'Level',
+    alarmLevel: 'Emergency',
     more: 'More',
-    batteries: 'Batteries',
+    batteries: 'Amounts of battery',
     thride: 'Alarm Threshold',
-    realDate: 'Actual Data',
+    realDate: 'Current Value',
     view: 'View',
     custorm: 'Customer',
     latLng: 'Location',
-    warnData: 'Alarm Data',
+    warnData: 'Alarm Value',
     endTime: 'End Time',
     startTime: 'Start Time'
   },
@@ -389,10 +393,10 @@ module.exports = {
       email: 'Email(optional)',
       enterpriseName: 'Company Name',
       nature: 'Company Type',
-      manufacturer: 'New Manufacturer Administrator',
-      customer: 'New Customer Administrator',
-      manuProduct: 'New Manufacturer User',
-      cusNoraml: 'Add common users',
+      manufacturer: 'Create manufacturer administrator',
+      customer: 'Create customer administrator',
+      manuProduct: 'Add manufacturer user',
+      cusNoraml: 'Add common user',
       cancel: 'Cancel',
       sure: 'Submit'
     },
@@ -405,7 +409,7 @@ module.exports = {
       phoneCheck: 'Wrong format of mobile number entered.',
       emailCheck: 'Wrong format of mailbox entered.',
       enterprise: 'Please eneter name of company.',
-      nature: 'Please choose nature of company.'
+      nature: 'Please choose type of company.'
     },
     success: 'Created Successfully.',
     no: 'No Data',
@@ -417,12 +421,12 @@ module.exports = {
       'Your Operation will delete this company and all users under it. Do you want to continue?'
   },
   defaultRole: {
-    addBatteries: 'Battery Enrollment',
+    addBatteries: 'Battery Registration',
     addblack: 'Black and Restore',
     historyData: 'Historical Data',
     alarm: 'Alarm Event',
     sameAnalysis: 'Comparison Analysis',
-    personalInfo: 'Personal Maintenance',
+    personalInfo: 'Personal Information Maintenance',
     allocation: 'Battery Allocation'
   },
   device: {
@@ -433,12 +437,12 @@ module.exports = {
     detail: 'Detail',
     deviceDetail: 'Device Detail',
     manufacturerName: 'Company Name',
-    createTime: 'Create time',
+    createTime: 'Create Time',
     batteryCode: '',
     onlineStatus: 'Online Status',
     device: 'Device',
     location: 'View',
-    addDevice: 'Device Registration',
+    addDevice: 'New Device',
     nobind: 'Unbound',
     hasbind: 'Bound',
     online: 'Online',
@@ -447,11 +451,11 @@ module.exports = {
     enterprise: 'Manufacturer',
     upLevel: 'Device Upgrade',
     deviceCategory: 'Device Type',
-    company: 'Related usiness',
-    registed: 'Registed',
+    company: 'Related Business',
+    registed: 'Registered',
     noregist: 'Unregistered',
     delTips: 'Are you sure you want to delete this device?',
-    selectCampany: 'Please choose the company',
+    selectCampany: 'Please choose a company',
     batteryGps: 'Battery Tracking',
     batteryMonitor: 'Battery Monitoring'
   },
@@ -485,7 +489,7 @@ module.exports = {
     phoneCheck: 'Wrong format of mobile phone number.'
   },
   password: {
-    new: 'new password',
+    new: 'New password',
     placeholder: 'Please enter password.',
     changeBtn: 'Change password',
     error: 'Please enter password.',
@@ -495,20 +499,20 @@ module.exports = {
   googleAbno: {
     return: 'Back',
     title: 'View the current location.',
-    OUT: 'OUT',
+    OUT: 'Out of the geofence.',
     Geofence: 'Out of the Geofence.',
     nowPosition: 'Current Location'
   },
   comparison: {
-    same: 'Same battery pack',
-    diffrence: 'Different battery pack',
+    same: 'Same battery',
+    diffrence: 'Different battery',
     comparData: 'Comparison',
     batteryCode: 'Battery Id',
     timeRange: 'Please select range of time.',
     comparWay: 'Please choose a comparison method.',
-    addCompar: 'Please add a battery pack',
+    addCompar: 'Please add a battery.',
     most: 'You could choose up to ',
-    item: 'items.',
+    item: ' items.',
     deviceId: 'Device Id',
     YearOnYear: 'Compare with the same period of last year',
     monthOnMonth: 'Compare with previous period',
@@ -516,13 +520,13 @@ module.exports = {
     lastPeriod: 'Previous period',
     batteryUse: 'Battery Situation',
     alarmTimes: 'Amounts of alarm',
-    charageSituation: 'Charging condition',
+    charageSituation: 'Charge',
     charageTimes: 'Amounts of charging',
-    discharageSituation: 'Discharge condition',
-    discharageTimes: 'Amounts of discharge',
+    discharageSituation: 'Discharge',
+    discharageTimes: 'Amounts of discharging',
     selectBattery: 'Please choose a battery.',
-    addOneBattery: 'You should join one battery',
-    addTwoBattery: 'You should join two batteries',
+    addOneBattery: 'You should put one battery.',
+    addTwoBattery: 'You should put two batteries.',
     changeBattery: 'Please change a battery.',
     alarm: 'Alarm'
   },
@@ -546,15 +550,14 @@ module.exports = {
   },
   threshold: {
     changeThreshold: 'Modify Threshold',
-    recovery: 'Restore universal',
+    recovery: 'Restore universal value',
     singleVoltage:
       'Upper threshold value of unit voltage while battery is in charging',
     singleDisVoltage:
       'Lower threshold value of unit voltage while battery is in discharging',
-    maxColtage:
-      'Upper threshold value of pack voltage while battery is in charging',
+    maxColtage: 'Upper threshold value of voltage while battery is in charging',
     minDVoltage:
-      'Lower threshold value of pack voltage while battery is in discharging',
+      'Lower threshold value of voltage while battery is in discharging',
     maxCCurrent:
       'Upper threshold coefficient of current while battery is in charging',
     maxDCurrent:
@@ -578,9 +581,9 @@ module.exports = {
       singleDisVoltage:
         'Please enter the lower threshold value of unit voltage while battery is in discharging.',
       maxColtage:
-        'Please enter the upper threshold value of pack voltage while batteryialarm n charging.',
+        'Please enter the upper threshold value of voltage while batteryialarm n charging.',
       minDVoltage:
-        'Please enter the lower threshold value of pack voltage while battery is in discharging',
+        'Please enter the lower threshold value of voltage while battery is in discharging.',
       maxCCurrent:
         'Please enter the upper threshold coefficient of current while battery is in charging.',
       maxDCurrent:
@@ -594,7 +597,7 @@ module.exports = {
       minDTemperat:
         'Please enter the lower threshold value of temperature while battery is in discharging.',
       maxFODays:
-        'Please enter the days of overrun time while battery is lack of electrolyte',
+        'Please enter the days of overrun time while battery is lack of electrolyte.',
       maxCCapacity:
         'Please enter the upper threshold coefficient of capacity while battery is in charging.',
       minCCapacity:

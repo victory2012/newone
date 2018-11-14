@@ -77,24 +77,24 @@ function switchCode(status) {
     case 30: {
       return Message.warning(`${t('responseCode.dataExists')}`);
     }
-    case 40: {
+    case 40:
       return Message.warning(`${t('responseCode.sendCode')}`);
-    }
-    case 41: {
+
+    case 41:
       return Message.warning(`${t('responseCode.smscodeErr')}`);
-    }
-    case 101001: {
+
+    case 101001:
       return Message.warning(`${t('responseCode.accountExists')}`);
-    }
-    case 101002: {
+
+    case 101002:
       return Message.warning(`${t('responseCode.phoneExists')}`);
-    }
-    case 101003: {
+
+    case 101003:
       return Message.warning(`${t('responseCode.emailExists')}`);
-    }
-    case 104001: {
+
+    case 104001:
       return Message.warning(`${t('responseCode.accountOrPwdErr')}`);
-    }
+
     case 104002: {
       return Message.warning(`${t('responseCode.userNotExist')}`);
     }

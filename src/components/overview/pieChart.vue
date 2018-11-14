@@ -155,7 +155,7 @@ export default {
       let voltageOptions = deepClone(this.pieOption);
       voltageOptions.tooltip.formatter = p => {
         let item = `${this.$t("overview.total")}：${data.total}<br />${this.$t(
-          "overview.valid"
+          "overview.effectiveRate"
         )}：${p.data.per || 0}<br />${p.data.value}%`;
         return item;
       };
