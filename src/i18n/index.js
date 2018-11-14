@@ -3,7 +3,7 @@ import VueI18n from 'vue-i18n';
 import enLocale from 'element-ui/lib/locale/lang/en';
 import zhLocale from 'element-ui/lib/locale/lang/zh-CN';
 import ElementLocale from 'element-ui/lib/locale';
-import zh from './lang/LangZhCHS';
+import zh from './lang/LangZh';
 import en from './lang/LangEn';
 
 Vue.use(VueI18n);
