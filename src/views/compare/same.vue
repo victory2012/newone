@@ -94,7 +94,7 @@
             @change="remoteMethod"
             :placeholder="$t('batteryList.searchContent')"
             suffix-icon="el-icon-search"
-            v-model="searchCont">
+            v-model.trim="searchCont">
           </el-input>
           <!-- <el-select v-model="searchCont" filterable clearable remote placeholder="请输入关键词" :remote-method="remoteMethod" :loading="loading">
               <el-option v-for="item in searchList" :key="item.id" :label="item.code" :value="item.id">

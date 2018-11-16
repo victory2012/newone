@@ -4,7 +4,7 @@
       <!-- 编辑 -->
       <el-button size="small"
         type="primary"
-        @click="userMsgBox=true"
+        @click="openEdit"
         class="editorContent">{{$t('user.edit')}}</el-button>
     </div>
     <div class="center">
@@ -79,20 +79,19 @@
     </div>
     <el-dialog width="600px"
       :title="$t('user.userInfo')"
-      @open="OpenBox"
-      @close="closeIt"
       :visible.sync="userMsgBox">
       <el-form :model="InfoForm"
-        ref="InfoForm"
-        label-width="200px">
+        label-width="150px"
+        :rules="userInfoRole"
+        ref="InfoForm">
         <el-form-item :label="$t('useMsg.phone')"
-          prop="phones"
-          :error="phonesError">
+          prop="phone">
           <el-input size="small"
-            v-model.number="InfoForm.phones"
+            v-model.number="InfoForm.phone"
             style="width:160px;"></el-input>
         </el-form-item>
         <el-form-item :label="$t('useMsg.nickName')"
+          :error="nameError"
           prop="userName">
           <el-input size="small"
             v-model="InfoForm.nickName"
@@ -100,20 +99,19 @@
         </el-form-item>
         <!-- 邮箱 -->
         <el-form-item :label="$t('useMsg.email')"
-          prop="emails"
-          :error="emailsError">
+          prop="email">
           <el-input size="small"
-            v-model="InfoForm.emails"
+            v-model="InfoForm.email"
             style="width:160px;"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer"
         class="dialog-footer">
         <el-button size="small"
+          @click="resetForm">{{$t('timeBtn.cancle')}}</el-button>
+        <el-button size="small"
           type="primary"
           @click="submitForm('InfoForm')">{{$t('timeBtn.sure')}}</el-button>
-        <el-button size="small"
-          @click="resetForm">{{$t('timeBtn.cancle')}}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -128,13 +126,30 @@ export default {
       userMsgBox: false,
       userArr: {},
       InfoForm: {},
-      emailsError: "",
-      phonesError: ""
+      nameError: "",
+      userInfoRole: {
+        phone: [
+          {
+            pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
+            message: t('useMsg.warn.phoneCheck'),
+            trigger: ["change", 'blur']
+          }
+        ],
+        userName: [],
+        email: [
+          {
+            type: 'email',
+            message: t('useMsg.warn.emailCheck'),
+            trigger: ["change", 'blur']
+          }
+        ]
+      }
     };
   },
   methods: {
-    closeIt () {
-      console.log("closeIt");
+    openEdit () {
+      this.userMsgBox = true;
+      this.InfoForm = this.userArr;
     },
     closeMsgBox (formName) {
       this.userMsgBox = false;
@@ -145,39 +160,34 @@ export default {
       this.userMsgBox = false;
       this.$refs.InfoForm.resetFields();
     },
-    OpenBox () {
-      console.log("open it", this.$refs.InfoForm);
-    },
     submitForm () {
-      const phone = /^[1][3,4,5,7,8][0-9]{9}$/;
-      const email = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
-      this.emailsError = "";
-      this.phonesError = "";
-      if (!phone.test(this.InfoForm.phones)) {
-        this.phonesError = t('useMsg.warn.phoneCheck'); // "手机号格式有误";
-        return;
-      }
-      if (!email.test(this.InfoForm.emails) && this.InfoForm.emails !== "") {
-        this.emailsError = t('useMsg.warn.emailCheck'); // "邮箱格式有误";
-        return;
-      }
-      let userObj = {};
-      userObj.phone = this.InfoForm.phones;
-      userObj.nickName = this.InfoForm.nickName;
-      userObj.email = this.InfoForm.emails;
-      if (JSON.stringify(userObj) !== "{}") {
-        this.$api.changeUserMsg(userObj).then(res => {
-          console.log(res);
-          if (res.data && res.data.code === 0) {
-            this.$message({
-              type: "success",
-              message: t('successTips.changeSuccess') // "修改成功"
+      // const nickName = /[\s""]/g;
+      // this.nameError = "";
+      // if (nickName.test(this.InfoForm.nickName)) {
+      //   this.nameError = t('useMsg.warn.phoneCheck'); // "手机号格式有误";
+      //   return;
+      // }
+      this.$refs.InfoForm.validate(valid => {
+        if (valid) {
+          let userObj = {};
+          userObj.phone = this.InfoForm.phone;
+          userObj.nickName = this.InfoForm.nickName;
+          userObj.email = this.InfoForm.email;
+          if (JSON.stringify(userObj) !== "{}") {
+            this.$api.changeUserMsg(userObj).then(res => {
+              console.log(res);
+              if (res.data && res.data.code === 0) {
+                this.$message({
+                  type: "success",
+                  message: t('successTips.changeSuccess') // "修改成功"
+                });
+                this.init();
+                this.closeMsgBox("InfoForm");
+              }
             });
-            this.init();
-            this.closeMsgBox("InfoForm");
           }
-        });
-      }
+        }
+      });
     },
     init () {
       this.$api.getUserMsg().then(res => {
@@ -186,9 +196,9 @@ export default {
           this.userArr = res.data.data;
           this.userArr.accountType = utils.accountType(this.userArr.type);
           this.userArr.email = res.data.data.email || "";
-          this.InfoForm.emails = this.userArr.email;
-          this.InfoForm.phones = this.userArr.phone;
-          this.InfoForm.nickName = this.userArr.nickName;
+          // this.InfoForm.emails = this.userArr.email;
+          // this.InfoForm.phones = this.userArr.phone;
+          // this.InfoForm.nickName = this.userArr.nickName;
         }
       });
     }

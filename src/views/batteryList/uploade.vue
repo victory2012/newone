@@ -18,7 +18,6 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-
     <div class="items"
       v-if="AdminRoles.AddBatteries"
       style="position: relative">
@@ -98,13 +97,6 @@ export default {
       }
     };
   },
-
-  components: {},
-
-  computed: {},
-
-  beforeMount () { },
-
   mounted () {
     this.getGroupSpecif(); // 获取电池规格列表
     this.getSinglBattery(); // 获取电池单体型号列表

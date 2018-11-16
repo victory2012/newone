@@ -133,6 +133,20 @@ const BatteryDefriend = {
   text: 'menu.defriend', // 恢复拉黑设备
   link: '/battery/defriend'
 };
+
+/* 系统管理 */
+const systemDefriend = {
+  text: 'menu.system', // 系统管理
+  icon: 'iconfont icon-system',
+  link: '',
+  children: [
+    {
+      text: 'menu.repairGps', // gps修正
+      link: '/gps/repair'
+    }
+  ]
+};
+listData2.push(systemDefriend);
 /* 生产企业 */
 export const getManifactor = () => {
   let personRole = {};

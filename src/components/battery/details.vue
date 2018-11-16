@@ -66,7 +66,7 @@
               v-show="Edit"
               style="width: 195px"
               value="number"
-              v-model="editObj.voltage"></el-input>
+              v-model.trim="editObj.voltage"></el-input>
             <p v-show="!Edit">{{BATTERYDETAILDATA.voltage}}</p>
           </td>
           <!-- 电池组额定容量 -->
@@ -76,7 +76,7 @@
               v-show="Edit"
               style="width: 195px"
               value="number"
-              v-model="editObj.capacity"></el-input>
+              v-model.trim="editObj.capacity"></el-input>
             <p v-show="!Edit">{{BATTERYDETAILDATA.capacity}}</p>
           </td>
         </tr>
@@ -106,6 +106,7 @@
           <td>
             <el-date-picker v-show="Edit"
               size="small"
+              :clearable='false'
               value-format="yyyy-MM-dd"
               style="width: 195px"
               :default-value="editObj.manufacturerDate"
@@ -120,6 +121,7 @@
           <td>
             <el-date-picker v-show="Edit"
               size="small"
+              :clearable='false'
               value-format="yyyy-MM-dd"
               style="width: 195px"
               :default-value="editObj.productionDate"
@@ -136,6 +138,7 @@
           <td>
             <el-date-picker v-show="Edit"
               size="small"
+              :clearable='false'
               value-format="yyyy-MM-dd"
               style="width: 195px"
               :default-value="editObj.qualityGuaranteeDate"
@@ -155,12 +158,13 @@
     <div slot="footer"
       class="dialog-footer">
       <el-button v-show="Edit"
+        size="small"
+        @click="cancelSaveDetails">{{$t('timeBtn.cancle')}}</el-button>
+      <el-button v-show="Edit"
         type="danger"
         size="small"
         @click="saveDetails">{{$t('timeBtn.save')}}</el-button>
-      <el-button v-show="Edit"
-        size="small"
-        @click="cancelSaveDetails">{{$t('timeBtn.cancle')}}</el-button>
+
       <el-button v-show="!Edit"
         size="small"
         @click="closeDetails">{{$t('timeBtn.confirm')}}</el-button>
@@ -209,18 +213,32 @@ export default {
     },
     /* 保存 */
     saveDetails () {
-      // console.log("电池组型号", this.editObj);
-      // console.log("电池组型号", this.getGroupModelOpts);
-      // console.log("电池规格", this.getBatGroupSpecifOpts);
-      // console.log("单体电压", this.getSingleBatteryOpts);
       if (!this.AdminRoles.AddBatteries) {
         return;
       }
       if (!this.editObj.voltage) {
+
+        this.$message.error(t('batteryList.warn.batteryVoltage'));
         return;
       }
       if (!this.editObj.capacity) {
+
+        this.$message.error(t('batteryList.warn.batteryCapacity'));
+
         return;
+      }
+
+      if (
+        new Date(this.editObj.manufacturerDate) > new Date(this.editObj.productionDate)) {
+
+        this.$message.error(t('batteryList.warn.CheckmanufactureDate'));
+
+        return
+      }
+      if (new Date(this.editObj.manufacturerDate) > new Date(this.editObj.qualityGuaranteeDate)) {
+        this.$message.error(t('batteryList.warn.CheckWarrantyDate'));
+
+        return
       }
       this.getSingleBatteryOpts.forEach(key => {
         if (key.id === this.editObj.singleModelId) {
@@ -296,7 +314,7 @@ export default {
       }
       &.titles {
         padding-right: 15px;
-        width: 110px;
+        width: 130px;
         background: #ffffff;
         text-align: right;
       }

@@ -42,7 +42,7 @@
           label-width="150px">
           <el-input style="width:200px;"
             size="small"
-            v-model="regform.name"
+            v-model.trim="regform.name"
             :placeholder="$t('device.deviceCode')"
             auto-complete="off"></el-input>
         </el-form-item>
@@ -273,7 +273,6 @@ export default {
       }
     },
     ENuploadDataCheck (resultObj) {
-      console.log('英文')
       let valuesObj = [];
       for (let i = 0; i < resultObj.length; i++) {
         let results = resultObj[i];
@@ -303,7 +302,6 @@ export default {
       this.fileUploadTo(valuesObj);
     },
     ZHuploadDataCheck (resultObj) {
-      console.log('中文')
       let valuesObj = [];
       for (let i = 0; i < resultObj.length; i++) {
         let results = resultObj[i];

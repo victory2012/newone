@@ -1,7 +1,7 @@
 <template>
   <div class="pieWarper">
     <div class="pieItme shadow">
-      <p>{{$t("overview.valid")}}</p>
+      <p>{{$t("overview.effectiveRate")}}</p>
       <div class="chat"
         id="pieChart1"></div>
     </div>

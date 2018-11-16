@@ -5,7 +5,7 @@
         <!-- 电池编号 -->
         <el-select size="small"
           v-model="batteryModelId"
-          :placeholder="$t('batteryList.batteryCode')"
+          :placeholder="$t('batteryList.battertModel')"
           @change="ChooseBatteryModel">
           <el-option v-for="item in group"
             :key="item.id"

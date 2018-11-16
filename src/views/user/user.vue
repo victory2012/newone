@@ -1,17 +1,17 @@
 <template>
   <div class="alarmTable">
-    <div class="addWarrp">
+    <adduser-info @hasCreated="reloadData"></adduser-info>
+    <!-- <div class="addWarrp">
       <div @click="adduser(index, key)"
         v-for="(key, index) in userData"
         class="addBox"
         :key="key.role">
-        <!-- <img :src="key.default" alt=""> -->
         <img src="../../../static/img/add-admin.png"
           alt=""
           srcset="">
         <p>{{key.text}}</p>
       </div>
-    </div>
+    </div> -->
     <el-table v-loading="loading"
       :data="tableData"
       style="width: 100%">
@@ -82,10 +82,10 @@
         :total="total">
       </el-pagination>
     </div>
-    <Manfictors @hasCreated="reloadData"
+    <!-- <Manfictors @hasCreated="reloadData"
       :type="addType"></Manfictors>
     <Custom @hasCreatedCustorm="reloadData"
-      :type="addType"></Custom>
+      :type="addType"></Custom> -->
     <!-- 权限 -->
     <div>
       <el-dialog :title="$t('useMsg.changeRole')"
@@ -123,15 +123,17 @@
 import utils from "@/utils/utils";
 import permissionFun from "@/utils/valated";
 import addData from "@/config/add-user-data";
-import Manfictors from "@/components/user/manfictor";
-import Custom from "@/components/user/custom";
+// import Manfictors from "@/components/user/manfictor";
+// import Custom from "@/components/user/custom";
 import defaultPermision from "@/utils/default-permision";
 import t from "@/utils/translate";
+import adduserInfo from "../../components/user/addUser"
 
 export default {
   components: {
-    Manfictors,
-    Custom
+    // Manfictors,
+    // Custom,
+    adduserInfo
   },
   data () {
     return {
@@ -188,41 +190,10 @@ export default {
     };
   },
   mounted () {
-    this.$store.state.manfictor = false;
-    this.$store.state.custom = false;
     this.storge = JSON.parse(utils.getStorage("loginData"));
-
     this.getUserList();
-    this.userLimit();
   },
   methods: {
-    userLimit () {
-      let loginData = sessionStorage.getItem("loginData");
-      if (!loginData) {
-        this.$router.push("/login");
-        return;
-      }
-      let getLayerName = JSON.parse(loginData);
-      // console.log(getLayerName);
-      let UserLimet;
-      if (
-        getLayerName.layerName === "平台" &&
-        (getLayerName.type === 1 || getLayerName.type === 3)
-      ) {
-        UserLimet = addData.getPlat();
-      }
-      if (getLayerName.layerName === "生产企业" && getLayerName.type === 2) {
-        UserLimet = addData.getProduct();
-      }
-      if (getLayerName.layerName === "采购企业" && getLayerName.type === 2) {
-        UserLimet = addData.getCreateUser();
-      }
-      this.userData = JSON.parse(JSON.stringify(UserLimet));
-      this.userData.forEach(key => {
-        key.text = t(`${key.text}`)
-      })
-      console.log(this.userData);
-    },
     /* 删除按钮 */
     secondary (item) {
       console.log(item);
@@ -253,6 +224,8 @@ export default {
               this.getUserList();
             }
           });
+        }).catch((err) => {
+          console.log(err)
         });
     },
     /* 刪除企业 */
@@ -277,6 +250,8 @@ export default {
               this.getUserList();
             }
           });
+        }).catch((err) => {
+          console.log(err)
         });
     },
     /* 修改权限 -- 按钮 */
@@ -368,20 +343,6 @@ export default {
     handleCurrentChange (val) {
       this.currentPage = val;
       this.getUserList();
-    },
-    adduser (index, key) {
-      console.log(key);
-      // sessionStorage.setItem("useItem", key.text);
-      // this.userData = addData();
-      this.$store.commit("SETAddUserText", key.text);
-      this.clicked = this.userData[index].role;
-      this.addType = this.userData[index].role;
-      // this.userData[index].default = this.userData[index].icon;
-      if (this.addType > 2) {
-        this.$store.commit("triggerCustom");
-      } else {
-        this.$store.commit("triggerManfictor");
-      }
     },
     reloadData (data) {
       this.getUserList();

@@ -76,7 +76,7 @@
             @change="remoteMethod"
             :placeholder="$t('batteryList.searchContent')"
             suffix-icon="el-icon-search"
-            v-model="searchCont">
+            v-model.trim="searchCont">
           </el-input>
         </div>
       </div>

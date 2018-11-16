@@ -9,7 +9,7 @@
           <!-- 设备编号 -->
           <el-input size="small"
             style="width:100%"
-            v-model="content"
+            v-model.trim="content"
             :placeholder="$t('device.deviceCode')"></el-input>
         </div>
         <div class="item"
@@ -286,11 +286,11 @@ export default {
                 ? key.subCompanyName
                 : "-";
               key.registerCode =
-                key.registerCode === null ? "未注册" : "已注册";
+                key.registerCode === null ? t('device.noregist') : t('device.registed');// "未注册" : "已注册";
               key.bindStatus = key.hostId === null;
               key.canlook = key.hostId === null;
               key.delete = !key.bindStatus;
-              key.bindState = key.hostId === null ? "未绑定" : "已绑定";
+              key.bindState = key.hostId === null ? t('batteryList.noBind') : t('batteryList.hasBind'); // "未绑定" : "已绑定";
               if (this.storge.type !== 1 && this.storge.layerName !== "平台") {
                 key.blackStatus = true;
                 key.delete = true;

@@ -211,47 +211,72 @@ export default {
       batteryForm: {},
       batteryFormRules: {
         batCustom: [
-          {            required: true,
-            message: t('batteryList.warn.customerCom'), // "请选择电池组客户企业",
+          {
+            required: true,
+            message: t('batteryList.warn.customerCom'), // "请选择电池组客户企",
             trigger: "blur"
           }
         ],
         groupNum: [
-          {            required: true,
+          {
+            required: true,
             message: t('batteryList.warn.batteryCode'), // "请选择电池组编号",
-            trigger: "blur"          }
+            trigger: "blur"
+          }
         ],
         batGroupModel: [
-          {            required: true,
+          {
+            required: true,
             message: t('batteryList.warn.model'), // "请选择电池组型号",
-            trigger: "blur"          }
+            trigger: "blur"
+          }
         ],
         batGroupSpecif: [
-          {            required: true,
+          {
+            required: true,
             message: t('batteryList.warn.specif'), // "请选择电池组规格",
-            trigger: "blur"          }
+            trigger: "blur"
+          }
         ],
-        batteryVoltage: [{ required: true, message: t('batteryList.warn.batteryVoltage') }],
-        batteryCapacity: [{ required: true, message: t('batteryList.warn.batteryCapacity') }],
+        batteryVoltage: [
+          {
+            required: true,
+            message: t('batteryList.warn.batteryVoltage')
+          }
+        ],
+        batteryCapacity: [
+          {
+            required: true,
+            message: t('batteryList.warn.batteryCapacity')
+          }
+        ],
         singleBattery: [
-          {            required: true,
+          {
+            required: true,
             message: t('batteryList.warn.singleBattery'),
-            trigger: "blur"          }
+            trigger: "blur"
+          }
         ],
         productDate: [
-          {            required: true,
+          {
+            required: true,
             message: t('batteryList.warn.createDate'), // "请选择电池组生产日期",
-            trigger: "blur"          }
+            trigger: "blur"
+          }
         ],
         factoryDate: [
-          {            required: true,
-            message: t('batteryList.warn.manufactureDate'), // "请选择电池组出厂日期",
-            trigger: "blur"          }
+          {
+            required: true,
+            message: t('batteryList.warn.manufactureDate'), // 电池组出厂日期",
+            trigger: "blur"
+          }
         ],
         qualityDate: [
-          {            required: true,
+          {
+            required: true,
             message: t('batteryList.warn.warrantyDate'), // "请选择电池组质保期",
-            trigger: "blur"          }
+            trigger: "blur"
+          }
         ]
       },
       GroupModelOpts: [],
@@ -358,23 +383,8 @@ export default {
       this.$refs.batteryForm.resetFields();
       this.batteryForm = {};
       this.$store.state.addBattery = false;
-    },
-
-    init () {
-      // this.batCustomOpts = JSON.parse(utils.getStorage("batCustomOpts"));
-      // this.GroupModelOpts = JSON.parse(utils.getStorage("Modeloptions"));
-      // this.deviceIdOpts = JSON.parse(utils.getStorage("deviceIdOpts"));
-      // this.singleBatteryOpts = JSON.parse(
-      //   utils.getStorage("singleBatteryOpts")
-      // );
-      // this.batGroupSpecifOpts = JSON.parse(
-      //   utils.getStorage("batGroupSpecifOpts")
-      // );
     }
   }
-  // created() {
-  //   this.init();
-  // }
 };
 </script>
 

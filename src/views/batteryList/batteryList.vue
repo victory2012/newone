@@ -7,7 +7,7 @@
       <div class="select">
         <div class="item">
           <el-input size="small"
-            v-model="batteryId"
+            v-model.trim="batteryId"
             :placeholder="$t('batteryList.searchContent')"></el-input>
         </div>
         <div class="item">

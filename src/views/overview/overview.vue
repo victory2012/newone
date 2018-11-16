@@ -80,7 +80,7 @@
                 <!-- 有效监控数 -->
                 <el-table-column prop="activeTotal"
                   align="center"
-                  :label="$t('overview.effectiveRate')">
+                  :label="$t('overview.effectiveField')">
                 </el-table-column>
                 <!-- 告警电池数 -->
                 <el-table-column prop="alarmedTotal"
@@ -199,21 +199,16 @@ export default {
       openMoreModel: false,
       modelBtnText: t('toggleTip.open'),
       tableData: [],
-
       canInterval: false,
-
       custormTable: [],
       provenceTable: [],
       modelTable: [],
-
       sortCustormTable: [],
       sortProvenceTable: [],
       sortModelTable: [],
-
       allCustormTable: [],
       allProvenceTable: [],
       allModelTable: [],
-
       pageSize: 5,
       stripNum: 3,
       Timer: ""

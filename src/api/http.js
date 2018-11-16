@@ -41,10 +41,10 @@ function checkStatus(response) {
     return response;
   } else {
     // 异常状态下，把错误信息返回去
-    Message.error(`${i18n.t('internetErr')}`);
+    Message.error(`${t('internetErr')}`);
     return {
       status: 500,
-      msg: `${i18n.t('internetErr')}`
+      msg: `${t('internetErr')}`
     };
   }
 }
@@ -52,7 +52,7 @@ function checkStatus(response) {
 function checkCode(res) {
   // 如果code异常(这里已经包括网络错误，服务器错误，后端抛出的错误)，可以弹出一个错误提示，告诉用户
   let status = res.data;
-  if (status.code !== 0) {
+  if (status && status.code && status.code !== 0) {
     switchCode(status);
     // Message.error(switchCode(status));
   }

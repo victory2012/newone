@@ -124,7 +124,9 @@ module.exports = {
     addReceive: '已添加接收人',
     OuterReceive: '外部告警接收人',
     Allocation: '电池调配',
-    alarmData: '告警数据'
+    alarmData: '告警数据',
+    system: '系统管理',
+    repairGps: 'gps修正'
   },
   overview: {
     total: '电池总数',
@@ -260,6 +262,7 @@ module.exports = {
     batteryDetail: '详情',
     batteryNumber: '电池编号',
     model: '电池型号',
+    battertModel: '电池型号',
     specif: '电池组规格',
     customer: '客户企业',
     enterprise: '生产企业',
@@ -285,7 +288,9 @@ module.exports = {
       content: '内容不能为空',
       batteryVoltage: '请输入电池组额定电压',
       batteryCapacity: '请输入电池组额定容量',
-      singleBattery: '请选择电池单体型号'
+      singleBattery: '请选择电池单体型号',
+      CheckmanufactureDate: '出厂日期应大于生产日期',
+      CheckWarrantyDate: '质保期应大于出厂日期'
     },
     batteries: '添加电池',
     batchImport: '批量导入',
