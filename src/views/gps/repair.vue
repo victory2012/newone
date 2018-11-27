@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-button @click="repairHandle"
-      type="primary">gsp修复</el-button>
+      type="primary">gps修复</el-button>
   </div>
 </template>
 

@@ -410,9 +410,6 @@ export default {
       this.$api.batteryModelList().then(res => {
         console.log("获取电池型号列表", res);
         if (res.data && res.data.code === 0) {
-          this.Modeloptions = res.data.data;
-          // console.log(utils);
-          utils.setStorage("Modeloptions", JSON.stringify(res.data.data));
           this.$store.commit(
             "SETGroupModelOpts",
             JSON.stringify(res.data.data)

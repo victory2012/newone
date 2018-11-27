@@ -6,7 +6,7 @@
       <div class="textAlain">
         <div class="compare-add addone"
           v-show="contrastDatas">
-          <p v-for="(tag, index) in stacks1"
+          <p v-for="(tag, index) in stacks2"
             :key="tag.hostId">{{$t('comparison.batteryCode')}}{{index+1}}: {{tag.code}}</p>
           <!-- <p>电池编号2: {{stacks1[1].code}}</p> -->
         </div>
@@ -214,7 +214,7 @@ export default {
       this.defaultGray = false;
     },
     cancelHandle () {
-      this.stacks1 = [];
+      // this.stacks1 = [];
       this.tableVisible = false;
     },
     sureBtnSearch () {
@@ -234,7 +234,10 @@ export default {
         this.$message.error(t('history.endTime'));
         return;
       }
-
+      if (new Date(this.start) > new Date(this.end)) {
+        this.$message.error(t('history.checkErr'));
+        return;
+      }
       // let nowStart = `${utils.sortTime(this.start)}000000`;
       // let nowEnd = `${utils.sortTime(this.end)}235959`;
       let nowStart = utils.toUTCTime(utils.startTime(this.start));
@@ -261,6 +264,7 @@ export default {
       if (this.timevalue === "all") {
         this.start = "2000-01-01";
       }
+      this.end = new Date();
     },
     getDataNow (startTime, endTime) {
       // console.log(this.stacks1);
@@ -395,6 +399,7 @@ export default {
       this.chooseText = t('comparison.changeBattery');
       this.contrastDatas = true;
       this.tableVisible = false;
+      this.stacks2 = JSON.parse(JSON.stringify(this.stacks1));
     },
     openTable () {
       this.stacks1 = [];
@@ -429,7 +434,7 @@ export default {
     },
     /* 获取电池列表 */
     getBatteryList () {
-      this.stacks1 = [];
+      // this.stacks1 = [];
       this.loading = true;
       let options = {
         pageSize: 8,

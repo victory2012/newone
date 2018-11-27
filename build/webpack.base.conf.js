@@ -1,11 +1,11 @@
-'use strict'
-const path = require('path')
-const utils = require('./utils')
-const config = require('../config')
-const vueLoaderConfig = require('./vue-loader.conf')
+'use strict';
+const path = require('path');
+const utils = require('./utils');
+const config = require('../config');
+const vueLoaderConfig = require('./vue-loader.conf');
 
 function resolve(dir) {
-  return path.join(__dirname, '..', dir)
+  return path.join(__dirname, '..', dir);
 }
 
 const createLintingRule = () => ({
@@ -17,7 +17,7 @@ const createLintingRule = () => ({
     formatter: require('eslint-friendly-formatter'),
     emitWarning: !config.dev.showEslintErrorsInOverlay
   }
-})
+});
 
 module.exports = {
   context: path.resolve(__dirname, '../'),
@@ -34,7 +34,7 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {
-      'vue$': 'vue/dist/vue.esm.js',
+      vue$: 'vue/dist/vue.esm.js',
       '@': resolve('src')
     }
   },
@@ -49,7 +49,11 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
+        include: [
+          resolve('src'),
+          resolve('test'),
+          resolve('node_modules/webpack-dev-server/client')
+        ]
       },
       {
         test: /\.scss$/,
@@ -94,14 +98,14 @@ module.exports = {
     child_process: 'empty'
   },
   externals: {
-    'AMap': 'window.AMap',
-    'AMapUI': 'window.AMapUI',
-    'echarts': 'echarts',
-    'axios': 'axios',
-    'vuex': 'Vuex',
+    AMap: 'window.AMap',
+    AMapUI: 'window.AMapUI',
+    echarts: 'echarts',
+    axios: 'axios',
+    vuex: 'Vuex',
     'vue-router': 'VueRouter',
-    'lodash': '_',
-    'xlsx': 'XLSX',
-    'Paho': 'window.Paho'
+    lodash: '_',
+    xlsx: 'XLSX',
+    Paho: 'window.Paho'
   }
-}
+};

@@ -354,6 +354,10 @@ export default {
       this.getListData();
     },
     search () {
+      if (new Date(this.alarm.endTime) < new Date(this.alarm.startTime)) {
+        this.$message.error(t('history.checkErr'));
+        return;
+      }
       this.currentPage = 1;
       this.getListData();
     },

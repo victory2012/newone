@@ -1,4 +1,5 @@
 module.exports = {
+  projectName: 'Battery monitoring and management platform',
   platform: 'Platform',
   manufacturer: 'Manufacturer',
   administrator: 'Administrator',
@@ -283,6 +284,7 @@ module.exports = {
     cancel: 'Cancel',
     sure: 'Close',
     warn: {
+      BeNumber: 'Must be numbers.',
       enterprise: 'Please enter manufacturer id.',
       customerCom: 'Please enter Customer id.',
       batteryCode: 'Please enter battery id.',
@@ -464,7 +466,8 @@ module.exports = {
     delTips: 'Are you sure you want to delete this device?',
     selectCampany: 'Please choose a company.',
     batteryGps: 'Battery Tracking',
-    batteryMonitor: 'Battery Monitoring'
+    batteryMonitor: 'Battery Monitoring',
+    handle: 'View'
   },
   addDevice: {
     title: 'Register Device',

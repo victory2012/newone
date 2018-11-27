@@ -192,9 +192,6 @@ export default {
               });
             }
           });
-        } else {
-          console.log("error submit!!");
-          return false;
         }
       });
     },
@@ -264,6 +261,7 @@ export default {
         this.$i18n.locale = "en";
         localStorage.setItem("locale", "en");
       }
+      document.title = t("projectName");
       this.smsMsg = t("loginMsg.getSmsCode");
       this.LoginRules = {
         account: [

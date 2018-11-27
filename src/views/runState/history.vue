@@ -18,7 +18,7 @@
         size="small"
         v-model="end"
         type="date"
-        placeholder="$t('history.endTime')"></el-date-picker>
+        :placeholder="$t('history.endTime')"></el-date-picker>
       <el-select class="queryTime"
         :class="{'timeSelect': defaultGray}"
         size="small"
@@ -239,6 +239,10 @@ export default {
     },
     /* 确认按钮 */
     getChartData () {
+      if (new Date(this.start) > new Date(this.end)) {
+        this.$message.error(t('history.checkErr'));
+        return
+      }
       let startTime = utils.toUTCTime(utils.startTime(this.start));
       let endTime = utils.toUTCTime(utils.endTime(this.end));
       this.getChartDatafun(startTime, endTime);
@@ -354,6 +358,7 @@ export default {
     },
     /* 快速选择日期 */
     changeTime () {
+      console.log(this.timevalue);
       if (this.timevalue === "week") {
         this.start = utils.getWeek();
       }
@@ -372,6 +377,7 @@ export default {
       if (this.timevalue === "all") {
         this.start = "2000-01-01";
       }
+      this.end = new Date();
     },
     /* 分页方法 */
     handleCurrentChange (val) {

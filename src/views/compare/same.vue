@@ -96,10 +96,6 @@
             suffix-icon="el-icon-search"
             v-model.trim="searchCont">
           </el-input>
-          <!-- <el-select v-model="searchCont" filterable clearable remote placeholder="请输入关键词" :remote-method="remoteMethod" :loading="loading">
-              <el-option v-for="item in searchList" :key="item.id" :label="item.code" :value="item.id">
-              </el-option>
-            </el-select> -->
         </div>
       </div>
       <el-table :data="gridData"
@@ -266,7 +262,10 @@ export default {
         this.$message.error(t('history.endTime'));
         return;
       }
-
+      if (new Date(this.start) > new Date(this.end)) {
+        this.$message.error(t('history.checkErr'));
+        return;
+      }
       if (!this.contrastWay) {
         this.$message.error(t('comparison.comparWay')); // 请选择对比方式
         return;
@@ -307,6 +306,7 @@ export default {
       if (this.timevalue === "all") {
         this.start = "2000-01-01";
       }
+      this.end = new Date();
     },
     getDataNow (startTime, endTime) {
       let hostId = this.chooseObj.hostId;
@@ -435,12 +435,8 @@ export default {
       this.chooseText = t('comparison.changeBattery'); // 更换电池单元
       this.tableVisible = false;
       this.contrastData = true;
-      // if (this.actived === "same") {
-      //   this.contrastData = true;
-      // }
-      // if (this.actived === "diff") {
-      //   this.contrastDatas = true;
-      // }
+      this.chooseObj = this.stacks1[0];
+      // this.stacks2 = JSON.parse(JSON.stringify(this.stacks1));
     },
     handleCurrentChange (val) {
       this.currentPage = val;
@@ -463,7 +459,6 @@ export default {
       if (data.checked) {
         // this.chooseObj.push();
         this.stacks1.push(data);
-        this.chooseObj = data;
         this.chooseLen = 1;
       }
     },

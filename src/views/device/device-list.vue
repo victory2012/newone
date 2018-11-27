@@ -2,7 +2,7 @@
   <div class="device">
     <div class="topTab">
       <div class="icons">
-        <reg-btn></reg-btn>
+        <reg-btn @createDevice="reloadDeviceList"></reg-btn>
       </div>
       <div class="select">
         <div class="item">
@@ -76,7 +76,7 @@
         </el-table-column>
         <!-- 监测设备 -->
         <el-table-column align="center"
-          :label="$t('device.deviceCode')">
+          :label="$t('device.handle')">
           <template slot-scope="scope">
             <el-button @click.native.prevent="MonitorDevice(scope.row)"
               type="text"
@@ -178,6 +178,9 @@ export default {
     /* 改变每页显示的数量 */
     handleSizeChange (val) {
       this.pageSize = val;
+      this.getDeviceList();
+    },
+    reloadDeviceList () {
       this.getDeviceList();
     },
     /* 改变当前页 */

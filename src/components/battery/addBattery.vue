@@ -87,8 +87,9 @@
           <el-form-item :label="$t('batteryList.batteryVoltage')"
             prop="batteryVoltage">
             <el-input size="small"
-              v-model.number="batteryForm.batteryVoltage"
+              v-model="batteryForm.batteryVoltage"
               style="width:210px;"
+              @keyup.native="proving"
               :placeholder="$t('batteryList.batteryVoltage')"></el-input>
           </el-form-item>
         </el-col>
@@ -99,8 +100,9 @@
           <el-form-item :label="$t('batteryList.batteryCapacity')"
             prop="batteryCapacity">
             <el-input size="small"
-              v-model.number="batteryForm.batteryCapacity"
+              v-model="batteryForm.batteryCapacity"
               style="width:210px;"
+              @keyup.native="proving1"
               :placeholder="$t('batteryList.batteryCapacity')"></el-input>
           </el-form-item>
         </el-col>
@@ -138,6 +140,7 @@
         <el-col :span="12">
           <!-- 电池组出厂日期 -->
           <el-form-item :label="$t('batteryList.manufactureDate')"
+            :error="manufactureDateError"
             prop="factoryDate">
             <el-date-picker size="small"
               style="width: 210px"
@@ -153,6 +156,7 @@
         <el-col :span="12">
           <!-- 电池组质保期 -->
           <el-form-item :label="$t('batteryList.warrantyDate')"
+            :error="warrantyDateError"
             prop="qualityDate">
             <el-date-picker size="small"
               style="width: 210px"
@@ -206,6 +210,8 @@ import t from "@/utils/translate";
 export default {
   data () {
     return {
+      manufactureDateError: '',
+      warrantyDateError: '',
       account:
         JSON.parse(sessionStorage.getItem("loginData")).companyName || "",
       batteryForm: {},
@@ -314,10 +320,26 @@ export default {
       this.$refs.batteryForm.resetFields();
       this.batteryForm = {};
     },
+    getTime (date) {
+      return new Date(date).getTime();
+    },
+    proving () {
+      this.batteryForm.batteryVoltage = this.batteryForm.batteryVoltage.replace(/[^\.\d]/g, '');
+    },
+    proving1 () {
+      this.batteryForm.batteryCapacity = this.batteryForm.batteryCapacity.replace(/[^\.\d]/g, '');
+    },
     submitBatteryAdd () {
       this.$refs.batteryForm.validate(valid => {
         if (valid) {
-          console.log("submit!", this.batteryForm);
+          if (this.getTime(this.batteryForm.factoryDate) < this.getTime(this.batteryForm.productDate)) {
+            this.manufactureDateError = this.$t('batteryList.warn.CheckmanufactureDate')
+            return
+          }
+          if (this.getTime(this.batteryForm.qualityDate) < this.getTime(this.batteryForm.factoryDate)) {
+            this.warrantyDateError = this.$t('batteryList.warn.CheckWarrantyDate')
+            return
+          }
           this.getGroupModelOpts.forEach(key => {
             if (key.id === this.batteryForm.batGroupModel) {
               this.batteryForm.model = key.dicKey;
@@ -346,8 +368,8 @@ export default {
             norm: this.batteryForm.norm,
             companyId: this.batteryForm.batCustom,
             companyName: this.batteryForm.company,
-            voltage: this.batteryForm.batteryVoltage,
-            capacity: this.batteryForm.batteryCapacity,
+            voltage: Number(this.batteryForm.batteryVoltage),
+            capacity: Number(this.batteryForm.batteryCapacity),
             singleModelId: this.batteryForm.singleBattery,
             singleModel: this.batteryForm.singleMode,
             productionDate: this.batteryForm.productDate,

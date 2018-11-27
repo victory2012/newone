@@ -169,7 +169,7 @@ export default {
               category = key.name;
             }
           });
-          this.companyArr.forEach(key => {
+          this.COMPANYARRAY.forEach(key => {
             if (key.id === this.regform.company) {
               companyName = key.name;
             }
@@ -189,7 +189,7 @@ export default {
                 type: "success",
                 message: t('successTips.regDevice') // "设备注册成功"
               });
-              this.getDeviceList();
+              this.$emit('createDevice', true)
               this.regDevice = false;
             }
           });
@@ -353,7 +353,7 @@ export default {
         this.fullscreenLoading = false;
         if (res.data && res.data.code === 0) {
           this.$message.success(t('successTips.batchSuccess'));
-          this.getDeviceList();
+          this.$emit('createDevice', true)
         } else {
           if (this.eventUpload) {
             this.eventUpload.value = "";

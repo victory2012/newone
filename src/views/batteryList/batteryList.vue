@@ -25,6 +25,7 @@
           class="item">
           <el-select size="small"
             v-model="manufacter"
+            clearable
             :placeholder="$t('batteryList.enterprise')">
             <el-option v-for="item in companyArr"
               :key="item.id"
@@ -37,6 +38,7 @@
           class="item">
           <el-select size="small"
             v-model="batCustom"
+            clearable
             :placeholder="$t('batteryList.customer')">
             <el-option v-for="item in batCustomOpts"
               :key="item.id"
@@ -521,6 +523,7 @@ export default {
       this.batteryId = "";
       this.batteryModel = "";
       this.bindStatus = "";
+      this.manufacter = "";
       this.getBatteryList();
     },
     /* 获取电池列表 */
@@ -581,9 +584,10 @@ export default {
       this.$api.purchaseNames().then(res => {
         console.log("获取电池组客户企业表", res);
         if (res.data && res.data.code === 0) {
-          this.batCustomOpts = res.data.data;
+          // this.batCustomOpts = [{ id: '1122', name: '全部' }, ...res.data.data];
+          this.batCustomOpts = [...res.data.data];
           this.$store.commit("SETCustomOpts", JSON.stringify(res.data.data));
-          utils.setStorage("batCustomOpts", JSON.stringify(res.data.data));
+          // utils.setStorage("batCustomOpts", JSON.stringify(res.data.data));
         }
       });
     },
@@ -601,6 +605,19 @@ export default {
             );
           }
         });
+    },
+    /* 获取电池型号列表 */
+    getBatteryModelList () {
+      this.$api.batteryModelList().then(res => {
+        console.log("获取电池型号列表", res);
+        if (res.data && res.data.code === 0) {
+          this.Modeloptions = res.data.data;
+          this.$store.commit(
+            "SETGroupModelOpts",
+            JSON.stringify(res.data.data)
+          );
+        }
+      });
     },
     /* 用户权限 */
     userRole () {
@@ -636,7 +653,7 @@ export default {
     },
     init () {
       this.getCompanyId(); // 获取客户企业表
-
+      this.getBatteryModelList(); // 获取电池型号列表
       this.getDeviceList(); // 获取设备列表
     },
     getCompany () {

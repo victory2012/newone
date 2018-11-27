@@ -10,23 +10,20 @@ import '../static/icon/iconfont.css';
 import './assets/css/iconfont.css';
 import App from './App';
 import router from './router';
-import createStore from "./store/store";
+import createStore from './store/store';
 import api from '@/api/index';
-import i18n from "@/i18n";
-import utils from "./utils/utils";
+import i18n from '@/i18n';
+import utils from './utils/utils';
 import ElementUI from './UI/element';
-import {
-  Message,
-  MessageBox
-} from "element-ui";
-import createScript from "./config/addScripts";
+import { Message, MessageBox } from 'element-ui';
+import createScript from './config/addScripts';
 
-promise.polyfill()
+promise.polyfill();
 createScript(); // 引入phao。mqtt.js
-const isDebug_mode = process.env.NODE_ENV !== 'production'
-Vue.config.debug = isDebug_mode
-Vue.config.devtools = isDebug_mode
-Vue.config.productionTip = isDebug_mode
+const isDebug_mode = process.env.NODE_ENV !== 'production';
+Vue.config.debug = isDebug_mode;
+Vue.config.devtools = isDebug_mode;
+Vue.config.productionTip = isDebug_mode;
 
 /**
  * 导出数据报表xlsx文件
@@ -43,11 +40,11 @@ const outputXlsxFile = (data, xlsxName) => {
   XLSX.utils.book_append_sheet(wb, ws, xlsxName);
   XLSX.writeFile(wb, `${xlsxName}.xlsx`);
 };
-ElementUI();
 Vue.prototype.$outputXlsxFile = outputXlsxFile;
 Vue.prototype.$api = api;
 Vue.prototype.$message = Message;
 Vue.prototype.$messageBox = MessageBox;
+ElementUI();
 
 Vue.use(Vuex);
 
@@ -63,9 +60,9 @@ new Vue({
   },
   template: '<App/>',
   created() {
-    let loginData = utils.getStorage('loginData') || "";
-    let token = utils.getStorage('token') || "";
-    let userRoles = utils.getStorage('userRoles') || "";
+    let loginData = utils.getStorage('loginData') || '';
+    let token = utils.getStorage('token') || '';
+    let userRoles = utils.getStorage('userRoles') || '';
     this.$store.commit('setUserRole', userRoles);
     this.$store.commit('setStorage', loginData);
     this.$store.commit('setTokenStorage', token);

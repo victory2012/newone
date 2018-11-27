@@ -1,4 +1,5 @@
 module.exports = {
+  projectName: '摩融电池监测管理平台',
   platform: '平台管理员',
   manufacturer: '生产商',
   administrator: '管理员',
@@ -276,6 +277,7 @@ module.exports = {
     cancel: '取消',
     sure: '确认',
     warn: {
+      BeNumber: '必须为数字',
       enterprise: '请填写生产商',
       customerCom: '请选择客户企业',
       batteryCode: '请输入电池编号',
@@ -453,7 +455,8 @@ module.exports = {
     delTips: '确定删除此设备吗？',
     selectCampany: '请选择企业',
     batteryGps: '电池追踪',
-    batteryMonitor: '电池监测'
+    batteryMonitor: '电池监测',
+    handle: '查看'
   },
   addDevice: {
     title: '添加设备',
