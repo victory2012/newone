@@ -4,7 +4,6 @@ export default {
   },
   setStorage(state, data) {
     state.loginData = data;
-    sessionStorage.setItem('loginData', data);
   },
   removeStorage(state) {
     state.loginData = null;
@@ -82,5 +81,9 @@ export default {
   /* 获取公司列表 */
   SETCOMPANY(state, data) {
     state.companyArr = data;
+  },
+  /* 获取公司列表 */
+  SETuserData(state, data) {
+    state.userData = data;
   }
 };

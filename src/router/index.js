@@ -47,7 +47,7 @@ const overviewComponent = () =>
 const StockComponent = () =>
   import(/* webpackChunkName: "StockComponent" */ '../views/Stock/stock.vue');
 const RepairComponent = () =>
-  import(/* webpackChunkName: "StockComponent" */ '../views/gps/repair.vue');
+  import(/* webpackChunkName: "RepairComponent" */ '../views/gps/repair.vue');
 
 /* eslint-disable */
 export default new Router({

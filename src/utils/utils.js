@@ -244,6 +244,7 @@ export default {
   },
   checkDate: data => {
     let res = data.toString();
+    console.log('upload date', res);
     if (
       res.indexOf('年') > 0 ||
       res.indexOf('月') > 0 ||

@@ -22,6 +22,7 @@
             <el-form-item :label="$t('useMsg.name')"
               prop="account">
               <el-input v-model.trim="adminForm.account"
+                @keyup.native="adminForm.account=adminForm.account.replace(/\s+/g,'')"
                 auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
@@ -31,6 +32,7 @@
               prop="password">
               <el-input v-model.trim="adminForm.password"
                 type="password"
+                @keyup.native="adminForm.password=adminForm.password.replace(/\s+/g,'')"
                 auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
@@ -74,8 +76,8 @@
           <el-col :span="12">
             <el-form-item :label="$t('useMsg.name')"
               prop="account">
-              <el-input size="small"
-                v-model.trim="CompanyForm.account"
+              <el-input v-model.trim="CompanyForm.account"
+                @keyup.native="CompanyForm.account=CompanyForm.account.replace(/\s+/g,'')"
                 auto-complete="off"></el-input>
             </el-form-item>
           </el-col>
@@ -84,6 +86,7 @@
               prop="password">
               <el-input size="small"
                 v-model.trim="CompanyForm.password"
+                @keyup.native="CompanyFormChange"
                 type="password"
                 auto-complete="off"></el-input>
             </el-form-item>
@@ -228,7 +231,7 @@ export default {
             password: this.adminForm.password,
             phone: this.adminForm.phone,
             email: this.adminForm.email,
-            isCreator: 0
+            isCreator: 0,
           };
           this.addcustorm = true;
           this.$api.createUser(params).then(res => {
@@ -260,7 +263,8 @@ export default {
             phone: this.CompanyForm.phone,
             email: this.CompanyForm.email,
             companyName: this.CompanyForm.companyName,
-            isCreator: 1
+            isCreator: 1,
+            permissions: '{}'
           };
           this.addadmin = true;
           if (this.addType === "1") {

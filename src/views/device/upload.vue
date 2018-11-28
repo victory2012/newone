@@ -100,7 +100,7 @@ let rABS = false; // 是否将文件读取为二进制字符串
 export default {
   data () {
     return {
-      manufacturerName: true,
+      manufacturerName: false,
       regDevice: false,
       storge: '',
       createDevice: false,
@@ -124,10 +124,7 @@ export default {
   },
   mounted () {
     this.storge = JSON.parse(utils.getStorage("loginData"));
-    if (
-      this.storge.type === 1 ||
-      (this.storge.type === 3 && this.storge.layerName === "平台")
-    ) {
+    if (this.storge.type === 1) {
       this.manufacturerName = true;
       this.getCompany();
     }

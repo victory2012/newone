@@ -322,7 +322,7 @@ export default {
         if (res.data && res.data.code === 0) {
           this.$message.success(t("successTips.batchSuccess"));
           this.eventUpload.value = "";
-          this.getBatteryList();
+          this.$emit("hasCreated", { value: true });
         } else {
           if (this.eventUpload) {
             this.eventUpload.value = "";

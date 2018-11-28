@@ -2,6 +2,7 @@
   <el-dialog width="600px"
     :title="$t('batteryList.batteryAddBtn')"
     @close="closeTt"
+    top="50px"
     :visible.sync="addBattery">
     <!-- 电池登记 -->
     <el-form :model="batteryForm"

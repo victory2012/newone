@@ -2,7 +2,7 @@
   <div class="batteryList">
     <div class="topTab">
       <div class="icons">
-        <up-loade></up-loade>
+        <up-loade @hasCreated="reloadBattery"></up-loade>
       </div>
       <div class="select">
         <div class="item">

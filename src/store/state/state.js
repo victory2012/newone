@@ -1,6 +1,8 @@
+const userData = sessionStorage.getItem('loginData');
 export default {
   loginData: null, // 用户登录信息
   token: null, // 用户的token
+  userData: userData ? JSON.parse(userData) : {},
   mapData: '',
   manfictor: false,
   custom: false,

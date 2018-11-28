@@ -285,6 +285,8 @@ module.exports = {
     sure: 'Close',
     warn: {
       BeNumber: 'Must be numbers.',
+      voltageNumber: 'Voltage must be digital',
+      capacityNumber: 'Rated capacity must be digital',
       enterprise: 'Please enter manufacturer id.',
       customerCom: 'Please enter Customer id.',
       batteryCode: 'Please enter battery id.',

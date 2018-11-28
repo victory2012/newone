@@ -71,8 +71,13 @@ export default {
   GETCARDDATA(state) {
     return state.cardData;
   },
-
+  /* 生产企业列表 */
   COMPANYARRAY(state) {
     return state.companyArr;
+  },
+  /* 生产企业列表 */
+  getUserData(state) {
+    console.log('state', state);
+    return state.userData;
   }
 };

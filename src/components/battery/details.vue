@@ -65,7 +65,6 @@
             <el-input size="mini"
               v-show="Edit"
               style="width: 195px"
-              value="number"
               v-model.trim="editObj.voltage"></el-input>
             <p v-show="!Edit">{{BATTERYDETAILDATA.voltage}}</p>
           </td>
@@ -198,7 +197,8 @@ export default {
     return {
       editObj: {},
       Edit: false,
-      AdminRoles: permissionFun()
+      AdminRoles: permissionFun(),
+      numberReg: /^[0-9]+.?[0-9]*$/,
     };
   },
   methods: {
@@ -216,18 +216,23 @@ export default {
       if (!this.AdminRoles.AddBatteries) {
         return;
       }
+      console.log(this.editObj);
       if (!this.editObj.voltage) {
-
         this.$message.error(t('batteryList.warn.batteryVoltage'));
         return;
       }
-      if (!this.editObj.capacity) {
-
-        this.$message.error(t('batteryList.warn.batteryCapacity'));
-
+      if (!this.numberReg.test(Number(this.editObj.voltage))) {
+        this.$message.error(t('batteryList.warn.voltageNumber'));
         return;
       }
-
+      if (!this.editObj.capacity) {
+        this.$message.error(t('batteryList.warn.batteryCapacity'));
+        return;
+      }
+      if (!this.numberReg.test(Number(this.editObj.capacity))) {
+        this.$message.error(t('batteryList.warn.capacityNumber'));
+        return;
+      }
       if (
         new Date(this.editObj.manufacturerDate) > new Date(this.editObj.productionDate)) {
 

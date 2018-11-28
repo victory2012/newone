@@ -48,6 +48,19 @@ ElementUI();
 
 Vue.use(Vuex);
 
+router.beforeEach((to, from, next) => {
+  const loginData = sessionStorage.getItem('loginData');
+  if (to.fullPath !== '/login') {
+    if (!loginData) {
+      next('/login');
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
+
 const store = createStore();
 /* eslint-disable no-new */
 new Vue({

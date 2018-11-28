@@ -40,8 +40,8 @@
               <i class="iconfont icon-logout"></i>{{$t('userInfo.logOut')}}</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <p>{{getUserLoginData.nickName}}</p>
-        <p>{{getUserLoginData.companyName}}</p>
+        <p>{{loginData.nickName}}</p>
+        <p>{{loginData.companyName}}</p>
       </div>
       <el-menu class="sidebar-el-menu"
         :default-active="$route.path"
@@ -73,30 +73,28 @@ import permissionFun from "@/utils/valated";
 export default {
   data () {
     return {
-      // CopyMenuData: '',
+      // loginData: '',
       menuData: '',
       AdminRoles: {},
       isCollapse: false,
       menus: {},
       roles: "",
-      getUserLoginData: "",
       localLanguge: localStorage.getItem('locale') === 'zh' ? '中文' : 'English'
     };
   },
   components: {
     MenuTree: MenuTree
   },
+  computed: {
+    ...mapGetters({
+      loginData: 'getUserData'
+    })
+  },
   mounted () {
-    let loginData = sessionStorage.getItem("loginData");
-    if (loginData) {
-      this.AdminRoles = permissionFun();
-
-      let getUserType = JSON.parse(loginData);
-      this.getUserLoginData = getUserType;
-      this.switchMenu(getUserType);
-    } else {
-      this.$router.push("/login");
-    }
+    // let loginData = sessionStorage.getItem("loginData");
+    // this.loginData = loginData ? JSON.parse(loginData) : {}
+    this.AdminRoles = permissionFun();
+    this.switchMenu(this.loginData);
   },
   methods: {
     handleCommand (command) {

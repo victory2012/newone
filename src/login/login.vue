@@ -180,7 +180,8 @@ export default {
             this.doLogin = false;
             if (res.data && res.data.code === 0) {
               this.$store.commit("setTokenStorage", res.headers.token);
-              this.$store.commit("setStorage", JSON.stringify(res.data.data));
+              sessionStorage.setItem('loginData', JSON.stringify(res.data.data));
+              this.$store.commit("SETuserData", res.data.data);
               this.$api.permissions(res.data.data.id).then(opts => {
                 if (opts.data && opts.data.code === 0) {
                   this.$store.commit(

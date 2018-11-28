@@ -118,6 +118,7 @@
 </template>
 <script>
 import utils from "@/utils/utils";
+import { deepClone } from '@/utils/functions';
 import t from "@/utils/translate";
 
 export default {
@@ -149,7 +150,7 @@ export default {
   methods: {
     openEdit () {
       this.userMsgBox = true;
-      this.InfoForm = this.userArr;
+      this.InfoForm = deepClone(this.userArr);
     },
     closeMsgBox (formName) {
       this.userMsgBox = false;
@@ -170,9 +171,15 @@ export default {
       this.$refs.InfoForm.validate(valid => {
         if (valid) {
           let userObj = {};
-          userObj.phone = this.InfoForm.phone;
+          console.log('this.InfoForm', this.InfoForm);
+          if (this.InfoForm.phone !== this.userArr.phone) {
+            userObj.phone = this.InfoForm.phone;
+          }
+          if (this.InfoForm.email !== this.userArr.email) {
+            userObj.email = this.InfoForm.email;
+          }
           userObj.nickName = this.InfoForm.nickName;
-          userObj.email = this.InfoForm.email;
+          // userObj.email = this.InfoForm.email;
           if (JSON.stringify(userObj) !== "{}") {
             this.$api.changeUserMsg(userObj).then(res => {
               console.log(res);
@@ -194,11 +201,10 @@ export default {
         console.log(res);
         if (res.data && res.data.code === 0) {
           this.userArr = res.data.data;
+          this.$store.commit('SETuserData', res.data.data);
+          utils.setStorage('loginData', JSON.stringify(res.data.data));
           this.userArr.accountType = utils.accountType(this.userArr.type);
           this.userArr.email = res.data.data.email || "";
-          // this.InfoForm.emails = this.userArr.email;
-          // this.InfoForm.phones = this.userArr.phone;
-          // this.InfoForm.nickName = this.userArr.nickName;
         }
       });
     }
