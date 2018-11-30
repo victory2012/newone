@@ -55,11 +55,11 @@
       <div slot="footer"
         class="dialog-footer">
         <el-button size="small"
-          @click="resetModelAdd">{{$t('batteryList.cancel')}}</el-button>
+          @click="resetModelAdd">{{$t('timeBtn.cancle')}}</el-button>
         <el-button :loading="addallTypes"
           size="small"
           @click="submitModelAdd"
-          type="primary">{{$t('batteryList.sure')}}</el-button>
+          type="primary">{{$t('timeBtn.sure')}}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -115,7 +115,7 @@ export default {
         return;
       }
       const IMPORTFILE_MAXSIZE = 1 * 1024; // 这里可以自定义控制导入文件大小
-      let suffix;
+      let suffix = '';
       if (obj.files[0].name) {
         suffix = obj.files[0].name.split(".")[1];
       }
@@ -141,48 +141,80 @@ export default {
       }
       let f = obj.files[0];
       let reader = new FileReader();
-      reader.onload = e => {
-        let data = e.target.result;
-        if (rABS) {
-          wb = XLSX.read(btoa(this.fixdata(data)), {
-            // 手动转化
-            type: "base64"
-          });
-        } else {
-          wb = XLSX.read(data, {
-            type: "binary"
-          });
-        }
-        // wb.SheetNames[0]是获取Sheets中第一个Sheet的名字
-        // wb.Sheets[Sheet名]获取第一个Sheet的数据
-        // document.getElementById("demo").innerHTML = JSON.stringify(
-        //   XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
-        // );
-
-        let resultObj = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-        console.log("resultObj ====>>>", resultObj);
-        if (resultObj.length < 1) {
-          this.$message.error(t("batch.nodata"));
-          this.eventUpload.value = "";
-          this.fullscreenLoading = false;
-        } else {
-          // 判断模板是中文还是英文
-          let ZhTemp = resultObj[0].Battery_Id ? false : true;
-          if (ZhTemp) {
-            this.ZHuploadDataCheck(resultObj);
-          } else {
-            this.ENuploadDataCheck(resultObj);
+      let self = this;
+      FileReader.prototype.readAsBinaryString = function (f) {
+        let binary = "";
+        let rABS = false; //是否将文件读取为二进制字符串
+        let wb; //读取完成的数据
+        let reader = new FileReader();
+        reader.onload = function (e) {
+          let bytes = new Uint8Array(reader.result);
+          let length = bytes.byteLength;
+          for (let i = 0; i < length; i++) {
+            binary += String.fromCharCode(bytes[i]);
           }
-
+          // let XLSX = require('xlsx');
+          if (rABS) {
+            wb = XLSX.read(btoa(this.fixdata(binary)), { //手动转化
+              type: 'base64'
+            });
+          } else {
+            wb = XLSX.read(binary, {
+              type: 'binary'
+            });
+          }
+          let resultObj = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);//outdata就是你想要的东西
+          if (resultObj.length < 1) {
+            self.$message.error(t("batch.nodata"));
+            self.eventUpload.value = "";
+            self.fullscreenLoading = false;
+          } else {
+            // 判断模板是中文还是英文
+            let ZhTemp = resultObj[0].Battery_Id ? false : true;
+            if (ZhTemp) {
+              self.ZHuploadDataCheck(resultObj, self);
+            } else {
+              self.ENuploadDataCheck(resultObj, self);
+            }
+          }
         }
-      };
+        reader.readAsArrayBuffer(f);
+      }
+      // reader.onload = e => {
+      //   let data = e.target.result;
+      //   if (rABS) {
+      //     wb = XLSX.read(btoa(this.fixdata(data)), {
+      //       // 手动转化
+      //       type: "base64"
+      //     });
+      //   } else {
+      //     wb = XLSX.read(data, {
+      //       type: "binary"
+      //     });
+      //   }
+      //   let resultObj = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+      //   if (resultObj.length < 1) {
+      //     this.$message.error(t("batch.nodata"));
+      //     this.eventUpload.value = "";
+      //     this.fullscreenLoading = false;
+      //   } else {
+      //     // 判断模板是中文还是英文
+      //     let ZhTemp = resultObj[0].Battery_Id ? false : true;
+      //     if (ZhTemp) {
+      //       this.ZHuploadDataCheck(resultObj);
+      //     } else {
+      //       this.ENuploadDataCheck(resultObj);
+      //     }
+
+      //   }
+      // };
       if (rABS) {
         reader.readAsArrayBuffer(f);
       } else {
         reader.readAsBinaryString(f);
       }
     },
-    ENuploadDataCheck (resultObj) {
+    ENuploadDataCheck (resultObj, self) {
       console.log('英文');
       let valuesObj = [];
       for (let i = 0; i < resultObj.length; i++) {
@@ -199,18 +231,18 @@ export default {
           !results.Manufacture_Date ||
           !results.Warranty
         ) {
-          this.$message.error(t("batch.complete"));
-          this.eventUpload.value = "";
-          this.fullscreenLoading = false;
+          self.$message.error(t("batch.complete"));
+          self.eventUpload.value = "";
+          self.fullscreenLoading = false;
           return;
         }
         if (
           resultObj[i + 1] &&
           results.Battery_Id === resultObj[i + 1].Battery_Id
         ) {
-          this.$message.error(t("batch.betteryCodeRepeat"));
-          this.eventUpload.value = "";
-          this.fullscreenLoading = false;
+          self.$message.error(t("batch.betteryCodeRepeat"));
+          self.eventUpload.value = "";
+          self.fullscreenLoading = false;
           return;
         }
         if (
@@ -218,9 +250,9 @@ export default {
           !utils.checkDate(results.Manufacture_Date) ||
           !utils.checkDate(results.Warranty)
         ) {
-          this.$message.warning(t("batch.timeFormatErr"));
-          this.eventUpload.value = "";
-          this.fullscreenLoading = false;
+          self.$message.warning(t("batch.timeFormatErr"));
+          self.eventUpload.value = "";
+          self.fullscreenLoading = false;
           return;
         }
         let ItemObj = {
@@ -238,9 +270,9 @@ export default {
         };
         valuesObj.push(ItemObj);
       }
-      this.fileUploadTo(valuesObj);
+      self.fileUploadTo(valuesObj, self);
     },
-    ZHuploadDataCheck (resultObj) {
+    ZHuploadDataCheck (resultObj, self) {
       console.log('中文');
       let valuesObj = [];
       for (let i = 0; i < resultObj.length; i++) {
@@ -257,18 +289,18 @@ export default {
           !results["出产日期"] ||
           !results["质保期"]
         ) {
-          this.$message.error(t("batch.complete"));
-          this.eventUpload.value = "";
-          this.fullscreenLoading = false;
+          self.$message.error(t("batch.complete"));
+          self.eventUpload.value = "";
+          self.fullscreenLoading = false;
           return;
         }
         if (
           resultObj[i + 1] &&
           results["电池组编号"] === resultObj[i + 1]["电池组编号"]
         ) {
-          this.$message.error(t("batch.betteryCodeRepeat"));
-          this.eventUpload.value = "";
-          this.fullscreenLoading = false;
+          self.$message.error(t("batch.betteryCodeRepeat"));
+          self.eventUpload.value = "";
+          self.fullscreenLoading = false;
           return;
         }
         if (
@@ -276,9 +308,9 @@ export default {
           !utils.checkDate(results["出产日期"]) ||
           !utils.checkDate(results["质保期"])
         ) {
-          this.$message.warning(t("batch.timeFormatErr"));
-          this.eventUpload.value = "";
-          this.fullscreenLoading = false;
+          self.$message.warning(t("batch.timeFormatErr"));
+          self.eventUpload.value = "";
+          self.fullscreenLoading = false;
           return;
         }
         let ItemObj = {
@@ -298,7 +330,7 @@ export default {
         // ItemObj.deviceCodes.push(results["编号"]);
         valuesObj.push(ItemObj);
       }
-      this.fileUploadTo(valuesObj);
+      self.fileUploadTo(valuesObj, self);
     },
     fixdata (data) {
       // 文件流转BinaryString
@@ -315,17 +347,17 @@ export default {
       o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
       return o;
     },
-    fileUploadTo (data) {
-      this.$api.batteryUpLoadAll(data).then(res => {
+    fileUploadTo (data, self) {
+      self.$api.batteryUpLoadAll(data).then(res => {
         console.log(res);
-        this.fullscreenLoading = false;
+        self.fullscreenLoading = false;
         if (res.data && res.data.code === 0) {
-          this.$message.success(t("successTips.batchSuccess"));
-          this.eventUpload.value = "";
-          this.$emit("hasCreated", { value: true });
+          self.$message.success(t("successTips.batchSuccess"));
+          self.eventUpload.value = "";
+          self.$emit("hasCreated", { value: true });
         } else {
-          if (this.eventUpload) {
-            this.eventUpload.value = "";
+          if (self.eventUpload) {
+            self.eventUpload.value = "";
           }
         }
       });
@@ -361,7 +393,7 @@ export default {
             if (res.data && res.data.code === 0) {
               this.$message({
                 type: "success",
-                message: t("batteryList.success")
+                message: t("successTips.addSuccess")
               });
               this.addModel = false;
               this.modelForm = {};

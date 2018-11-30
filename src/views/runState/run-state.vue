@@ -22,7 +22,7 @@
           clearable
           @change="changeBatteryCode">
           <el-option v-for="item in tableData"
-            :key="item.value"
+            :key="item.value+Math.random()"
             :label="item.value"
             :value="item">
           </el-option>

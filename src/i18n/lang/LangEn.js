@@ -133,8 +133,8 @@ module.exports = {
     OuterReceive: 'Notified Outsiders',
     Allocation: 'Battery Allocation',
     alarmData: 'Battery Alarms',
-    system: '系统管理',
-    repairGps: 'gps修正'
+    system: 'System Management',
+    repairGps: 'GPS Correction'
   },
   overview: {
     total: 'Total Currently',

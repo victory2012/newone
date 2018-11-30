@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-button @click="repairHandle"
-      type="primary">gps修复</el-button>
+      type="primary">{{$t('menu.repairGps')}}</el-button>
   </div>
 </template>
 

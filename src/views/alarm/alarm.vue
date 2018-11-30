@@ -1,7 +1,7 @@
 <template>
   <div class="alarmTable">
     <div class="select">
-      <div class="item">
+      <div class="item lage">
         <el-button size="small"
           @click="search"
           type="primary">{{$t('timeBtn.sure')}}</el-button>
@@ -433,6 +433,9 @@ export default {
   .item {
     flex: 1;
     padding: 10px 5px;
+    &.lage {
+      flex: 0 0 150px;
+    }
   }
 }
 .detailCenter {
