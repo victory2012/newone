@@ -20,6 +20,7 @@
     </div>
     <div class="items"
       v-if="AdminRoles.AddBatteries"
+      @click="resetIndex"
       style="position: relative">
       <input class="fileUpload"
         type="file"
@@ -84,6 +85,7 @@ export default {
       addModel: false,
       labels: "",
       titles: "",
+      index: 0,
       addallTypes: false,
       modelForm: {},
       modelFormRules: {
@@ -104,7 +106,13 @@ export default {
   },
 
   methods: {
+    resetIndex () {
+      console.log('this.index', this.index);
+      this.index = 0;
+    },
     fileUpload (event) {
+      this.index += 1;
+      if (this.index > 1) return;
       console.log(event);
       this.fullscreenLoading = true;
       this.eventUpload = event.target;
@@ -112,6 +120,7 @@ export default {
       if (!obj.files) {
         this.eventUpload.value = "";
         this.fullscreenLoading = false;
+        this.index = 0;
         return;
       }
       const IMPORTFILE_MAXSIZE = 1 * 1024; // 这里可以自定义控制导入文件大小
@@ -128,6 +137,7 @@ export default {
         });
         this.eventUpload.value = "";
         this.fullscreenLoading = false;
+        this.index = 0;
         return;
       }
       if (obj.files[0].size / 1024 > IMPORTFILE_MAXSIZE) {
@@ -137,25 +147,26 @@ export default {
         });
         this.eventUpload.value = "";
         this.fullscreenLoading = false;
+        this.index = 0;
         return;
       }
       let f = obj.files[0];
       let reader = new FileReader();
-      let self = this;
+      const self = this;
       FileReader.prototype.readAsBinaryString = function (f) {
         let binary = "";
         let rABS = false; //是否将文件读取为二进制字符串
         let wb; //读取完成的数据
-        let reader = new FileReader();
+        // let reader = new FileReader();
         reader.onload = function (e) {
           let bytes = new Uint8Array(reader.result);
           let length = bytes.byteLength;
           for (let i = 0; i < length; i++) {
             binary += String.fromCharCode(bytes[i]);
           }
-          // let XLSX = require('xlsx');
+          let XLSX = require('xlsx');
           if (rABS) {
-            wb = XLSX.read(btoa(this.fixdata(binary)), { //手动转化
+            wb = XLSX.read(btoa(self.fixdata(binary)), { //手动转化
               type: 'base64'
             });
           } else {
@@ -168,6 +179,7 @@ export default {
             self.$message.error(t("batch.nodata"));
             self.eventUpload.value = "";
             self.fullscreenLoading = false;
+            self.index = 0;
           } else {
             // 判断模板是中文还是英文
             let ZhTemp = resultObj[0].Battery_Id ? false : true;
@@ -180,34 +192,6 @@ export default {
         }
         reader.readAsArrayBuffer(f);
       }
-      // reader.onload = e => {
-      //   let data = e.target.result;
-      //   if (rABS) {
-      //     wb = XLSX.read(btoa(this.fixdata(data)), {
-      //       // 手动转化
-      //       type: "base64"
-      //     });
-      //   } else {
-      //     wb = XLSX.read(data, {
-      //       type: "binary"
-      //     });
-      //   }
-      //   let resultObj = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-      //   if (resultObj.length < 1) {
-      //     this.$message.error(t("batch.nodata"));
-      //     this.eventUpload.value = "";
-      //     this.fullscreenLoading = false;
-      //   } else {
-      //     // 判断模板是中文还是英文
-      //     let ZhTemp = resultObj[0].Battery_Id ? false : true;
-      //     if (ZhTemp) {
-      //       this.ZHuploadDataCheck(resultObj);
-      //     } else {
-      //       this.ENuploadDataCheck(resultObj);
-      //     }
-
-      //   }
-      // };
       if (rABS) {
         reader.readAsArrayBuffer(f);
       } else {
@@ -234,6 +218,7 @@ export default {
           self.$message.error(t("batch.complete"));
           self.eventUpload.value = "";
           self.fullscreenLoading = false;
+          self.index = 0;
           return;
         }
         if (
@@ -243,6 +228,7 @@ export default {
           self.$message.error(t("batch.betteryCodeRepeat"));
           self.eventUpload.value = "";
           self.fullscreenLoading = false;
+          self.index = 0;
           return;
         }
         if (
@@ -253,6 +239,7 @@ export default {
           self.$message.warning(t("batch.timeFormatErr"));
           self.eventUpload.value = "";
           self.fullscreenLoading = false;
+          self.index = 0;
           return;
         }
         let ItemObj = {
@@ -292,6 +279,7 @@ export default {
           self.$message.error(t("batch.complete"));
           self.eventUpload.value = "";
           self.fullscreenLoading = false;
+          self.index = 0;
           return;
         }
         if (
@@ -301,6 +289,7 @@ export default {
           self.$message.error(t("batch.betteryCodeRepeat"));
           self.eventUpload.value = "";
           self.fullscreenLoading = false;
+          self.index = 0;
           return;
         }
         if (
@@ -311,6 +300,7 @@ export default {
           self.$message.warning(t("batch.timeFormatErr"));
           self.eventUpload.value = "";
           self.fullscreenLoading = false;
+          self.index = 0;
           return;
         }
         let ItemObj = {
@@ -356,6 +346,7 @@ export default {
           self.eventUpload.value = "";
           self.$emit("hasCreated", { value: true });
         } else {
+          self.index = 0;
           if (self.eventUpload) {
             self.eventUpload.value = "";
           }

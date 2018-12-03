@@ -64,7 +64,6 @@
       <div class="item">
         <!-- 开始时间 -->
         <el-date-picker size="small"
-          value-format="yyyy-MM-dd HH:mm:ss"
           style="width: 100%"
           v-model="alarm.startTime"
           type="date"
@@ -354,7 +353,7 @@ export default {
       this.getListData();
     },
     search () {
-      if (new Date(this.alarm.endTime) < new Date(this.alarm.startTime)) {
+      if (new Date(this.alarm.endTime).getTime() < new Date(this.alarm.startTime).getTime()) {
         this.$message.error(t('history.checkErr'));
         return;
       }

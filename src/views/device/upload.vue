@@ -10,6 +10,7 @@
     </div>
     <div v-if="manufacturerName"
       class="items"
+      @click="resetIndex"
       style="position: relative">
       <input class="fileUpload"
         type="file"
@@ -107,7 +108,7 @@ export default {
       fullscreenLoading: false,
       regform: {},
       categoryArr: [],
-      // companyArr: [],
+      index: 0,
       regRules: {
         name: [
           { required: true, message: t('addDevice.errorTip'), trigger: "change" } // 请输入设备编号
@@ -199,13 +200,20 @@ export default {
     regDialog () {
       this.regDevice = true;
     },
+    resetIndex () {
+      console.log('this.index', this.index);
+      this.index = 0;
+    },
     fileUpload (event) {
       console.log(event);
+      this.index += 1;
+      if (this.index > 1) return;
       this.fullscreenLoading = true;
       this.eventUpload = event.target;
       let obj = event.target;
       if (!obj.files) {
         this.fullscreenLoading = false;
+        this.index = 0;
         this.eventUpload.value = "";
         return;
       }
@@ -222,6 +230,7 @@ export default {
         });
         this.eventUpload.value = "";
         this.fullscreenLoading = false;
+        this.index = 0;
         return;
       }
       if (obj.files[0].size / 1024 > IMPORTFILE_MAXSIZE) {
@@ -231,60 +240,75 @@ export default {
         });
         this.fullscreenLoading = false;
         this.eventUpload.value = "";
+        this.index = 0;
         return;
       }
       let f = obj.files[0];
       let reader = new FileReader();
-      reader.onload = e => {
-        let data = e.target.result;
-        if (rABS) {
-          wb = XLSX.read(btoa(this.fixdata(data)), {
-            // 手动转化
-            type: "base64"
-          });
-        } else {
-          wb = XLSX.read(data, {
-            type: "binary"
-          });
-        }
-        let resultObj = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-        console.log(resultObj);
-        if (resultObj.length < 1) {
-          // "上传的文件内容为空，请检查文件"
-          this.$message.error(t('batch.nodata'));
-          this.eventUpload.value = "";
-          this.fullscreenLoading = false;
-        } else {
-          let ZhTemp = resultObj[0].Device_Id ? false : true;
-          if (ZhTemp) {
-            this.ZHuploadDataCheck(resultObj);
+      const self = this;
+      FileReader.prototype.readAsBinaryString = function (f) {
+        let binary = "";
+        let rABS = false; //是否将文件读取为二进制字符串
+        let wb; //读取完成的数据
+        // let reader = new FileReader();
+        reader.onload = function (e) {
+          let bytes = new Uint8Array(reader.result);
+          let length = bytes.byteLength;
+          for (let i = 0; i < length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          let XLSX = require('xlsx');
+          if (rABS) {
+            wb = XLSX.read(btoa(self.fixdata(binary)), { //手动转化
+              type: 'base64'
+            });
           } else {
-            this.ENuploadDataCheck(resultObj);
+            wb = XLSX.read(binary, {
+              type: 'binary'
+            });
+          }
+          let resultObj = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);//outdata就是你想要的东西
+          if (resultObj.length < 1) {
+            self.$message.error(t("batch.nodata"));
+            self.eventUpload.value = "";
+            self.fullscreenLoading = false;
+            self.index = 0;
+          } else {
+            // 判断模板是中文还是英文
+            let ZhTemp = resultObj[0].Device_Id ? false : true;
+            if (ZhTemp) {
+              self.ZHuploadDataCheck(resultObj, self);
+            } else {
+              self.ENuploadDataCheck(resultObj, self);
+            }
           }
         }
-      };
+        reader.readAsArrayBuffer(f);
+      }
       if (rABS) {
         reader.readAsArrayBuffer(f);
       } else {
         reader.readAsBinaryString(f);
       }
     },
-    ENuploadDataCheck (resultObj) {
+    ENuploadDataCheck (resultObj, self) {
       let valuesObj = [];
       for (let i = 0; i < resultObj.length; i++) {
         let results = resultObj[i];
         console.log(results);
         if (!results.Device_Id || !results.Manufacturer) {
-          this.$message.error(t('batch.complete')); // "生产企业或设备编号不能为空，请检查文件"
-          this.fullscreenLoading = false;
+          self.$message.error(t('batch.complete')); // "生产企业或设备编号不能为空，请检查文件"
+          self.fullscreenLoading = false;
+          self.index = 0;
           return;
         }
         if (
           resultObj[i + 1] &&
           results.Manufacturer === resultObj[i + 1].Manufacturer
         ) {
-          this.$message.error(t('batch.betteryCodeRepeat')); // "设备编号不能重复，请检查文件"
-          this.fullscreenLoading = false;
+          self.$message.error(t('batch.betteryCodeRepeat')); // "设备编号不能重复，请检查文件"
+          self.fullscreenLoading = false;
+          self.index = 0;
           return;
         }
         let ItemObj = {
@@ -296,26 +320,28 @@ export default {
         valuesObj.push(ItemObj);
       }
       // console.log(valuesObj);
-      this.fileUploadTo(valuesObj);
+      self.fileUploadTo(valuesObj, self);
     },
-    ZHuploadDataCheck (resultObj) {
+    ZHuploadDataCheck (resultObj, self) {
       let valuesObj = [];
       for (let i = 0; i < resultObj.length; i++) {
         let results = resultObj[i];
         console.log(results);
         if (!results["生产企业"] || !results["编号"]) {
-          this.$message.error(t('batch.complete')); // "生产企业或设备编号不能为空，请检查文件"
-          this.fullscreenLoading = false;
-          this.eventUpload.value = "";
+          self.$message.error(t('batch.complete')); // "生产企业或设备编号不能为空，请检查文件"
+          self.fullscreenLoading = false;
+          self.eventUpload.value = "";
+          self.index = 0;
           return;
         }
         if (
           resultObj[i + 1] &&
           results["编号"] === resultObj[i + 1]["编号"]
         ) {
-          this.$message.error(t('batch.betteryCodeRepeat')); // "设备编号不能重复，请检查文件"
-          this.fullscreenLoading = false;
-          this.eventUpload.value = "";
+          self.$message.error(t('batch.betteryCodeRepeat')); // "设备编号不能重复，请检查文件"
+          self.fullscreenLoading = false;
+          self.index = 0;
+          self.eventUpload.value = "";
           return;
         }
         let ItemObj = {
@@ -327,7 +353,7 @@ export default {
         valuesObj.push(ItemObj);
       }
       // console.log(valuesObj);
-      this.fileUploadTo(valuesObj);
+      self.fileUploadTo(valuesObj, self);
     },
     fixdata (data) {
       // 文件流转BinaryString
@@ -344,16 +370,19 @@ export default {
       o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
       return o;
     },
-    fileUploadTo (data) {
-      this.$api.deviceBatchAdd(data).then(res => {
+    fileUploadTo (data, self) {
+      console.log('fileUploadTo', data);
+      console.log('fileUploadTo self', self);
+      self.$api.deviceBatchAdd(data).then(res => {
         console.log(res);
-        this.fullscreenLoading = false;
+        self.fullscreenLoading = false;
         if (res.data && res.data.code === 0) {
-          this.$message.success(t('successTips.batchSuccess'));
-          this.$emit('createDevice', true)
+          self.$message.success(t('successTips.batchSuccess'));
+          self.$emit('createDevice', true)
         } else {
-          if (this.eventUpload) {
-            this.eventUpload.value = "";
+          self.index = 0;
+          if (self.eventUpload) {
+            self.eventUpload.value = "";
           }
         }
       });
