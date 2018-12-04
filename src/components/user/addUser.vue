@@ -76,7 +76,8 @@
           <el-col :span="12">
             <el-form-item :label="$t('useMsg.name')"
               prop="account">
-              <el-input v-model.trim="CompanyForm.account"
+              <el-input size="small"
+                v-model.trim="CompanyForm.account"
                 @keyup.native="CompanyForm.account=CompanyForm.account.replace(/\s+/g,'')"
                 auto-complete="off"></el-input>
             </el-form-item>
@@ -86,7 +87,7 @@
               prop="password">
               <el-input size="small"
                 v-model.trim="CompanyForm.password"
-                @keyup.native="CompanyFormChange"
+                @keyup.native="CompanyForm.password=CompanyForm.password.replace(/\s+/g,'')"
                 type="password"
                 auto-complete="off"></el-input>
             </el-form-item>
