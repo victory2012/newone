@@ -6,82 +6,48 @@
         <p>告警设置</p>
       </div>
     </div> -->
-    <el-table v-loading="loading"
-      :data="tableData"
-      style="width: 100%">
+    <el-table v-loading="loading" :data="tableData" style="width: 100%">
       <!-- 序号 -->
-      <el-table-column type="index"
-        align="center"
-        :label="$t('alarmList.serial')"
-        width="50">
+      <el-table-column type="index" align="center" :label="$t('alarmList.serial')" width="50">
       </el-table-column>
       <!-- 告警发生时间 -->
-      <el-table-column prop="createTime"
-        align="center"
-        :label="$t('alarmList.time')"
-        width="180">
+      <el-table-column prop="createTime" align="center" :label="$t('alarmList.time')" width="180">
       </el-table-column>
       <!-- 告警项目 -->
-      <el-table-column prop="items"
-        align="center"
-        :label="$t('alarmList.alarmItem')">
+      <el-table-column prop="items" align="center" :label="$t('alarmList.alarmItem')">
       </el-table-column>
       <!-- 告警阈值 -->
-      <el-table-column prop="thresholdValue"
-        align="center"
-        :label="$t('alarmList.thride')">
+      <el-table-column prop="thresholdValue" align="center" :label="$t('alarmList.thride')">
       </el-table-column>
       <!-- 实际值 -->
-      <el-table-column prop="actualValue"
-        align="center"
-        :label="$t('alarmList.realDate')">
+      <el-table-column prop="actualValue" align="center" :label="$t('alarmList.realDate')">
       </el-table-column>
       <!-- 电池组编号 -->
-      <el-table-column prop="hostCode"
-        align="center"
-        :label="$t('alarmList.batteryCode')">
+      <el-table-column prop="hostCode" align="center" :label="$t('alarmList.batteryCode')">
       </el-table-column>
       <!-- 告警内容 -->
-      <el-table-column prop="content"
-        align="center"
-        :label="$t('alarmList.content')"
-        width="190">
+      <el-table-column prop="content" align="center" :label="$t('alarmList.content')" width="190">
       </el-table-column>
       <!-- 告警层级 -->
-      <el-table-column prop="hierarchy"
-        align="center"
-        :label="$t('alarmList.alarmHierarchy')">
+      <el-table-column prop="hierarchy" align="center" :label="$t('alarmList.alarmHierarchy')">
       </el-table-column>
       <!-- 告警级别 -->
-      <el-table-column prop="levels"
-        align="center"
-        :label="$t('alarmList.alarmLevel')">
+      <el-table-column prop="levels" align="center" :label="$t('alarmList.alarmLevel')">
       </el-table-column>
       <!-- 详情 -->
-      <el-table-column align="center"
-        :label="$t('alarmList.detail')"
-        width="80">
+      <el-table-column align="center" :label="$t('alarmList.detail')" width="80">
         <template slot-scope="scope">
-          <el-button @click.native.prevent="handleClick(scope.row)"
-            type="text">
+          <el-button @click.native.prevent="handleClick(scope.row)" type="text">
             {{$t('alarmList.view')}}
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <div class="page">
-      <el-pagination @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page.sync="currentPage"
-        :page-sizes="[10, 20, 30, 50]"
-        :page-size="pageSize"
-        layout="sizes, prev, pager, next"
-        :total="total">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout="sizes, prev, pager, next" :total="total">
       </el-pagination>
     </div>
-    <el-dialog :title="$t('alarmList.detail')"
-      :visible.sync="details"
-      width="770px">
+    <el-dialog :title="$t('alarmList.detail')" :visible.sync="details" width="770px">
       <div class="detailCenter">
         <table>
           <tr>
@@ -165,10 +131,8 @@
           </tr>
         </table>
       </div>
-      <div slot="footer"
-        class="dialog-footer">
-        <el-button size="small"
-          @click="details = false">{{$t('timeBtn.sure')}}</el-button>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="details = false">{{$t('timeBtn.sure')}}</el-button>
         <!-- <el-button size="small" type="primary" @click="details = false">确 定</el-button> -->
       </div>
     </el-dialog>
@@ -208,17 +172,21 @@ export default {
         console.log(res);
         if (res.data && res.data.code === 0) {
           let result = res.data.data;
+          this.rowObj.fluidLevel = result.fluidLevel === 0 ? t("realTime.normal") : t(("realTime.abnormal"));
+          this.rowObj.temperature = result.temperature;
+          this.rowObj.voltage = result.voltage;
+          this.rowObj.current = result.current;
           if (result) {
-            let position = [result.gcjLongitude, result.gcjLatitude];
-            lnglatTrabsofor(position, callRes => {
-              this.rowObj.fluidLevel =
-                result.fluidLevel === 0 ? t('realTime.normal') : t('realTime.abnormal');
-              this.rowObj.temperature = result.temperature;
-              this.rowObj.voltage = result.voltage;
-              this.rowObj.current = result.current;
-              this.rowObj.address = callRes.formattedAddress || "--";
+            if (Math.abs(Number(result.gcjLongitude)) > 1 && Math.abs(Number(result.gcjLatitude)) > 1) {
+              let position = [result.gcjLongitude, result.gcjLatitude];
+              lnglatTrabsofor(position, callRes => {
+                this.rowObj.address = callRes.formattedAddress || "--";
+                this.details = true;
+              });
+            } else {
               this.details = true;
-            });
+              this.rowObj.address = "--";
+            }
           }
         }
       });

@@ -1,69 +1,37 @@
 <template>
   <div class="login">
     <div class="img">
-      <img src="../assets/img/login-bg.svg"
-        alt="">
+      <img src="../assets/img/login-bg.svg" alt="">
     </div>
     <div class="item">
       <div class="form">
-        <el-tabs v-model="activeName"
-          :stretch="true">
-          <el-tab-pane :label="$t('loginMsg.labelAccPass')"
-            name="accPwd">
-            <el-form label-position="top"
-              :rules="LoginRules"
-              ref="LoginForm"
-              label-width="80px"
-              :model="LoginForm">
-              <el-form-item :label="$t('loginMsg.accountPlace')"
-                prop="account">
+        <el-tabs v-model="activeName" :stretch="true">
+          <el-tab-pane :label="$t('loginMsg.labelAccPass')" name="accPwd">
+            <el-form label-position="top" :rules="LoginRules" ref="LoginForm" label-width="80px" :model="LoginForm">
+              <el-form-item :label="$t('loginMsg.accountPlace')" prop="account">
                 <el-input v-model="LoginForm.account"></el-input>
               </el-form-item>
-              <el-form-item :label="$t('loginMsg.passwordPlace')"
-                prop="password">
+              <el-form-item :label="$t('loginMsg.passwordPlace')" prop="password">
                 <!-- @keyup.enter.native="accountLogin('LoginForm')" -->
-                <el-input type="password"
-                  v-model="LoginForm.password"
-                  @keyup.enter.native="accountLogin('LoginForm')"></el-input>
+                <el-input type="password" v-model="LoginForm.password" @keyup.enter.native="accountLogin('LoginForm')"></el-input>
               </el-form-item>
               <el-form-item>
                 <!-- <button @click.stop.prevent="accountLogin('LoginForm')" class="accpwsBtn">登录</button> -->
-                <el-button :loading="doLogin"
-                  type="primary"
-                  class="accpwsBtn"
-                  @click="accountLogin('LoginForm')"
-                  round>{{$t('loginMsg.loginBtn')}}</el-button>
+                <el-button :loading="doLogin" type="primary" class="accpwsBtn" @click="accountLogin('LoginForm')" round>{{$t('loginMsg.loginBtn')}}</el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane :label="$t('loginMsg.labelSmsCode')"
-            name="SMScode">
-            <el-form label-position="top"
-              :rules="phoneRules"
-              ref="smsPhone"
-              label-width="80px"
-              :model="smsForm">
-              <el-form-item :label="$t('loginMsg.phone')"
-                prop="phone">
+          <el-tab-pane :label="$t('loginMsg.labelSmsCode')" name="SMScode">
+            <el-form label-position="top" :rules="phoneRules" ref="smsPhone" label-width="80px" :model="smsForm">
+              <el-form-item :label="$t('loginMsg.phone')" prop="phone">
                 <el-input v-model="smsForm.phone"></el-input>
               </el-form-item>
-              <el-form-item :label="$t('loginMsg.smsCode')"
-                class="smsCode"
-                prop="smsCode">
-                <el-input v-model="smsForm.smsCode"
-                  @keyup.enter.native="getSmsCode"></el-input>
-                <el-button class="getSms"
-                  @click="getSmsCode"
-                  :disabled="hasGetSms"
-                  type="primary"
-                  plain>{{smsMsg}}</el-button>
+              <el-form-item :label="$t('loginMsg.smsCode')" class="smsCode" prop="smsCode">
+                <el-input v-model="smsForm.smsCode" @keyup.enter.native="getSmsCode"></el-input>
+                <el-button class="getSms" @click="getSmsCode" :disabled="hasGetSms" type="primary" plain>{{smsMsg}}</el-button>
               </el-form-item>
               <el-form-item>
-                <el-button :loading="doLogin"
-                  type="primary"
-                  class="accpwsBtn"
-                  @click="checkSmsCode"
-                  round>{{$t('loginMsg.loginBtn')}}</el-button>
+                <el-button :loading="doLogin" type="primary" class="accpwsBtn" @click="checkSmsCode" round>{{$t('loginMsg.loginBtn')}}</el-button>
                 <!-- <button @click.stop.prevent="checkSmsCode" class="accpwsBtn">登录</button> -->
               </el-form-item>
             </el-form>
@@ -72,18 +40,13 @@
 
       </div>
       <div class="changeLangue">
-        <el-dropdown trigger="click"
-          placement="bottom"
-          @command="handleCommand">
+        <el-dropdown trigger="click" placement="bottom" @command="handleCommand">
           <span class="el-dropdown-link cursor">
             {{localLanguge}}<i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item :disabled="$i18n.locale === 'zh'"
-              command="zh">中文</el-dropdown-item>
-            <el-dropdown-item divided
-              command="en"
-              :disabled="$i18n.locale === 'en'">English</el-dropdown-item>
+            <el-dropdown-item :disabled="$i18n.locale === 'zh'" command="zh">中文</el-dropdown-item>
+            <el-dropdown-item divided command="en" :disabled="$i18n.locale === 'en'">English</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -236,7 +199,8 @@ export default {
             this.doLogin = false;
             if (res.data && res.data.code === 0) {
               this.$store.commit("setTokenStorage", res.headers.token);
-              this.$store.commit("setStorage", JSON.stringify(res.data.data));
+              sessionStorage.setItem('loginData', JSON.stringify(res.data.data));
+              this.$store.commit("SETuserData", res.data.data);
               this.$api.permissions(res.data.data.id).then(opts => {
                 if (opts.data && opts.data.code === 0) {
                   this.$store.commit(

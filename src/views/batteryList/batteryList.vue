@@ -6,205 +6,107 @@
       </div>
       <div class="select">
         <div class="item">
-          <el-input size="small"
-            v-model.trim="batteryId"
-            :placeholder="$t('batteryList.searchContent')"></el-input>
+          <el-input size="small" v-model.trim="batteryId" :placeholder="$t('batteryList.searchContent')"></el-input>
         </div>
         <div class="item">
-          <el-select size="small"
-            v-model="batteryModel"
-            :placeholder="$t('batteryList.model')">
-            <el-option v-for="item in Modeloptions"
-              :key="item.id"
-              :label="item.dicKey"
-              :value="item.id">
+          <el-select size="small" v-model="batteryModel" :placeholder="$t('batteryList.model')">
+            <el-option v-for="item in Modeloptions" :key="item.id" :label="item.dicKey" :value="item.id">
             </el-option>
           </el-select>
         </div>
-        <div v-if="userRole().selectProd"
-          class="item">
-          <el-select size="small"
-            v-model="manufacter"
-            clearable
-            :placeholder="$t('batteryList.enterprise')">
-            <el-option v-for="item in companyArr"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id">
+        <div v-if="userRole().selectProd" class="item">
+          <el-select size="small" v-model="manufacter" clearable :placeholder="$t('batteryList.enterprise')">
+            <el-option v-for="item in companyArr" :key="item.id" :label="item.name" :value="item.id">
             </el-option>
           </el-select>
         </div>
-        <div v-if="userRole().selectCus"
-          class="item">
-          <el-select size="small"
-            v-model="batCustom"
-            clearable
-            :placeholder="$t('batteryList.customer')">
-            <el-option v-for="item in batCustomOpts"
-              :key="item.id"
-              :label="item.name"
-              :value="item.name">
+        <div v-if="userRole().selectCus" class="item">
+          <el-select size="small" v-model="batCustom" clearable :placeholder="$t('batteryList.customer')">
+            <el-option v-for="item in batCustomOpts" :key="item.id" :label="item.name" :value="item.name">
             </el-option>
           </el-select>
         </div>
 
         <div class="item">
-          <el-select size="small"
-            v-model="bindStatus"
-            :placeholder="$t('batteryList.binding')">
-            <el-option v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+          <el-select size="small" v-model="bindStatus" :placeholder="$t('batteryList.binding')">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
         </div>
         <div class="item">
-          <el-button @click="getBatteryList"
-            size="mini"
-            type="primary">{{$t('batteryList.search')}}</el-button>
-          <el-button @click="clearOptions"
-            size="small"
-            plain>{{$t('batteryList.clear')}}</el-button>
+          <el-button @click="getBatteryList" size="mini" type="primary">{{$t('batteryList.search')}}</el-button>
+          <el-button @click="clearOptions" size="small" plain>{{$t('batteryList.clear')}}</el-button>
         </div>
       </div>
     </div>
     <div class="tables">
-      <el-table v-loading="loading"
-        :data="tableData"
-        style="width: 100%"
-        :highlight-current-row="true">
+      <el-table v-loading="loading" :data="tableData" style="width: 100%" :highlight-current-row="true">
         <!-- 序号 -->
-        <el-table-column type="index"
-          width="50"
-          align="center"
-          :label="$t('batteryList.serial')">
+        <el-table-column type="index" width="50" align="center" :label="$t('batteryList.serial')">
         </el-table-column>
         <!-- 电池编号 -->
-        <el-table-column prop="code"
-          align="center"
-          :label="$t('batteryList.batteryCode')">
+        <el-table-column prop="code" align="center" :label="$t('batteryList.batteryCode')">
         </el-table-column>
         <!-- 电池型号 -->
-        <el-table-column prop="model"
-          align="center"
-          :label="$t('batteryList.model')">
+        <el-table-column prop="model" align="center" :label="$t('batteryList.model')">
         </el-table-column>
         <!-- 电池组规格 -->
-        <el-table-column prop="norm"
-          align="center"
-          :label="$t('batteryList.specif')">
+        <el-table-column prop="norm" align="center" :label="$t('batteryList.specif')">
         </el-table-column>
         <!-- 生产企业名称 -->
-        <el-table-column v-if="userRole().listProd"
-          prop="parentCompanyName"
-          align="center"
-          :label="$t('batteryList.enterprise')">
+        <el-table-column v-if="userRole().listProd" prop="parentCompanyName" align="center" :label="$t('batteryList.enterprise')">
         </el-table-column>
         <!-- 客户企业名称 -->
-        <el-table-column v-if="userRole().listCus"
-          prop="companyName"
-          align="center"
-          :label="$t('batteryList.customer')">
+        <el-table-column v-if="userRole().listCus" prop="companyName" align="center" :label="$t('batteryList.customer')">
         </el-table-column>
         <!-- 监测设备编号 -->
-        <el-table-column prop="deviceCode"
-          align="center"
-          :label="$t('batteryList.deviceCode')">
+        <el-table-column prop="deviceCode" align="center" :label="$t('batteryList.deviceCode')">
         </el-table-column>
         <!-- 绑定状态 -->
-        <el-table-column prop="bindingName"
-          align="center"
-          :label="$t('batteryList.bindStatus')">
+        <el-table-column prop="bindingName" align="center" :label="$t('batteryList.bindStatus')">
         </el-table-column>
         <!-- 运行状态 -->
-        <el-table-column align="center"
-          :label="$t('batteryList.runStatus')">
+        <el-table-column align="center" :label="$t('batteryList.runStatus')">
           <template slot-scope="scope">
-            <el-button @click.native.prevent="lookFor(scope.row)"
-              :disabled="scope.row.hasbind"
-              type="text"
-              size="small">
+            <el-button @click.native.prevent="lookFor(scope.row)" :disabled="scope.row.hasbind" type="text" size="small">
               {{$t('batteryList.view')}}
             </el-button>
           </template>
         </el-table-column>
         <!-- 操作 -->
-        <el-table-column align="center"
-          width="280"
-          :label="$t('batteryList.handle')">
+        <el-table-column align="center" width="280" :label="$t('batteryList.handle')">
           <template slot-scope="scope">
             <!-- 详情 -->
-            <el-button @click="details(scope.row)"
-              type="text"
-              size="small">{{$t('batteryList.batteryDetail')}}</el-button>
+            <el-button @click="details(scope.row)" type="text" size="small">{{$t('batteryList.batteryDetail')}}</el-button>
             <!-- 绑定 -->
-            <el-button @click="bindDeviceClick(scope.row)"
-              :disabled="!scope.row.hasbind || scope.row.isPlat"
-              type="text"
-              size="small">{{$t('batteryList.bind')}}</el-button>
+            <el-button @click="bindDeviceClick(scope.row)" :disabled="!scope.row.hasbind || scope.row.isPlat" type="text" size="small">{{$t('batteryList.bind')}}</el-button>
             <!-- 解绑 -->
-            <el-button @click="unbindClick(scope.row)"
-              :disabled="scope.row.hasbind || scope.row.isPlat"
-              type="text"
-              size="small">{{$t('batteryList.unBind')}}</el-button>
+            <el-button @click="unbindClick(scope.row)" :disabled="scope.row.hasbind || scope.row.isPlat" type="text" size="small">{{$t('batteryList.unBind')}}</el-button>
             <!-- 拉黑 -->
-            <el-button @click="addBlack(scope.row)"
-              :disabled="!AdminRoles.addblack || scope.row.hasbind"
-              type="text"
-              size="small">{{$t('batteryList.black')}}</el-button>
+            <el-button @click="addBlack(scope.row)" :disabled="!AdminRoles.addblack || scope.row.hasbind" type="text" size="small">{{$t('batteryList.black')}}</el-button>
             <!-- 删除 -->
-            <el-button @click="deleteBattery(scope.row)"
-              :disabled="!scope.row.canDelete || scope.row.isPlat"
-              type="text"
-              size="small">{{$t('batteryList.detele')}}</el-button>
+            <el-button @click="deleteBattery(scope.row)" :disabled="!scope.row.canDelete || scope.row.isPlat" type="text" size="small">{{$t('batteryList.detele')}}</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <div class="page">
-      <el-pagination @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page.sync="currentPage"
-        :page-sizes="[10, 20, 30, 50]"
-        :page-size="pageSize"
-        layout="sizes, prev, pager, next"
-        :total="total">
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-sizes="[10, 20, 30, 50]" :page-size="pageSize" layout="sizes, prev, pager, next" :total="total">
       </el-pagination>
     </div>
     <!-- 电池绑定 -->
-    <el-dialog width="600px"
-      :title="$t('batteryList.batteryBindDevice')"
-      :visible.sync="bindDevice">
-      <el-form :model="deviceModel"
-        label-width="150px"
-        label-position="right"
-        ref="deviceModel"
-        style="margin-top:20px;">
-        <el-form-item :title="$t('batteryList.deviceCode')"
-          prop="deviceId"
-          :rules="bindRole">
-          <el-select size="small"
-            style="width:210px"
-            v-model="deviceModel.deviceId"
-            :placeholder="$t('batteryList.deviceCode')">
-            <el-option v-for="item in deviceIdOpts"
-              :key="item.id"
-              :label="item.code"
-              :value="item.id"
-              :disabled="item.disabled">
+    <el-dialog width="600px" :title="$t('batteryList.batteryBindDevice')" :visible.sync="bindDevice">
+      <el-form :model="deviceModel" label-width="150px" label-position="right" ref="deviceModel" style="margin-top:20px;">
+        <el-form-item :title="$t('batteryList.deviceCode')" prop="deviceId" :rules="bindRole">
+          <el-select size="small" style="width:210px" v-model="deviceModel.deviceId" :placeholder="$t('batteryList.deviceCode')">
+            <el-option v-for="item in deviceIdOpts" :key="item.id" :label="item.code" :value="item.id" :disabled="item.disabled">
             </el-option>
           </el-select>
         </el-form-item>
       </el-form>
-      <div slot="footer"
-        class="dialog-footer">
-        <el-button size="small"
-          @click="resetBind">{{$t('batteryList.cancel')}}</el-button>
-        <el-button :loading="bindings"
-          size="small"
-          @click="submitBind"
-          type="primary">{{$t('batteryList.sure')}}</el-button>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="resetBind">{{$t('batteryList.cancel')}}</el-button>
+        <el-button :loading="bindings" size="small" @click="submitBind" type="primary">{{$t('batteryList.sure')}}</el-button>
       </div>
     </el-dialog>
     <add-battery @hasCreated="reloadBattery"></add-battery>
@@ -622,19 +524,13 @@ export default {
     /* 用户权限 */
     userRole () {
       let userObj = {};
-      if (
-        this.loginData.type === 1 ||
-        (this.loginData.type === 3 && this.loginData.layerName === "平台")
-      ) {
+      if (this.loginData.layerName === "平台") {
         userObj.listCus = true;
         userObj.listProd = true;
         userObj.selectCus = false;
         userObj.selectProd = true;
       }
-      if (
-        this.loginData.type === 2 ||
-        (this.loginData.type === 3 && this.loginData.layerName === "生产企业")
-      ) {
+      if (this.loginData.type === 2 || (this.loginData.type === 3 && this.loginData.layerName === "生产企业")) {
         userObj.listCus = true;
         userObj.listProd = false;
         userObj.selectCus = true;

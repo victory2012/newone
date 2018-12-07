@@ -1,13 +1,9 @@
 <template>
   <div>
-    <div class="items"
-      v-if="AdminRoles.AddBatteries">
-      <el-dropdown trigger="click"
-        placement="bottom"
-        @command="handleCommand">
+    <div class="items" v-if="AdminRoles.AddBatteries">
+      <el-dropdown trigger="click" placement="bottom" @command="handleCommand">
         <span>
-          <img src="../../../static/img/device_reg.png"
-            alt=""><br />
+          <img src="../../../static/img/device_reg.png" alt=""><br />
           <span class="el-dropdown-link">{{$t('batteryList.batteries')}}</span>
         </span>
         <el-dropdown-menu slot="dropdown">
@@ -18,49 +14,24 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-    <div class="items"
-      v-if="AdminRoles.AddBatteries"
-      @click="resetIndex"
-      style="position: relative">
-      <input class="fileUpload"
-        type="file"
-        @change="fileUpload"
-        v-loading.fullscreen.lock="fullscreenLoading" />
-      <img id="upers"
-        src="../../../static/img/device_import.png"
-        alt="">
+    <div class="items" v-if="AdminRoles.AddBatteries" @click="resetIndex" style="position: relative">
+      <input class="fileUpload" type="file" @change="fileUpload" v-loading.fullscreen.lock="fullscreenLoading" />
+      <img id="upers" src="../../../static/img/device_import.png" alt="">
       <p>{{$t('batteryList.batchImport')}}</p>
     </div>
-    <div class="items"
-      v-if="AdminRoles.addblack"
-      @click="recovery">
-      <img id="recover"
-        src="../../../static/img/device_recover.png"
-        alt="">
+    <div class="items" v-if="AdminRoles.addblack" @click="recovery">
+      <img id="recover" src="../../../static/img/device_recover.png" alt="">
       <p>{{$t('batteryList.defriend')}}</p>
     </div>
-    <el-dialog width="600px"
-      :title="titles"
-      :visible.sync="addModel">
-      <el-form :model="modelForm"
-        label-position="right"
-        :rules="modelFormRules"
-        ref="modelForm">
-        <el-form-item :label="labels"
-          prop="dicValue">
-          <el-input size="small"
-            v-model="modelForm.dicValue"
-            auto-complete="off"></el-input>
+    <el-dialog width="600px" :title="titles" :visible.sync="addModel">
+      <el-form :model="modelForm" label-position="right" :rules="modelFormRules" ref="modelForm">
+        <el-form-item :label="labels" prop="dicValue">
+          <el-input size="small" v-model="modelForm.dicValue" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer"
-        class="dialog-footer">
-        <el-button size="small"
-          @click="resetModelAdd">{{$t('timeBtn.cancle')}}</el-button>
-        <el-button :loading="addallTypes"
-          size="small"
-          @click="submitModelAdd"
-          type="primary">{{$t('timeBtn.sure')}}</el-button>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="resetModelAdd">{{$t('timeBtn.cancle')}}</el-button>
+        <el-button :loading="addallTypes" size="small" @click="submitModelAdd" type="primary">{{$t('timeBtn.sure')}}</el-button>
       </div>
     </el-dialog>
   </div>

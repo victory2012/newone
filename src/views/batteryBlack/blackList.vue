@@ -29,7 +29,7 @@
 import t from "@/utils/translate";
 
 export default {
-  data() {
+  data () {
     return {
       currentPage: 1,
       total: 0,
@@ -38,7 +38,7 @@ export default {
     };
   },
   methods: {
-    recovery(data) {
+    recovery (data) {
       let deviceObj = {
         id: data.id,
         status: 0
@@ -54,15 +54,15 @@ export default {
         }
       });
     },
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.pageSize = val;
       this.getDeviceList();
     },
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.currentPage = val;
       this.getDeviceList();
     },
-    getDeviceList() {
+    getDeviceList () {
       let pageObj = {
         pageSize: this.pageSize,
         pageNum: this.currentPage,
@@ -94,7 +94,7 @@ export default {
       });
     }
   },
-  mounted() {
+  mounted () {
     this.getDeviceList();
   }
 };

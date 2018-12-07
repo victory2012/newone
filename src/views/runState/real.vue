@@ -35,53 +35,38 @@
     <div class="warrp">
       <div class="map">
         <div class="mapCenter">
-          <div class="mapContent"
-            id="mapContent"></div>
+          <div class="mapContent" id="mapContent"></div>
         </div>
         <div class="timeCenter">
           <p class="map-time">{{infoData.hhmmss}}</p>
           <p class="map-date">{{infoData.yyddmm}}</p>
           <p class="map-des">{{$t('realTime.refresh')}}</p>
-          <p @click="activeQuery"
-            :class="{'active': queryData}"
-            class="map-line">{{btnTip}}</p>
+          <p @click="activeQuery" :class="{'active': queryData}" class="map-line">{{btnTip}}</p>
         </div>
       </div>
       <div class="address">
         <div>
-          <img width="21px"
-            src="../../assets/img/me.png"
-            alt="">
+          <img width="21px" src="../../assets/img/me.png" alt="">
           <span>{{infoData.companyName}}</span>
         </div>
         <div>
-          <img width="22px"
-            src="../../assets/img/address.png"
-            alt="">
+          <img width="22px" src="../../assets/img/address.png" alt="">
           <span>{{address}}</span>
         </div>
         <div>
-          <img width="25px"
-            src="../../assets/img/battery.png"
-            alt="">
+          <img width="25px" src="../../assets/img/battery.png" alt="">
           <span>{{infoData.code}}</span>
         </div>
         <div>
-          <img width="26px"
-            src="../../assets/img/device.png"
-            alt="">
+          <img width="26px" src="../../assets/img/device.png" alt="">
           <span>{{infoData.deviceCode}}</span>
         </div>
         <div>
-          <img width="25px"
-            src="../../assets/img/version.svg"
-            alt="">
+          <img width="25px" src="../../assets/img/version.svg" alt="">
           <span>{{version}}</span>
         </div>
         <div>
-          <img width="25px"
-            src="../../assets/img/device-flesh.png"
-            alt="">
+          <img width="25px" src="../../assets/img/device-flesh.png" alt="">
           <span>{{CCID}}</span>
         </div>
       </div>
@@ -90,8 +75,7 @@
       <span>{{$t('realTime.fourHour')}}</span>
       <el-checkbox v-model="checked">{{$t('realTime.update')}}</el-checkbox>
     </div>
-    <echart-map :chartData="dataObj"
-      :mqttData="ReceiveObj"></echart-map>
+    <echart-map :chartData="dataObj" :mqttData="ReceiveObj"></echart-map>
   </div>
 </template>
 <script>
@@ -322,35 +306,39 @@ export default {
     },
     positionData (data) {
       if (data && data.gcjLongitude) {
-        // marker.remove()
-        let position = new AMap.LngLat(data.gcjLongitude, data.gcjLatitude);
-        if (this.markerArr.length > 0) {
-          this.markerArr.forEach(key => {
-            key.setMap(null);
-          });
-        }
-        marker = new AMap.Marker({
-          icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
-          position: position
-        });
-        marker.setMap(map);
-        this.markerArr.push(marker);
-        map.setCenter(position);
         /* 根据经纬度 用高德查询详细地址 */
-        lnglatTrabsofor(position, res => {
-          console.log("adress", res);
-          this.address = res.formattedAddress;
-          let sendAddress = `${res.addressComponent.province}-${
-            res.addressComponent.city
-            }`;
-          if (this.sendBack !== sendAddress) {
-            this.hasSend = false;
-            this.sendBack = sendAddress;
+        if (Math.abs(Number(data.gcjLongitude)) > 1 && Math.abs(Number(data.gcjLatitude)) > 1) {
+          let position = new AMap.LngLat(data.gcjLongitude, data.gcjLatitude);
+          if (this.markerArr.length > 0) {
+            this.markerArr.forEach(key => {
+              key.setMap(null);
+            });
           }
-          if (!this.hasSend) {
-            this.addressCallBack(res.addressComponent);
-          }
-        });
+          marker = new AMap.Marker({
+            icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+            position: position
+          });
+          marker.setMap(map);
+          this.markerArr.push(marker);
+          map.setCenter(position);
+          lnglatTrabsofor(position, res => {
+            console.log("adress", res);
+            this.address = res.formattedAddress;
+            let sendAddress = `${res.addressComponent.province}-${
+              res.addressComponent.city
+              }`;
+            if (this.sendBack !== sendAddress) {
+              this.hasSend = false;
+              this.sendBack = sendAddress;
+            }
+            if (!this.hasSend) {
+              this.addressCallBack(res.addressComponent);
+            }
+          });
+        } else {
+          this.address = "--";
+        }
+
       }
     },
     getData () {

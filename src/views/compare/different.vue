@@ -4,119 +4,66 @@
       <!-- 比较数据 -->
       <h2 class="textAlain title">{{$t('comparison.comparData')}}</h2>
       <div class="textAlain">
-        <div class="compare-add addone"
-          v-show="contrastDatas">
-          <p v-for="(tag, index) in stacks2"
-            :key="tag.hostId">{{$t('comparison.batteryCode')}}{{index+1}}: {{tag.code}}</p>
+        <div class="compare-add addone" v-show="contrastDatas">
+          <p v-for="(tag, index) in stacks2" :key="tag.hostId">{{$t('comparison.batteryCode')}}{{index+1}}: {{tag.code}}</p>
           <!-- <p>电池编号2: {{stacks1[1].code}}</p> -->
         </div>
-        <div @click="openTable"
-          class="compare-add">{{chooseText}}</div>
+        <div @click="openTable" class="compare-add">{{chooseText}}</div>
       </div>
     </div>
     <div class="timeCenter">
       <div class="timeBar">
         <span class="lables">{{$t('history.from')}}</span>
-        <el-date-picker class="queryTime"
-          :class="{'timeSelect': !defaultGray}"
-          @focus="timeChanges"
-          size="small"
-          v-model="start"
-          type="date"
-          :placeholder="$t('history.startTime')"></el-date-picker>
+        <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="start" type="date" :placeholder="$t('history.startTime')"></el-date-picker>
         <span class="lable">{{$t('history.to')}}</span>
-        <el-date-picker class="queryTime"
-          :class="{'timeSelect': !defaultGray}"
-          @focus="timeChanges"
-          size="small"
-          v-model="end"
-          type="date"
-          :placeholder="$t('history.endTime')"></el-date-picker>
-        <el-select class="queryTime"
-          :class="{'timeSelect': defaultGray}"
-          @focus="selectTimeChanges"
-          @change="changeTime"
-          size="small"
-          v-model="timevalue"
-          :placeholder="$t('comparison.timeRange')">
-          <el-option v-for="item in weekOption"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+        <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="end" type="date" :placeholder="$t('history.endTime')"></el-date-picker>
+        <el-select class="queryTime" :class="{'timeSelect': defaultGray}" @focus="selectTimeChanges" @change="changeTime" size="small" v-model="timevalue" :placeholder="$t('comparison.timeRange')">
+          <el-option v-for="item in weekOption" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
-        <el-button @click="sureBtnSearch"
-          class="queryBtn"
-          size="small"
-          type="primary">{{$t('timeBtn.sure')}}</el-button>
+        <el-button @click="sureBtnSearch" class="queryBtn" size="small" type="primary">{{$t('timeBtn.sure')}}</el-button>
       </div>
     </div>
     <div class="chart">
-      <com-chart :loading="chartloading"
-        :chartData="dataArr"
-        :chartBarData="summary"></com-chart>
+      <com-chart :loading="chartloading" :chartData="dataArr" :chartBarData="summary"></com-chart>
     </div>
 
-    <el-dialog :title="$t('comparison.addCompar')"
-      width="800px"
-      :visible.sync="tableVisible">
+    <el-dialog :title="$t('comparison.addCompar')" width="800px" :visible.sync="tableVisible">
       <div class="TopWrapper">
         <div class="item">{{$t('comparison.most')}}
           <span style="color:#71bfdb">2</span>{{$t('comparison.item')}}&nbsp;&nbsp;{{$t('comparison.deviceId')}}：
-          <el-tag v-for="tag in stacks1"
-            :key="tag.hostId+new Date()"
-            @close="closeTags(tag)"
-            :type="''">
+          <el-tag v-for="tag in stacks1" :key="tag.hostId+new Date()" @close="closeTags(tag)" :type="''">
             {{tag.code}}
           </el-tag>
         </div>
 
         <div class="item2">
-          <el-input size="small"
-            @change="remoteMethod"
-            :placeholder="$t('batteryList.searchContent')"
-            suffix-icon="el-icon-search"
-            v-model.trim="searchCont">
+          <el-input size="small" @change="remoteMethod" :placeholder="$t('batteryList.searchContent')" suffix-icon="el-icon-search" v-model.trim="searchCont">
           </el-input>
         </div>
       </div>
-      <el-table :data="gridData"
-        v-loading="loading">
+      <el-table :data="gridData" v-loading="loading">
         <!-- 电池编号 -->
-        <el-table-column property="code"
-          :label="$t('batteryList.batteryCode')"></el-table-column>
+        <el-table-column property="code" :label="$t('batteryList.batteryCode')"></el-table-column>
         <!-- 电池型号 -->
-        <el-table-column property="model"
-          :label="$t('batteryList.model')"></el-table-column>
+        <el-table-column property="model" :label="$t('batteryList.model')"></el-table-column>
         <!-- 电池组规格 -->
-        <el-table-column property="norm"
-          :label="$t('batteryList.specif')"></el-table-column>
+        <el-table-column property="norm" :label="$t('batteryList.specif')"></el-table-column>
         <!-- 监测设备编号 -->
-        <el-table-column property="deviceCode"
-          :label="$t('batteryList.deviceCode')"></el-table-column>
-        <el-table-column :label="$t('alarmList.handle')"
-          width="70">
+        <el-table-column property="deviceCode" :label="$t('batteryList.deviceCode')"></el-table-column>
+        <el-table-column :label="$t('alarmList.handle')" width="70">
           <template slot-scope="scope">
-            <el-checkbox @change="toggleCheck(scope.row)"
-              v-model="scope.row.checked"></el-checkbox>
+            <el-checkbox @change="toggleCheck(scope.row)" v-model="scope.row.checked"></el-checkbox>
           </template>
         </el-table-column>
       </el-table>
       <div class="page">
-        <el-pagination @current-change="handleCurrentChange"
-          :current-page.sync="currentPage"
-          :page-size="8"
-          layout="prev, pager, next"
-          :total="total">
+        <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="8" layout="prev, pager, next" :total="total">
         </el-pagination>
       </div>
-      <div slot="footer"
-        class="dialog-footer">
-        <el-button size="small"
-          @click="cancelHandle">{{$t('timeBtn.cancle')}}</el-button>
-        <el-button size="small"
-          type="primary"
-          @click="sureBtn">{{$t('timeBtn.sure')}}</el-button>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="small" @click="cancelHandle">{{$t('timeBtn.cancle')}}</el-button>
+        <el-button size="small" type="primary" @click="sureBtn">{{$t('timeBtn.sure')}}</el-button>
       </div>
     </el-dialog>
 
@@ -238,8 +185,6 @@ export default {
         this.$message.error(t('history.checkErr'));
         return;
       }
-      // let nowStart = `${utils.sortTime(this.start)}000000`;
-      // let nowEnd = `${utils.sortTime(this.end)}235959`;
       let nowStart = utils.toUTCTime(utils.startTime(this.start));
       let nowEnd = utils.toUTCTime(utils.endTime(this.end));
 
@@ -269,120 +214,103 @@ export default {
     getDataNow (startTime, endTime) {
       // console.log(this.stacks1);
       this.chartloading = true;
-      this.$api
-        .historyData(
-          this.stacks1[0].hostId,
-          this.stacks1[0].deviceId,
-          startTime,
-          endTime
-        )
-        .then(res => {
-          console.log(res);
-          this.dataObjFirst = {
-            timeArr: [],
-            singleVoltage: [],
-            temperature: [],
-            voltage: [],
-            current: [],
-            capacity: []
-          };
-          if (res.data && res.data.code === 0) {
-            let result = res.data.data;
-            result.list.forEach(key => {
-              // this.dataObjFirst.timeArr.push(utils.fomats(key.time)); // 时间
-              let timeArr = utils.TimeSconds(key.time); // 时间
-              let capacity = Math.round(key.capacity * 100);
-              this.dataObjFirst.singleVoltage.push({
-                name: timeArr,
-                value: [timeArr, key.singleVoltage]
-              }); // 单体电压
-              this.dataObjFirst.temperature.push({
-                name: timeArr,
-                value: [timeArr, key.temperature]
-              }); // 温度
-              this.dataObjFirst.voltage.push({
-                name: timeArr,
-                value: [timeArr, key.voltage]
-              }); // 电压
-              this.dataObjFirst.current.push({
-                name: timeArr,
-                value: [timeArr, -key.current]
-              }); // 电流
-              this.dataObjFirst.capacity.push({
-                name: timeArr,
-                value: [timeArr, capacity]
-              }); // 电量
-            });
-            this.now = result.summary || {};
-            this.now_eventSummary =
-              result.eventSummary === null ? {} : result.eventSummary;
-            this.getDataPrev(startTime, endTime);
-          }
-        });
+      this.$api.historyData(this.stacks1[0].hostId, this.stacks1[0].deviceId, startTime, endTime).then(res => {
+        console.log(res);
+        this.dataObjFirst = {
+          timeArr: [],
+          singleVoltage: [],
+          temperature: [],
+          voltage: [],
+          current: [],
+          capacity: []
+        };
+        if (res.data && res.data.code === 0) {
+          let result = res.data.data;
+          result.list.forEach(key => {
+            let timeArr = utils.TimeSconds(key.time); // 时间
+            let capacity = Math.round(key.capacity * 100);
+            this.dataObjFirst.singleVoltage.push({
+              name: timeArr,
+              value: [timeArr, key.singleVoltage]
+            }); // 单体电压
+            this.dataObjFirst.temperature.push({
+              name: timeArr,
+              value: [timeArr, key.temperature]
+            }); // 温度
+            this.dataObjFirst.voltage.push({
+              name: timeArr,
+              value: [timeArr, key.voltage]
+            }); // 电压
+            this.dataObjFirst.current.push({
+              name: timeArr,
+              value: [timeArr, -key.current]
+            }); // 电流
+            this.dataObjFirst.capacity.push({
+              name: timeArr,
+              value: [timeArr, capacity]
+            }); // 电量
+          });
+          this.now = result.summary || {};
+          this.now_eventSummary = result.eventSummary === null ? {} : result.eventSummary;
+          this.getDataPrev(startTime, endTime);
+        }
+      });
     },
     getDataPrev (startTime, endTime) {
-      this.$api
-        .historyData(
-          this.stacks1[1].hostId,
-          this.stacks1[1].deviceId,
-          startTime,
-          endTime
-        )
-        .then(res => {
-          console.log(res);
-          this.dataObjSecond = {
-            timeArr: [],
-            singleVoltage: [],
-            temperature: [],
-            voltage: [],
-            current: [],
-            capacity: []
+      this.$api.historyData(this.stacks1[1].hostId, this.stacks1[1].deviceId, startTime, endTime).then(res => {
+        this.dataObjSecond = {
+          timeArr: [],
+          singleVoltage: [],
+          temperature: [],
+          voltage: [],
+          current: [],
+          capacity: []
+        };
+        if (res.data && res.data.code === 0) {
+          let result = res.data.data;
+          result.list.forEach(key => {
+            let timeArr = utils.TimeSconds(key.time); // 时间
+            let capacity = Math.round(key.capacity * 100);
+            this.dataObjSecond.singleVoltage.push({
+              name: timeArr,
+              value: [timeArr, key.singleVoltage]
+            }); // 单体电压
+            this.dataObjSecond.temperature.push({
+              name: timeArr,
+              value: [timeArr, key.temperature]
+            }); // 温度
+            this.dataObjSecond.voltage.push({
+              name: timeArr,
+              value: [timeArr, key.voltage]
+            }); // 电压
+            this.dataObjSecond.current.push({
+              name: timeArr,
+              value: [timeArr, -key.current]
+            }); // 电流
+            this.dataObjSecond.capacity.push({
+              name: timeArr,
+              value: [timeArr, capacity]
+            }); // 电量
+          });
+          this.chartloading = false;
+          this.last = result.summary || {};
+          this.last_eventSummary =
+            result.eventSummary === null ? {} : result.eventSummary;
+          this.dataArr = {
+            dataObjFirst: this.dataObjFirst,
+            dataObjSecond: this.dataObjSecond,
+            battertCode: this.stacks1
           };
-          if (res.data && res.data.code === 0) {
-            let result = res.data.data;
-            result.list.forEach(key => {
-              let timeArr = utils.TimeSconds(key.time); // 时间
-              let capacity = Math.round(key.capacity * 100);
-              this.dataObjSecond.singleVoltage.push({
-                name: timeArr,
-                value: [timeArr, key.singleVoltage]
-              }); // 单体电压
-              this.dataObjSecond.temperature.push({
-                name: timeArr,
-                value: [timeArr, key.temperature]
-              }); // 温度
-              this.dataObjSecond.voltage.push({
-                name: timeArr,
-                value: [timeArr, key.voltage]
-              }); // 电压
-              this.dataObjSecond.current.push({
-                name: timeArr,
-                value: [timeArr, -key.current]
-              }); // 电流
-              this.dataObjSecond.capacity.push({
-                name: timeArr,
-                value: [timeArr, capacity]
-              }); // 电量
-            });
-            this.chartloading = false;
-            this.last = result.summary || {};
-            this.last_eventSummary =
-              result.eventSummary === null ? {} : result.eventSummary;
-            this.dataArr = {
-              dataObjFirst: this.dataObjFirst,
-              dataObjSecond: this.dataObjSecond,
-              battertCode: this.stacks1
-            };
-            this.summary = {
-              now: this.now,
-              last: this.last,
-              now_eventSummary: this.now_eventSummary,
-              last_eventSummary: this.last_eventSummary,
-              battertCode: this.stacks1
-            };
-            console.log(this.summary);
-          }
-        });
+          this.summary = {
+            now: this.now,
+            last: this.last,
+            now_eventSummary: this.now_eventSummary,
+            last_eventSummary: this.last_eventSummary,
+            battertCode: this.stacks1
+          };
+          console.log(this.summary);
+        }
+      });
     },
     remoteMethod () {
       this.batteryGroup = this.searchCont;
@@ -408,7 +336,6 @@ export default {
         key.checked = false;
       });
     },
-    handleSizeChange () { },
     handleCurrentChange (val) {
       this.currentPage = val;
       this.getBatteryList();

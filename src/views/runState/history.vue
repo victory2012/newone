@@ -3,61 +3,26 @@
     <div class="timeBar">
       <!-- 从 -->
       <span class="lables">{{$t('history.from')}}</span>
-      <el-date-picker class="queryTime"
-        :class="{'timeSelect': !defaultGray}"
-        @focus="timeChanges"
-        size="small"
-        v-model="start"
-        type="date"
-        :placeholder="$t('history.startTime')"></el-date-picker>
+      <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="start" type="date" :placeholder="$t('history.startTime')"></el-date-picker>
       <!-- 至 -->
       <span class="lable">{{$t('history.to')}}</span>
-      <el-date-picker class="queryTime"
-        :class="{'timeSelect': !defaultGray}"
-        @focus="timeChanges"
-        size="small"
-        v-model="end"
-        type="date"
-        :placeholder="$t('history.endTime')"></el-date-picker>
-      <el-select class="queryTime"
-        :class="{'timeSelect': defaultGray}"
-        size="small"
-        @change="changeTime"
-        @focus="selectTimeChanges"
-        v-model="timevalue">
-        <el-option v-for="item in weekOption"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
+      <el-date-picker class="queryTime" :class="{'timeSelect': !defaultGray}" @focus="timeChanges" size="small" v-model="end" type="date" :placeholder="$t('history.endTime')"></el-date-picker>
+      <el-select class="queryTime" :class="{'timeSelect': defaultGray}" size="small" @change="changeTime" @focus="selectTimeChanges" v-model="timevalue">
+        <el-option v-for="item in weekOption" :key="item.value" :label="item.label" :value="item.value">
         </el-option>
       </el-select>
-      <el-button @click="getChartData"
-        class="queryBtn"
-        size="small"
-        type="primary">{{$t('timeBtn.sure')}}</el-button>
+      <el-button @click="getChartData" class="queryBtn" size="small" type="primary">{{$t('timeBtn.sure')}}</el-button>
     </div>
     <div class="btns">
       <div class="btns-item">
-        <el-button :type="btnTypeDown"
-          :disabled="narrowBtn"
-          plain
-          @click="narrow"
-          icon="el-icon-remove-outline"></el-button>
-        <el-button :type="btnTypeUp"
-          :disabled="enlargeBtn"
-          plain
-          @click="enlarge"
-          icon="el-icon-circle-plus-outline"></el-button>
+        <el-button :type="btnTypeDown" :disabled="narrowBtn" plain @click="narrow" icon="el-icon-remove-outline"></el-button>
+        <el-button :type="btnTypeUp" :disabled="enlargeBtn" plain @click="enlarge" icon="el-icon-circle-plus-outline"></el-button>
       </div>
       <div class="btns-item">
-        <el-button type="primary"
-          plain
-          @click="exportExcel">{{$t('history.exportBtn')}}</el-button>
+        <el-button type="primary" plain @click="exportExcel">{{$t('history.exportBtn')}}</el-button>
       </div>
     </div>
-    <echart-map :chartData="dataObj"
-      :loading="loading"
-      @timeZoom="timeZoom"></echart-map>
+    <echart-map :chartData="dataObj" :loading="loading" @timeZoom="timeZoom"></echart-map>
     <div class="batteryChart">
       <div class="addbattery">
         <ul>
@@ -98,28 +63,20 @@
           </li>
         </ul>
       </div>
-      <chart-pie :loading="loading"
-        :peiData="peiObj"></chart-pie>
+      <chart-pie :loading="loading" :peiData="peiObj"></chart-pie>
     </div>
     <div class="alarmTab">
       <div class="tabInfo">
-        <a :class="{'active': active === 'alarm'}"
-          @click="historAlarm">{{$t('history.historyWarn')}}</a>
+        <a :class="{'active': active === 'alarm'}" @click="historAlarm">{{$t('history.historyWarn')}}</a>
         <span class="divider"></span>
-        <a :class="{'active': active === 'liquid'}"
-          @click="historyLiquid">{{$t('history.historyfluid')}}</a>
+        <a :class="{'active': active === 'liquid'}" @click="historyLiquid">{{$t('history.historyfluid')}}</a>
       </div>
     </div>
     <div class="tables">
-      <i-alarm :alarmData="alarmData"
-        v-show="active === 'alarm'"></i-alarm>
-      <liquid :liquidData="liquidData"
-        v-show="active === 'liquid'"></liquid>
+      <i-alarm :alarmData="alarmData" v-show="active === 'alarm'"></i-alarm>
+      <liquid :liquidData="liquidData" v-show="active === 'liquid'"></liquid>
       <div class="page">
-        <el-pagination @current-change="handleCurrentChange"
-          :current-page.sync="currentPage"
-          layout="prev, pager, next"
-          :total="total">
+        <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" layout="prev, pager, next" :total="total">
         </el-pagination>
       </div>
     </div>

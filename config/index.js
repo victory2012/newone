@@ -6,7 +6,7 @@ const path = require('path');
 
 // const apiPath = 'http://192.168.1.139:8000';
 const apiPath = 'http://47.96.8.239:8000';
-// const apiPath = "https://www.myriadiot.net/api";
+// const apiPath = 'https://www.myriadiot.net/api';
 
 module.exports = {
   dev: {
@@ -25,7 +25,7 @@ module.exports = {
     },
 
     // Various Dev Server settings
-    host: '0.0.0.0', // can be overwritten by process.env.HOST
+    host: 'localhost', // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
@@ -68,7 +68,7 @@ module.exports = {
      * Source Maps
      */
 
-    productionSourceMap: true,
+    productionSourceMap: false,
     // https://webpack.js.org/configuration/devtool/#production
     devtool: '#source-map',
 

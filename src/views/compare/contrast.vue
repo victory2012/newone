@@ -3,12 +3,10 @@
     <div class="titleTab textAlain">
       <div class="tabInfo">
         <!-- 同一电池单元 -->
-        <a @click="showSameData"
-          :class="{'active': actived == 'same'}">{{$t('comparison.same')}}</a>
+        <a @click="showSameData" :class="{'active': actived == 'same'}">{{$t('comparison.same')}}</a>
         <span class="divider"></span>
         <!-- 不同电池单元 -->
-        <a @click="showDiffData"
-          :class="{'active': actived == 'diff'}">{{$t('comparison.diffrence')}}</a>
+        <a @click="showDiffData" :class="{'active': actived == 'diff'}">{{$t('comparison.diffrence')}}</a>
       </div>
     </div>
     <component :is="activeComponent"></component>
@@ -37,8 +35,7 @@ export default {
       this.activeComponent = "diffCompent";
       this.actived = "diff";
     }
-  },
-  mounted () { }
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -47,10 +44,8 @@ export default {
 }
 .tabInfo {
   width: 330px;
-  // height: 50px;
   background: #ffffff;
   font-size: 0;
-  // line-height: 50px;
   padding: 15px 0;
   border-radius: 5px;
   margin: 0 auto;

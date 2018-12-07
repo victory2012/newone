@@ -1,7 +1,7 @@
 /* eslint-disable */
-import AMap from "AMap";
+import AMap from 'AMap';
 
-export default function (lnglat, cb) {
+export default function(lnglat, cb) {
   let geocoder = new AMap.Geocoder({
     lang: 'en',
     radius: 1000 // 范围，默认：500
