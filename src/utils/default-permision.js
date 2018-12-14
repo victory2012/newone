@@ -44,5 +44,5 @@ export default {
       allocation: false
     };
     return product;
-  },
+  }
 };

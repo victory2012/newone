@@ -1,9 +1,6 @@
 export default {
   getUserLoginData(state) {
-    if (state.loginData) {
-      return JSON.parse(state.loginData);
-    }
-    return '';
+    return state.loginData;
   },
   manfictor(state) {
     return state.manfictor;
